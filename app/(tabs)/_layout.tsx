@@ -1,6 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs, useRouter } from "expo-router";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import { colors } from "@/lib/constants";
 
 function TabBarIcon(props: {
@@ -46,10 +46,20 @@ export default function TabLayout() {
         options={{
           title: "Visits",
           tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />,
+          headerLeft: () => (
+            <Pressable
+              onPress={() => router.push("/visit/new")}
+              style={{ marginLeft: 16 }}
+              hitSlop={8}
+            >
+              <FontAwesome name="plus" size={20} color={colors.accent} />
+            </Pressable>
+          ),
           headerRight: () => (
             <Pressable
               onPress={() => router.push("/search")}
               style={{ marginRight: 16 }}
+              hitSlop={8}
             >
               <FontAwesome name="search" size={20} color={colors.text} />
             </Pressable>

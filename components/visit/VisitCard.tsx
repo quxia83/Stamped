@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
+import { useFilterStore } from "@/stores/useFilterStore";
 import { colors } from "@/lib/constants";
 
 type Props = {
@@ -12,10 +13,11 @@ type Props = {
   rating: number | null;
   cost: number | null;
   currency: string | null;
+  categoryId: number | null;
   categoryIcon: string | null;
   categoryName: string | null;
   thumbnail?: string;
-  tags?: { label: string; color: string }[];
+  tags?: { id: number; label: string; color: string }[];
 };
 
 export function VisitCard({
@@ -25,12 +27,25 @@ export function VisitCard({
   rating,
   cost,
   currency,
+  categoryId,
   categoryIcon,
   categoryName,
   thumbnail,
   tags,
 }: Props) {
   const router = useRouter();
+  const setFilter = useFilterStore((s) => s.setFilter);
+
+  const filterByCategory = () => {
+    if (categoryId == null) return;
+    setFilter("categoryId", categoryId);
+    router.navigate("/(tabs)/list");
+  };
+
+  const filterByTag = (tagId: number) => {
+    setFilter("tagIds", [tagId]);
+    router.navigate("/(tabs)/list");
+  };
 
   return (
     <Pressable onPress={() => router.push(`/visit/${id}`)}>
@@ -41,7 +56,9 @@ export function VisitCard({
           )}
           <View style={styles.content}>
             <View style={styles.header}>
-              <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
+              <Pressable onPress={filterByCategory} hitSlop={4}>
+                <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
+              </Pressable>
               <Text style={styles.name} numberOfLines={1}>
                 {placeName ?? "Unknown"}
               </Text>
@@ -69,14 +86,15 @@ export function VisitCard({
             {tags && tags.length > 0 && (
               <View style={styles.tags}>
                 {tags.map((t) => (
-                  <View
-                    key={t.label}
+                  <Pressable
+                    key={t.id}
                     style={[styles.tag, { backgroundColor: t.color + "20" }]}
+                    onPress={() => filterByTag(t.id)}
                   >
                     <Text style={[styles.tagText, { color: t.color }]}>
                       {t.label}
                     </Text>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             )}

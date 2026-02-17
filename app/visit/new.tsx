@@ -23,6 +23,7 @@ import { insertPlace, updatePlace } from "@/db/queries/places";
 import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
 import { insertPhoto, getPhotosForVisit, deletePhoto } from "@/db/queries/photos";
 import { getTagsForVisit, setVisitTags } from "@/db/queries/tags";
+import * as Location from "expo-location";
 import { colors } from "@/lib/constants";
 
 type PhotoItem = { id?: number; uri: string };
@@ -50,6 +51,8 @@ export default function NewVisitScreen() {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [localPhotos, setLocalPhotos] = useState<PhotoItem[]>([]);
   const [saving, setSaving] = useState(false);
+  const [lat, setLat] = useState(params.lat ? parseFloat(params.lat) : 0);
+  const [lng, setLng] = useState(params.lng ? parseFloat(params.lng) : 0);
   const [existingPlaceId, setExistingPlaceId] = useState<number | undefined>(
     params.placeId ? parseInt(params.placeId) : undefined
   );
@@ -57,8 +60,36 @@ export default function NewVisitScreen() {
   useEffect(() => {
     if (params.editId) {
       loadVisit(parseInt(params.editId));
+    } else if (params.lat && params.lng) {
+      reverseGeocode(parseFloat(params.lat), parseFloat(params.lng));
+    } else if (!params.lat && !params.lng && !params.placeId) {
+      // Adding without map — use current location
+      getCurrentLocation();
     }
-  }, [params.editId]);
+  }, [params.editId, params.lat, params.lng]);
+
+  const getCurrentLocation = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
+      const loc = await Location.getCurrentPositionAsync({});
+      setLat(loc.coords.latitude);
+      setLng(loc.coords.longitude);
+      reverseGeocode(loc.coords.latitude, loc.coords.longitude);
+    } catch {}
+  };
+
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const results = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      if (results.length > 0) {
+        const r = results[0];
+        const parts = [r.streetNumber, r.street].filter(Boolean);
+        const cityParts = [r.city, r.region, r.postalCode].filter(Boolean);
+        setAddress([parts.join(" "), ...cityParts].filter(Boolean).join(", "));
+      }
+    } catch {}
+  };
 
   const loadVisit = async (visitId: number) => {
     const [visit] = await getVisitById(visitId);
@@ -106,8 +137,6 @@ export default function NewVisitScreen() {
       let placeId = existingPlaceId;
 
       if (!placeId) {
-        const lat = parseFloat(params.lat ?? "0");
-        const lng = parseFloat(params.lng ?? "0");
         const [place] = await insertPlace({
           name: name.trim(),
           address: address.trim() || undefined,

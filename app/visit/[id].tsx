@@ -6,6 +6,7 @@ import {
   Alert,
   StyleSheet,
   Pressable,
+  Linking,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import { format, parseISO } from "date-fns";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { getPhotosForVisit, deletePhotosForVisit } from "@/db/queries/photos";
+import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
 import { colors } from "@/lib/constants";
 
@@ -24,6 +26,7 @@ type Photo = { id: number; uri: string };
 export default function VisitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const setFilter = useFilterStore((s) => s.setFilter);
   const [visit, setVisit] = useState<VisitDetail | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -56,6 +59,25 @@ export default function VisitDetailScreen() {
         },
       },
     ]);
+  };
+
+  const openInMaps = () => {
+    if (!visit) return;
+    const q = visit.placeAddress
+      ? encodeURIComponent(visit.placeAddress)
+      : `${visit.placeLatitude},${visit.placeLongitude}`;
+    Linking.openURL(`maps://?q=${q}`);
+  };
+
+  const filterByCategory = () => {
+    if (!visit?.categoryId) return;
+    setFilter("categoryId", visit.categoryId);
+    router.navigate("/(tabs)/list");
+  };
+
+  const filterByTag = (tagId: number) => {
+    setFilter("tagIds", [tagId]);
+    router.navigate("/(tabs)/list");
   };
 
   if (!visit) return null;
@@ -101,25 +123,28 @@ export default function VisitDetailScreen() {
         )}
 
         {/* Place name */}
-        <Pressable onPress={() => router.push(`/place/${visit.placeId}`)}>
-          <View style={styles.placeRow}>
+        <View style={styles.placeRow}>
+          <Pressable onPress={filterByCategory}>
             <Text style={styles.placeIcon}>
               {visit.categoryIcon ?? "📍"}
             </Text>
-            <View>
-              <Text style={styles.placeName}>{visit.placeName}</Text>
-              {visit.placeAddress && (
-                <Text style={styles.placeAddress}>{visit.placeAddress}</Text>
-              )}
-            </View>
-            <FontAwesome
-              name="chevron-right"
-              size={14}
-              color={colors.textSecondary}
-              style={{ marginLeft: "auto" }}
-            />
-          </View>
-        </Pressable>
+          </Pressable>
+          <Pressable style={{ flex: 1 }} onPress={() => router.push(`/place/${visit.placeId}`)}>
+            <Text style={styles.placeName}>{visit.placeName}</Text>
+            {visit.placeAddress && (
+              <Pressable onPress={openInMaps}>
+                <Text style={[styles.placeAddress, styles.addressLink]}>
+                  {visit.placeAddress} ↗
+                </Text>
+              </Pressable>
+            )}
+          </Pressable>
+          <FontAwesome
+            name="chevron-right"
+            size={14}
+            color={colors.textSecondary}
+          />
+        </View>
 
         {/* Date */}
         <View style={styles.section}>
@@ -163,14 +188,15 @@ export default function VisitDetailScreen() {
             <Text style={styles.sectionLabel}>Tags</Text>
             <View style={styles.tagRow}>
               {tags.map((tag) => (
-                <View
+                <Pressable
                   key={tag.id}
                   style={[styles.tag, { backgroundColor: tag.color + "20" }]}
+                  onPress={() => filterByTag(tag.id)}
                 >
                   <Text style={[styles.tagText, { color: tag.color }]}>
                     {tag.label}
                   </Text>
-                </View>
+                </Pressable>
               ))}
             </View>
           </View>
@@ -232,6 +258,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     marginTop: 2,
+  },
+  addressLink: {
+    color: colors.accent,
+    textDecorationLine: "underline",
   },
   section: {
     paddingHorizontal: 16,

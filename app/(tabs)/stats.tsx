@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState, useEffect, useCallback } from "react";
 import {
   startOfWeek,
@@ -15,7 +16,7 @@ import {
 import { colors } from "@/lib/constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
-type TimeRange = "all" | "week" | "month" | "year";
+type TimeRange = "all" | "week" | "month" | "year" | "custom";
 
 type OverallStats = { totalVisits: number; avgRating: number | null; totalSpent: number | null };
 type CategoryStat = { id: number | null; name: string | null; icon: string | null; visitCount: number; totalSpent: number | null };
@@ -28,6 +29,10 @@ export default function StatsTab() {
   const [byCategory, setByCategory] = useState<CategoryStat[]>([]);
   const [byTime, setByTime] = useState<TimeStat[]>([]);
   const [topPlaces, setTopPlaces] = useState<TopPlace[]>([]);
+  const [customFrom, setCustomFrom] = useState(() => startOfMonth(new Date()));
+  const [customTo, setCustomTo] = useState(() => new Date());
+  const [showFromPicker, setShowFromPicker] = useState(false);
+  const [showToPicker, setShowToPicker] = useState(false);
 
   const getDateRange = useCallback((): { dateFrom?: string; dateTo?: string } => {
     const now = new Date();
@@ -35,8 +40,9 @@ export default function StatsTab() {
     const todayStr = format(now, "yyyy-MM-dd");
     if (range === "week") return { dateFrom: format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd"), dateTo: todayStr };
     if (range === "month") return { dateFrom: format(startOfMonth(now), "yyyy-MM-dd"), dateTo: todayStr };
-    return { dateFrom: format(startOfYear(now), "yyyy-MM-dd"), dateTo: todayStr };
-  }, [range]);
+    if (range === "year") return { dateFrom: format(startOfYear(now), "yyyy-MM-dd"), dateTo: todayStr };
+    return { dateFrom: format(customFrom, "yyyy-MM-dd"), dateTo: format(customTo, "yyyy-MM-dd") };
+  }, [range, customFrom, customTo]);
 
   useEffect(() => {
     const load = async () => {
@@ -61,6 +67,7 @@ export default function StatsTab() {
     { key: "week", label: "This Week" },
     { key: "month", label: "This Month" },
     { key: "year", label: "This Year" },
+    { key: "custom", label: "Custom" },
   ];
 
   return (
@@ -79,6 +86,48 @@ export default function StatsTab() {
           </Pressable>
         ))}
       </View>
+
+      {/* Custom Date Range Pickers */}
+      {range === "custom" && (
+        <View style={styles.dateRow}>
+          <View style={styles.dateField}>
+            <Text style={styles.dateLabel}>From</Text>
+            <Pressable style={styles.dateButton} onPress={() => setShowFromPicker(true)}>
+              <Text style={styles.dateText}>{format(customFrom, "MMM d, yyyy")}</Text>
+            </Pressable>
+            {showFromPicker && (
+              <DateTimePicker
+                value={customFrom}
+                mode="date"
+                maximumDate={customTo}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={(_, date) => {
+                  setShowFromPicker(Platform.OS === "ios");
+                  if (date) setCustomFrom(date);
+                }}
+              />
+            )}
+          </View>
+          <View style={styles.dateField}>
+            <Text style={styles.dateLabel}>To</Text>
+            <Pressable style={styles.dateButton} onPress={() => setShowToPicker(true)}>
+              <Text style={styles.dateText}>{format(customTo, "MMM d, yyyy")}</Text>
+            </Pressable>
+            {showToPicker && (
+              <DateTimePicker
+                value={customTo}
+                mode="date"
+                minimumDate={customFrom}
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={(_, date) => {
+                  setShowToPicker(Platform.OS === "ios");
+                  if (date) setCustomTo(date);
+                }}
+              />
+            )}
+          </View>
+        </View>
+      )}
 
       {/* Overview Card */}
       {overall && (
@@ -174,6 +223,34 @@ function StatBlock({ label, value, icon }: { label: string; value: string; icon?
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 16, paddingBottom: 40 },
+  dateRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 16,
+  },
+  dateField: {
+    flex: 1,
+  },
+  dateLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.textSecondary,
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  dateButton: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: colors.surface,
+  },
+  dateText: {
+    fontSize: 15,
+    color: colors.text,
+  },
   chipRow: {
     flexDirection: "row",
     flexWrap: "wrap",

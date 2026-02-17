@@ -69,6 +69,7 @@ export default function ListTab() {
             rating={item.rating}
             cost={item.cost}
             currency={item.currency}
+            categoryId={item.categoryId}
             categoryIcon={item.categoryIcon}
             categoryName={item.categoryName}
             thumbnail={item.thumbnail}

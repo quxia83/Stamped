@@ -1,7 +1,7 @@
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useImperativeHandle, forwardRef } from "react";
 import { StyleSheet } from "react-native";
 import MapView from "react-native-map-clustering";
-import { PROVIDER_GOOGLE, Region, LongPressEvent } from "react-native-maps";
+import { Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
 import { useMapStore } from "@/stores/useMapStore";
 
@@ -21,14 +21,22 @@ type Props = {
   onCalloutPress: (placeId: number) => void;
 };
 
-export function StampedMap({
-  places,
-  onLongPress,
-  onMarkerPress,
-  onCalloutPress,
-}: Props) {
+export type StampedMapHandle = {
+  animateToRegion: (region: Region, duration?: number) => void;
+};
+
+export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMap(
+  { places, onLongPress, onMarkerPress, onCalloutPress },
+  ref
+) {
   const mapRef = useRef<any>(null);
   const { region, setRegion } = useMapStore();
+
+  useImperativeHandle(ref, () => ({
+    animateToRegion: (r: Region, duration = 500) => {
+      mapRef.current?.animateToRegion(r, duration);
+    },
+  }));
 
   const handleLongPress = useCallback(
     (e: LongPressEvent) => {
@@ -49,7 +57,6 @@ export function StampedMap({
     <MapView
       ref={mapRef}
       style={styles.map}
-      provider={PROVIDER_GOOGLE}
       initialRegion={region}
       onRegionChangeComplete={handleRegionChange}
       onLongPress={handleLongPress}
@@ -72,7 +79,7 @@ export function StampedMap({
       ))}
     </MapView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   map: {

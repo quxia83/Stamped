@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { useCallback } from "react";
-import { StampedMap } from "@/components/map/StampedMap";
+import { useCallback, useRef } from "react";
+import { StampedMap, type StampedMapHandle } from "@/components/map/StampedMap";
 import { MapControls } from "@/components/map/MapControls";
 import { usePlaces } from "@/hooks/usePlaces";
 import { useMapStore } from "@/stores/useMapStore";
@@ -9,6 +9,7 @@ import { useFilterStore } from "@/stores/useFilterStore";
 
 export default function MapTab() {
   const router = useRouter();
+  const mapRef = useRef<StampedMapHandle>(null);
   const { data: places } = usePlaces();
   const { setRegion } = useMapStore();
   const categoryId = useFilterStore((s) => s.categoryId);
@@ -43,12 +44,14 @@ export default function MapTab() {
 
   const handleLocationFound = useCallback(
     (latitude: number, longitude: number) => {
-      setRegion({
+      const newRegion = {
         latitude,
         longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
-      });
+      };
+      setRegion(newRegion);
+      mapRef.current?.animateToRegion(newRegion);
     },
     [setRegion]
   );
@@ -56,6 +59,7 @@ export default function MapTab() {
   return (
     <View style={styles.container}>
       <StampedMap
+        ref={mapRef}
         places={filteredPlaces}
         onLongPress={handleLongPress}
         onMarkerPress={handleMarkerPress}

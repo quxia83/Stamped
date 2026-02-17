@@ -123,6 +123,7 @@ export default function SearchScreen() {
                 rating={item.rating}
                 cost={item.cost}
                 currency={item.currency}
+                categoryId={item.categoryId}
                 categoryIcon={item.categoryIcon}
                 categoryName={item.categoryName}
                 tags={item.tags}
