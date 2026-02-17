@@ -1,0 +1,152 @@
+import { View, Text, Pressable, Image, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { format, parseISO } from "date-fns";
+import { Card } from "@/components/ui/Card";
+import { colors } from "@/lib/constants";
+
+type Props = {
+  id: number;
+  placeName: string | null;
+  date: string;
+  rating: number | null;
+  cost: number | null;
+  currency: string | null;
+  categoryIcon: string | null;
+  categoryName: string | null;
+  thumbnail?: string;
+  tags?: { label: string; color: string }[];
+};
+
+export function VisitCard({
+  id,
+  placeName,
+  date,
+  rating,
+  cost,
+  currency,
+  categoryIcon,
+  categoryName,
+  thumbnail,
+  tags,
+}: Props) {
+  const router = useRouter();
+
+  return (
+    <Pressable onPress={() => router.push(`/visit/${id}`)}>
+      <Card>
+        <View style={styles.row}>
+          {thumbnail && (
+            <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
+          )}
+          <View style={styles.content}>
+            <View style={styles.header}>
+              <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
+              <Text style={styles.name} numberOfLines={1}>
+                {placeName ?? "Unknown"}
+              </Text>
+            </View>
+            <Text style={styles.date}>{format(parseISO(date), "MMM d, yyyy")}</Text>
+            <View style={styles.meta}>
+              {rating != null && (
+                <View style={styles.ratingRow}>
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <FontAwesome
+                      key={s}
+                      name={s <= rating ? "star" : "star-o"}
+                      size={14}
+                      color={s <= rating ? colors.star : colors.starEmpty}
+                    />
+                  ))}
+                </View>
+              )}
+              {cost != null && cost > 0 && (
+                <Text style={styles.cost}>
+                  {currency ?? "USD"} {cost.toFixed(2)}
+                </Text>
+              )}
+            </View>
+            {tags && tags.length > 0 && (
+              <View style={styles.tags}>
+                {tags.map((t) => (
+                  <View
+                    key={t.label}
+                    style={[styles.tag, { backgroundColor: t.color + "20" }]}
+                  >
+                    <Text style={[styles.tagText, { color: t.color }]}>
+                      {t.label}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </View>
+      </Card>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  thumbnail: {
+    width: 64,
+    height: 64,
+    borderRadius: 8,
+  },
+  content: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  icon: {
+    fontSize: 16,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.text,
+    flex: 1,
+  },
+  date: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  meta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 6,
+  },
+  ratingRow: {
+    flexDirection: "row",
+    gap: 2,
+  },
+  cost: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: colors.text,
+  },
+  tags: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 4,
+    marginTop: 6,
+  },
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: "500",
+  },
+});

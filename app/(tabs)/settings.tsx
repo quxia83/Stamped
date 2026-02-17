@@ -1,0 +1,211 @@
+import {
+  View,
+  Text,
+  SectionList,
+  TextInput,
+  Pressable,
+  Alert,
+  StyleSheet,
+} from "react-native";
+import { useEffect, useState } from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import {
+  getAllCategories,
+  insertCategory,
+  deleteCategory,
+} from "@/db/queries/categories";
+import { getAllTags, insertTag, deleteTag } from "@/db/queries/tags";
+import { getAllPeople, insertPerson, deletePerson } from "@/db/queries/people";
+import { colors } from "@/lib/constants";
+
+type Item = { id: number; name: string; extra?: string };
+type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
+
+export default function SettingsTab() {
+  const [sections, setSections] = useState<Section[]>([]);
+  const [addMode, setAddMode] = useState<string | null>(null);
+  const [newName, setNewName] = useState("");
+
+  const load = async () => {
+    const [cats, allTags, people] = await Promise.all([
+      getAllCategories(),
+      getAllTags(),
+      getAllPeople(),
+    ]);
+    setSections([
+      {
+        title: "Categories",
+        type: "category",
+        data: cats.map((c) => ({ id: c.id, name: c.name, extra: c.icon })),
+      },
+      {
+        title: "Tags",
+        type: "tag",
+        data: allTags.map((t) => ({ id: t.id, name: t.label, extra: t.color })),
+      },
+      {
+        title: "People",
+        type: "person",
+        data: people.map((p) => ({ id: p.id, name: p.name })),
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleAdd = async (type: string) => {
+    if (!newName.trim()) return;
+    if (type === "category") await insertCategory(newName.trim(), "📍");
+    else if (type === "tag") await insertTag(newName.trim(), "#3b82f6");
+    else await insertPerson(newName.trim());
+    setNewName("");
+    setAddMode(null);
+    load();
+  };
+
+  const handleDelete = (type: string, id: number, name: string) => {
+    Alert.alert("Delete", `Delete "${name}"?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          if (type === "category") await deleteCategory(id);
+          else if (type === "tag") await deleteTag(id);
+          else await deletePerson(id);
+          load();
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SectionList
+      sections={sections}
+      keyExtractor={(item) => `${item.id}`}
+      renderSectionHeader={({ section }) => (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>{section.title}</Text>
+          <Pressable onPress={() => setAddMode(section.type)}>
+            <FontAwesome name="plus-circle" size={22} color={colors.accent} />
+          </Pressable>
+        </View>
+      )}
+      renderItem={({ item, section }) => (
+        <View style={styles.item}>
+          {item.extra && section.type === "category" && (
+            <Text style={styles.itemIcon}>{item.extra}</Text>
+          )}
+          {item.extra && section.type === "tag" && (
+            <View
+              style={[styles.tagDot, { backgroundColor: item.extra }]}
+            />
+          )}
+          <Text style={styles.itemName}>{item.name}</Text>
+          <Pressable
+            onPress={() => handleDelete(section.type, item.id, item.name)}
+            style={styles.deleteBtn}
+          >
+            <FontAwesome name="trash-o" size={18} color="#dc3545" />
+          </Pressable>
+        </View>
+      )}
+      renderSectionFooter={({ section }) =>
+        addMode === section.type ? (
+          <View style={styles.addRow}>
+            <TextInput
+              style={styles.addInput}
+              value={newName}
+              onChangeText={setNewName}
+              placeholder={`New ${section.type}`}
+              autoFocus
+              onSubmitEditing={() => handleAdd(section.type)}
+            />
+            <Pressable
+              style={styles.addBtn}
+              onPress={() => handleAdd(section.type)}
+            >
+              <Text style={styles.addBtnText}>Add</Text>
+            </Pressable>
+          </View>
+        ) : null
+      }
+      contentContainerStyle={styles.container}
+      stickySectionHeadersEnabled={false}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 40,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 8,
+    backgroundColor: colors.background,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: colors.surface,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+    gap: 10,
+  },
+  itemIcon: {
+    fontSize: 18,
+  },
+  tagDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+  },
+  itemName: {
+    fontSize: 16,
+    color: colors.text,
+    flex: 1,
+  },
+  deleteBtn: {
+    padding: 8,
+  },
+  addRow: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface,
+  },
+  addInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+  },
+  addBtn: {
+    backgroundColor: colors.accent,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+  },
+  addBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+});

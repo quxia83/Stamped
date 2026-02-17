@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npx expo install:*)",
+      "Bash(npm install:*)",
+      "Bash(ls:*)",
+      "Bash(npx drizzle-kit generate:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node -e:*)",
+      "Bash(npx expo export:*)"
+    ]
+  }
+}

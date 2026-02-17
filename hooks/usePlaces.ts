@@ -1,0 +1,23 @@
+import { useLiveQuery } from "drizzle-orm/expo-sqlite";
+import { db } from "@/db/client";
+import { places, categories } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+export function usePlaces() {
+  return useLiveQuery(
+    db
+      .select({
+        id: places.id,
+        name: places.name,
+        address: places.address,
+        latitude: places.latitude,
+        longitude: places.longitude,
+        categoryId: places.categoryId,
+        createdAt: places.createdAt,
+        categoryName: categories.name,
+        categoryIcon: categories.icon,
+      })
+      .from(places)
+      .leftJoin(categories, eq(places.categoryId, categories.id))
+  );
+}
