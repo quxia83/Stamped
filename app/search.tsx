@@ -1,10 +1,14 @@
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { SearchBar } from "@/components/common/SearchBar";
 import { VisitCard } from "@/components/visit/VisitCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { getFilteredVisits, type VisitWithPlace } from "@/db/queries/visits";
 import { getTagsForVisit } from "@/db/queries/tags";
+import { searchPlaces, type PlaceResult } from "@/lib/geocode";
+import { useMapStore } from "@/stores/useMapStore";
 import { colors } from "@/lib/constants";
 
 type VisitRow = VisitWithPlace & {
@@ -13,27 +17,53 @@ type VisitRow = VisitWithPlace & {
 
 export default function SearchScreen() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<VisitRow[]>([]);
+  const [visits, setVisits] = useState<VisitRow[]>([]);
+  const [places, setPlaces] = useState<PlaceResult[]>([]);
+  const region = useMapStore((s) => s.region);
+  const setRegion = useMapStore((s) => s.setRegion);
+  const router = useRouter();
 
   const search = useCallback(async (q: string) => {
     if (!q.trim()) {
-      setResults([]);
+      setVisits([]);
+      setPlaces([]);
       return;
     }
-    const raw = await getFilteredVisits({ searchQuery: q });
+
+    const [raw, placeResults] = await Promise.all([
+      getFilteredVisits({ searchQuery: q }),
+      searchPlaces(q, region),
+    ]);
+
     const enriched = await Promise.all(
       raw.map(async (v) => {
         const tags = await getTagsForVisit(v.id);
         return { ...v, tags };
       })
     );
-    setResults(enriched);
-  }, []);
+    setVisits(enriched);
+    setPlaces(placeResults);
+  }, [region]);
 
   useEffect(() => {
     const timer = setTimeout(() => search(query), 300);
     return () => clearTimeout(timer);
   }, [query, search]);
+
+  const handlePlacePress = useCallback(
+    (place: PlaceResult) => {
+      setRegion({
+        latitude: place.latitude,
+        longitude: place.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      });
+      router.navigate("/");
+    },
+    [setRegion, router]
+  );
+
+  const hasResults = places.length > 0 || visits.length > 0;
 
   return (
     <View style={styles.container}>
@@ -43,27 +73,70 @@ export default function SearchScreen() {
         placeholder="Search places, notes, tags..."
       />
       <FlatList
-        data={results}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <VisitCard
-            id={item.id}
-            placeName={item.placeName}
-            date={item.date}
-            rating={item.rating}
-            cost={item.cost}
-            currency={item.currency}
-            categoryIcon={item.categoryIcon}
-            categoryName={item.categoryName}
-            tags={item.tags}
-          />
-        )}
+        data={[]}
+        renderItem={null}
         contentContainerStyle={
-          results.length === 0 && query ? styles.empty : undefined
+          !hasResults && query ? styles.empty : undefined
+        }
+        ListHeaderComponent={
+          <>
+            {places.length > 0 && (
+              <View>
+                <Text style={styles.sectionHeader}>Places</Text>
+                {places.map((place, i) => (
+                  <Pressable
+                    key={`place-${i}`}
+                    style={styles.placeRow}
+                    onPress={() => handlePlacePress(place)}
+                  >
+                    <Ionicons
+                      name="location-outline"
+                      size={20}
+                      color={colors.accent}
+                      style={styles.placeIcon}
+                    />
+                    <View style={styles.placeText}>
+                      <Text style={styles.placeName} numberOfLines={1}>
+                        {place.name}
+                      </Text>
+                      <Text style={styles.placeAddress} numberOfLines={1}>
+                        {place.displayName}
+                      </Text>
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+            {visits.length > 0 && (
+              <Text style={styles.sectionHeader}>Your Visits</Text>
+            )}
+          </>
+        }
+        ListFooterComponent={
+          <>
+            {visits.map((item) => (
+              <VisitCard
+                key={item.id}
+                id={item.id}
+                placeName={item.placeName}
+                date={item.date}
+                rating={item.rating}
+                cost={item.cost}
+                currency={item.currency}
+                categoryIcon={item.categoryIcon}
+                categoryName={item.categoryName}
+                tags={item.tags}
+              />
+            ))}
+          </>
         }
         ListEmptyComponent={
-          query ? (
-            <EmptyState icon="search" title="No results" message={`No matches for "${query}"`} />
+          query && !hasResults ? (
+            <EmptyState
+              icon="search"
+              title="No results"
+              message={`No matches for "${query}"`}
+            />
           ) : null
         }
       />
@@ -78,5 +151,39 @@ const styles = StyleSheet.create({
   },
   empty: {
     flex: 1,
+  },
+  sectionHeader: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  placeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: colors.border,
+  },
+  placeIcon: {
+    marginRight: 12,
+  },
+  placeText: {
+    flex: 1,
+  },
+  placeName: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: colors.text,
+  },
+  placeAddress: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginTop: 2,
   },
 });
