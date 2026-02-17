@@ -13,6 +13,7 @@ import {
   getAllCategories,
   insertCategory,
   deleteCategory,
+  updateCategory,
 } from "@/db/queries/categories";
 import { getAllTags, insertTag, deleteTag } from "@/db/queries/tags";
 import { getAllPeople, insertPerson, deletePerson } from "@/db/queries/people";
@@ -25,6 +26,9 @@ export default function SettingsTab() {
   const [sections, setSections] = useState<Section[]>([]);
   const [addMode, setAddMode] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editIcon, setEditIcon] = useState("");
 
   const load = async () => {
     const [cats, allTags, people] = await Promise.all([
@@ -65,6 +69,19 @@ export default function SettingsTab() {
     load();
   };
 
+  const startEdit = (item: Item) => {
+    setEditingId(item.id);
+    setEditName(item.name);
+    setEditIcon(item.extra ?? "📍");
+  };
+
+  const handleEditSave = async () => {
+    if (!editingId || !editName.trim()) return;
+    await updateCategory(editingId, editName.trim(), editIcon || "📍");
+    setEditingId(null);
+    load();
+  };
+
   const handleDelete = (type: string, id: number, name: string) => {
     Alert.alert("Delete", `Delete "${name}"?`, [
       { text: "Cancel", style: "cancel" },
@@ -93,25 +110,56 @@ export default function SettingsTab() {
           </Pressable>
         </View>
       )}
-      renderItem={({ item, section }) => (
-        <View style={styles.item}>
-          {item.extra && section.type === "category" && (
-            <Text style={styles.itemIcon}>{item.extra}</Text>
-          )}
-          {item.extra && section.type === "tag" && (
-            <View
-              style={[styles.tagDot, { backgroundColor: item.extra }]}
+      renderItem={({ item, section }) =>
+        section.type === "category" && editingId === item.id ? (
+          <View style={styles.item}>
+            <TextInput
+              style={styles.emojiInput}
+              value={editIcon}
+              onChangeText={(t) => setEditIcon(t.slice(-2))}
+              autoFocus
             />
-          )}
-          <Text style={styles.itemName}>{item.name}</Text>
+            <TextInput
+              style={[styles.addInput, { flex: 1 }]}
+              value={editName}
+              onChangeText={setEditName}
+              onSubmitEditing={handleEditSave}
+            />
+            <Pressable style={styles.addBtn} onPress={handleEditSave}>
+              <Text style={styles.addBtnText}>Save</Text>
+            </Pressable>
+            <Pressable style={styles.deleteBtn} onPress={() => setEditingId(null)}>
+              <FontAwesome name="times" size={18} color={colors.textSecondary} />
+            </Pressable>
+          </View>
+        ) : (
           <Pressable
-            onPress={() => handleDelete(section.type, item.id, item.name)}
-            style={styles.deleteBtn}
+            style={styles.item}
+            onPress={() => section.type === "category" ? startEdit(item) : undefined}
           >
-            <FontAwesome name="trash-o" size={18} color="#dc3545" />
+            {item.extra && section.type === "category" && (
+              <Text style={styles.itemIcon}>{item.extra}</Text>
+            )}
+            {item.extra && section.type === "tag" && (
+              <View
+                style={[styles.tagDot, { backgroundColor: item.extra }]}
+              />
+            )}
+            <Text style={styles.itemName}>{item.name}</Text>
+            {section.type === "category" && (
+              <Pressable style={styles.deleteBtn} onPress={() => startEdit(item)}>
+                <FontAwesome name="pencil" size={16} color={colors.textSecondary} />
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => handleDelete(section.type, item.id, item.name)}
+              style={styles.deleteBtn}
+            >
+              <FontAwesome name="trash-o" size={18} color="#dc3545" />
+            </Pressable>
           </Pressable>
-        </View>
-      )}
+        )
+      }
       renderSectionFooter={({ section }) =>
         addMode === section.type ? (
           <View style={styles.addRow}>
@@ -197,6 +245,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 14,
+  },
+  emojiInput: {
+    width: 44,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    fontSize: 18,
+    textAlign: "center",
   },
   addBtn: {
     backgroundColor: colors.accent,

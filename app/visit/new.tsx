@@ -19,7 +19,7 @@ import { CostInput } from "@/components/visit/CostInput";
 import { TagPicker } from "@/components/visit/TagPicker";
 import { PhotoPicker } from "@/components/visit/PhotoPicker";
 import { Button } from "@/components/ui/Button";
-import { insertPlace } from "@/db/queries/places";
+import { insertPlace, updatePlace } from "@/db/queries/places";
 import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
 import { insertPhoto, getPhotosForVisit, deletePhoto } from "@/db/queries/photos";
 import { getTagsForVisit, setVisitTags } from "@/db/queries/tags";
@@ -116,6 +116,10 @@ export default function NewVisitScreen() {
           categoryId,
         });
         placeId = place.id;
+      }
+
+      if (existingPlaceId && categoryId !== undefined) {
+        await updatePlace(existingPlaceId, { categoryId });
       }
 
       const visitData = {
