@@ -62,7 +62,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={theme}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, headerBackTitle: "Back" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, headerBackTitle: "" }} />
         <Stack.Screen name="visit/new" options={{ title: "New Visit" }} />
         <Stack.Screen name="visit/[id]" options={{ title: "Visit" }} />
         <Stack.Screen name="place/[id]" options={{ title: "Place" }} />
