@@ -18,9 +18,32 @@ import {
 import { getAllTags, insertTag, deleteTag } from "@/db/queries/tags";
 import { getAllPeople, insertPerson, deletePerson } from "@/db/queries/people";
 import { colors } from "@/lib/constants";
+import { useThemeStore, PIN_COLORS } from "@/stores/useThemeStore";
 
 type Item = { id: number; name: string; extra?: string };
 type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
+
+function PinColorPicker() {
+  const { pinColor, setPinColor } = useThemeStore();
+  return (
+    <View style={styles.pinSection}>
+      <Text style={styles.sectionTitle}>Map Pin Color</Text>
+      <View style={styles.swatchRow}>
+        {PIN_COLORS.map((c) => (
+          <Pressable
+            key={c}
+            style={[styles.swatch, { backgroundColor: c }, pinColor === c && styles.swatchSelected]}
+            onPress={() => setPinColor(c)}
+          >
+            {pinColor === c && (
+              <FontAwesome name="check" size={14} color="#fff" />
+            )}
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
 
 export default function SettingsTab() {
   const [sections, setSections] = useState<Section[]>([]);
@@ -102,6 +125,7 @@ export default function SettingsTab() {
     <SectionList
       sections={sections}
       keyExtractor={(item) => `${item.id}`}
+      ListHeaderComponent={<PinColorPicker />}
       renderSectionHeader={({ section }) => (
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -189,6 +213,29 @@ export default function SettingsTab() {
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 40,
+  },
+  pinSection: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 16,
+    backgroundColor: colors.background,
+  },
+  swatchRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 12,
+  },
+  swatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  swatchSelected: {
+    borderWidth: 3,
+    borderColor: colors.text,
   },
   sectionHeader: {
     flexDirection: "row",

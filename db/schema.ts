@@ -27,10 +27,11 @@ export const visits = sqliteTable("visits", {
     .notNull()
     .references(() => places.id),
   date: text("date").notNull(),
-  rating: integer("rating"),
+  rating: real("rating"),
   cost: real("cost"),
   currency: text("currency").default("USD"),
   whoPaidId: integer("who_paid_id").references(() => people.id),
+  priceLevel: integer("price_level"),
   notes: text("notes"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),

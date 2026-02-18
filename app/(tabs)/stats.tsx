@@ -1,11 +1,13 @@
 import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState, useCallback } from "react";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
   startOfWeek,
   startOfMonth,
   startOfYear,
+  endOfMonth,
+  parseISO,
   format,
 } from "date-fns";
 import {
@@ -14,6 +16,7 @@ import {
   getStatsByTimePeriod,
   getTopPlaces,
 } from "@/db/queries/stats";
+import { useFilterStore } from "@/stores/useFilterStore";
 import { colors } from "@/lib/constants";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -25,6 +28,9 @@ type TimeStat = { period: string; visitCount: number; totalSpent: number | null 
 type TopPlace = { placeId: number | null; name: string | null; categoryIcon: string | null; visitCount: number; avgRating: number | null };
 
 export default function StatsTab() {
+  const router = useRouter();
+  const setFilter = useFilterStore((s) => s.setFilter);
+  const resetFilters = useFilterStore((s) => s.resetFilters);
   const [range, setRange] = useState<TimeRange>("all");
   const [overall, setOverall] = useState<OverallStats | null>(null);
   const [byCategory, setByCategory] = useState<CategoryStat[]>([]);
@@ -164,7 +170,15 @@ export default function StatsTab() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>By Category</Text>
           {byCategory.map((cat, i) => (
-            <View key={cat.id ?? i} style={styles.catRow}>
+            <Pressable
+              key={cat.id ?? i}
+              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+              onPress={() => {
+                resetFilters();
+                if (cat.id != null) setFilter("categoryId", cat.id);
+                router.navigate("/(tabs)/list");
+              }}
+            >
               <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
               <Text style={styles.catName}>{cat.name ?? "Uncategorized"}</Text>
               <Text style={styles.catStat}>
@@ -173,7 +187,8 @@ export default function StatsTab() {
               <Text style={[styles.catStat, { color: colors.accent }]}>
                 ${Number(cat.totalSpent ?? 0).toFixed(0)}
               </Text>
-            </View>
+              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
+            </Pressable>
           ))}
         </View>
       )}
@@ -183,7 +198,17 @@ export default function StatsTab() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Monthly Trend</Text>
           {byTime.map((t) => (
-            <View key={t.period} style={styles.catRow}>
+            <Pressable
+              key={t.period}
+              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+              onPress={() => {
+                const d = parseISO(t.period + "-01");
+                resetFilters();
+                setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
+                setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
+                router.navigate("/(tabs)/list");
+              }}
+            >
               <Text style={styles.catName}>{t.period}</Text>
               <Text style={styles.catStat}>
                 {t.visitCount} visit{t.visitCount !== 1 ? "s" : ""}
@@ -191,7 +216,8 @@ export default function StatsTab() {
               <Text style={[styles.catStat, { color: colors.accent }]}>
                 ${Number(t.totalSpent ?? 0).toFixed(0)}
               </Text>
-            </View>
+              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
+            </Pressable>
           ))}
         </View>
       )}
@@ -201,7 +227,11 @@ export default function StatsTab() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Top Places</Text>
           {topPlaces.map((p, i) => (
-            <View key={p.placeId ?? i} style={styles.catRow}>
+            <Pressable
+              key={p.placeId ?? i}
+              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+              onPress={() => p.placeId != null && router.push(`/place/${p.placeId}`)}
+            >
               <Text style={styles.catIcon}>{p.categoryIcon ?? "📍"}</Text>
               <Text style={styles.catName}>{p.name ?? "Unknown"}</Text>
               <Text style={styles.catStat}>{p.visitCount}x</Text>
@@ -211,7 +241,8 @@ export default function StatsTab() {
                   <Text style={styles.ratingText}>{p.avgRating.toFixed(1)}</Text>
                 </View>
               )}
-            </View>
+              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
+            </Pressable>
           ))}
         </View>
       )}
@@ -319,6 +350,9 @@ const styles = StyleSheet.create({
     gap: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
+  },
+  rowPressed: {
+    opacity: 0.5,
   },
   catIcon: { fontSize: 18 },
   catName: { flex: 1, fontSize: 15, color: colors.text },

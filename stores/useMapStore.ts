@@ -7,11 +7,22 @@ type Region = {
   longitudeDelta: number;
 };
 
+export type SearchPin = {
+  name: string;
+  latitude: number;
+  longitude: number;
+};
+
 type MapStore = {
   region: Region;
   selectedPlaceId: number | null;
+  pendingRegion: Region | null;
+  searchPin: SearchPin | null;
   setRegion: (region: Region) => void;
   setSelectedPlaceId: (id: number | null) => void;
+  setSearchPin: (pin: SearchPin, region: Region) => void;
+  clearSearchPin: () => void;
+  clearPendingRegion: () => void;
 };
 
 export const useMapStore = create<MapStore>((set) => ({
@@ -22,6 +33,11 @@ export const useMapStore = create<MapStore>((set) => ({
     longitudeDelta: 0.05,
   },
   selectedPlaceId: null,
+  pendingRegion: null,
+  searchPin: null,
   setRegion: (region) => set({ region }),
   setSelectedPlaceId: (id) => set({ selectedPlaceId: id }),
+  setSearchPin: (pin, region) => set({ searchPin: pin, pendingRegion: region }),
+  clearSearchPin: () => set({ searchPin: null }),
+  clearPendingRegion: () => set({ pendingRegion: null }),
 }));

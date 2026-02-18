@@ -1,6 +1,6 @@
 import { Marker, Callout } from "react-native-maps";
 import { View, Text, Image, StyleSheet } from "react-native";
-import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Props = {
   id: number;
@@ -25,7 +25,7 @@ export function PlaceMarker({
   onPress,
   onCalloutPress,
 }: Props) {
-  const pinColor = colors.categoryColors[categoryIndex % colors.categoryColors.length];
+  const pinColor = useThemeStore((s) => s.pinColor);
 
   return (
     <Marker

@@ -1,9 +1,10 @@
 import { useRef, useCallback, useImperativeHandle, forwardRef } from "react";
-import { StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import MapView from "react-native-map-clustering";
-import { Region, LongPressEvent } from "react-native-maps";
+import { Marker, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
-import { useMapStore } from "@/stores/useMapStore";
+import { useMapStore, type SearchPin } from "@/stores/useMapStore";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Place = {
   id: number;
@@ -17,6 +18,7 @@ type Place = {
 
 type Props = {
   places: Place[];
+  searchPin: SearchPin | null;
   onLongPress: (latitude: number, longitude: number) => void;
   onMarkerPress: (placeId: number) => void;
   onCalloutPress: (placeId: number) => void;
@@ -27,11 +29,32 @@ export type StampedMapHandle = {
 };
 
 export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMap(
-  { places, onLongPress, onMarkerPress, onCalloutPress },
+  { places, searchPin, onLongPress, onMarkerPress, onCalloutPress },
   ref
 ) {
   const mapRef = useRef<any>(null);
   const { region, setRegion } = useMapStore();
+  const pinColor = useThemeStore((s) => s.pinColor);
+
+  const renderCluster = useCallback(
+    (cluster: any) => {
+      const { id, geometry, onPress, properties } = cluster;
+      const count = properties.point_count;
+      const size = count < 10 ? 40 : count < 50 ? 50 : 60;
+      return (
+        <Marker
+          key={`cluster-${id}`}
+          coordinate={{ latitude: geometry.coordinates[1], longitude: geometry.coordinates[0] }}
+          onPress={onPress}
+        >
+          <View style={[clusterStyles.bubble, { width: size, height: size, borderRadius: size / 2, backgroundColor: pinColor }]}>
+            <Text style={clusterStyles.count}>{count}</Text>
+          </View>
+        </Marker>
+      );
+    },
+    [pinColor]
+  );
 
   useImperativeHandle(ref, () => ({
     animateToRegion: (r: Region, duration = 500) => {
@@ -63,8 +86,24 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
       onLongPress={handleLongPress}
       showsUserLocation
       showsMyLocationButton={false}
-      clusterColor="#e94560"
+      clusterColor={pinColor}
+      renderCluster={renderCluster}
     >
+      {searchPin && (
+        <Marker
+          coordinate={{ latitude: searchPin.latitude, longitude: searchPin.longitude }}
+          anchor={{ x: 0.5, y: 1 }}
+          zIndex={999}
+        >
+          <View style={searchPinStyles.container}>
+            <View style={searchPinStyles.label}>
+              <Text style={searchPinStyles.labelText} numberOfLines={2}>{searchPin.name}</Text>
+            </View>
+            <View style={searchPinStyles.pin} />
+            <View style={searchPinStyles.dot} />
+          </View>
+        </Marker>
+      )}
       {places.map((place) => (
         <PlaceMarker
           key={place.id}
@@ -86,5 +125,54 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
 const styles = StyleSheet.create({
   map: {
     flex: 1,
+  },
+});
+
+const searchPinStyles = StyleSheet.create({
+  container: {
+    alignItems: "center",
+  },
+  label: {
+    backgroundColor: "#1a1a2e",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    maxWidth: 180,
+    marginBottom: 4,
+  },
+  labelText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  pin: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: "#1a1a2e",
+    borderWidth: 3,
+    borderColor: "#fff",
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#1a1a2e",
+    marginTop: 2,
+  },
+});
+
+const clusterStyles = StyleSheet.create({
+  bubble: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.6)",
+  },
+  count: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 14,
   },
 });

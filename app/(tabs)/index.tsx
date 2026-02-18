@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
 import { StampedMap, type StampedMapHandle } from "@/components/map/StampedMap";
 import { MapControls } from "@/components/map/MapControls";
@@ -11,8 +11,17 @@ export default function MapTab() {
   const router = useRouter();
   const mapRef = useRef<StampedMapHandle>(null);
   const { data: places } = usePlaces();
-  const { setRegion } = useMapStore();
+  const { setRegion, pendingRegion, clearPendingRegion, searchPin, clearSearchPin } = useMapStore();
   const categoryId = useFilterStore((s) => s.categoryId);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (pendingRegion) {
+        mapRef.current?.animateToRegion(pendingRegion, 600);
+        clearPendingRegion();
+      }
+    }, [pendingRegion, clearPendingRegion])
+  );
 
   const filteredPlaces = categoryId
     ? places.filter((p) => p.categoryId === categoryId)
@@ -20,12 +29,13 @@ export default function MapTab() {
 
   const handleLongPress = useCallback(
     (latitude: number, longitude: number) => {
+      clearSearchPin();
       router.push({
         pathname: "/visit/new",
         params: { lat: latitude.toString(), lng: longitude.toString() },
       });
     },
-    [router]
+    [router, clearSearchPin]
   );
 
   const handleMarkerPress = useCallback(
@@ -61,6 +71,7 @@ export default function MapTab() {
       <StampedMap
         ref={mapRef}
         places={filteredPlaces}
+        searchPin={searchPin}
         onLongPress={handleLongPress}
         onMarkerPress={handleMarkerPress}
         onCalloutPress={handleCalloutPress}

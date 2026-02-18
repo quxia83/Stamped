@@ -18,6 +18,7 @@ import { RatingInput } from "@/components/visit/RatingInput";
 import { CostInput } from "@/components/visit/CostInput";
 import { TagPicker } from "@/components/visit/TagPicker";
 import { PhotoPicker } from "@/components/visit/PhotoPicker";
+import { PriceLevelPicker } from "@/components/visit/PriceLevelPicker";
 import { Button } from "@/components/ui/Button";
 import { insertPlace, updatePlace } from "@/db/queries/places";
 import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
@@ -50,6 +51,7 @@ export default function NewVisitScreen() {
   const [notes, setNotes] = useState("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [localPhotos, setLocalPhotos] = useState<PhotoItem[]>([]);
+  const [priceLevel, setPriceLevel] = useState<number | undefined>();
   const [saving, setSaving] = useState(false);
   const [addressManuallyEdited, setAddressManuallyEdited] = useState(false);
   const [lat, setLat] = useState(params.lat ? parseFloat(params.lat) : 0);
@@ -104,6 +106,7 @@ export default function NewVisitScreen() {
     setCost(visit.cost?.toString() ?? "");
     setCurrency(visit.currency ?? "USD");
     setWhoPaidId(visit.whoPaidId ?? undefined);
+    setPriceLevel(visit.priceLevel ?? undefined);
     setNotes(visit.notes ?? "");
     setExistingPlaceId(visit.placeId);
     setLat(visit.placeLatitude ?? 0);
@@ -182,6 +185,7 @@ export default function NewVisitScreen() {
         cost: cost ? parseFloat(cost) : undefined,
         currency,
         whoPaidId,
+        priceLevel,
         notes: notes.trim() || undefined,
       };
 
@@ -269,6 +273,9 @@ export default function NewVisitScreen() {
             onCostChange={setCost}
             onCurrencyChange={setCurrency}
           />
+
+          <Text style={styles.label}>Price Level</Text>
+          <PriceLevelPicker value={priceLevel} onChange={setPriceLevel} />
 
           <Text style={styles.label}>Who Paid</Text>
           <PersonPicker selectedId={whoPaidId} onSelect={setWhoPaidId} />

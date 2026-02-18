@@ -20,7 +20,7 @@ export default function SearchScreen() {
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const [places, setPlaces] = useState<PlaceResult[]>([]);
   const region = useMapStore((s) => s.region);
-  const setRegion = useMapStore((s) => s.setRegion);
+  const setSearchPin = useMapStore((s) => s.setSearchPin);
   const router = useRouter();
 
   const search = useCallback(async (q: string) => {
@@ -52,15 +52,16 @@ export default function SearchScreen() {
 
   const handlePlacePress = useCallback(
     (place: PlaceResult) => {
-      setRegion({
+      const region = {
         latitude: place.latitude,
         longitude: place.longitude,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
-      });
+      };
+      setSearchPin({ name: place.name, latitude: place.latitude, longitude: place.longitude }, region);
       router.navigate("/");
     },
-    [setRegion, router]
+    [setSearchPin, router]
   );
 
   const hasResults = places.length > 0 || visits.length > 0;

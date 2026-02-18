@@ -26,6 +26,7 @@ export function getAllVisitsWithPlace() {
       cost: visits.cost,
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
+      priceLevel: visits.priceLevel,
       notes: visits.notes,
       createdAt: visits.createdAt,
       updatedAt: visits.updatedAt,
@@ -53,6 +54,7 @@ export function getVisitById(id: number) {
       cost: visits.cost,
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
+      priceLevel: visits.priceLevel,
       notes: visits.notes,
       createdAt: visits.createdAt,
       updatedAt: visits.updatedAt,
@@ -173,6 +175,7 @@ export function insertVisit(data: {
   cost?: number;
   currency?: string;
   whoPaidId?: number;
+  priceLevel?: number;
   notes?: string;
 }) {
   const now = new Date().toISOString();
@@ -190,6 +193,7 @@ export function updateVisit(
     cost: number;
     currency: string;
     whoPaidId: number;
+    priceLevel: number;
     notes: string;
   }>
 ) {

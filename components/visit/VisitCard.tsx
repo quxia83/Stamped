@@ -67,14 +67,8 @@ export function VisitCard({
             <View style={styles.meta}>
               {rating != null && (
                 <View style={styles.ratingRow}>
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <FontAwesome
-                      key={s}
-                      name={s <= rating ? "star" : "star-o"}
-                      size={14}
-                      color={s <= rating ? colors.star : colors.starEmpty}
-                    />
-                  ))}
+                  <FontAwesome name="star" size={13} color={colors.star} />
+                  <Text style={styles.ratingValue}>{rating}</Text>
                 </View>
               )}
               {cost != null && cost > 0 && (
@@ -145,7 +139,13 @@ const styles = StyleSheet.create({
   },
   ratingRow: {
     flexDirection: "row",
-    gap: 2,
+    alignItems: "center",
+    gap: 4,
+  },
+  ratingValue: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: colors.text,
   },
   cost: {
     fontSize: 13,

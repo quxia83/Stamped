@@ -162,14 +162,19 @@ export default function VisitDetailScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Rating</Text>
             <View style={styles.ratingRow}>
-              {[1, 2, 3, 4, 5].map((s) => (
-                <FontAwesome
-                  key={s}
-                  name={s <= visit.rating! ? "star" : "star-o"}
-                  size={22}
-                  color={s <= visit.rating! ? colors.star : colors.starEmpty}
-                />
-              ))}
+              <Text style={styles.ratingNumber}>{visit.rating}</Text>
+              {[1, 2, 3, 4, 5].map((s) => {
+                const fill = Math.min(1, Math.max(0, visit.rating! - (s - 1)));
+                const name = fill >= 1 ? "star" : fill >= 0.5 ? "star-half-o" : "star-o";
+                return (
+                  <FontAwesome
+                    key={s}
+                    name={name}
+                    size={22}
+                    color={fill > 0 ? colors.star : colors.starEmpty}
+                  />
+                );
+              })}
             </View>
           </View>
         )}
@@ -182,6 +187,14 @@ export default function VisitDetailScreen() {
               {visit.currency ?? "USD"} {visit.cost.toFixed(2)}
               {visit.whoPaidName ? ` (paid by ${visit.whoPaidName})` : ""}
             </Text>
+          </View>
+        )}
+
+        {/* Price Level */}
+        {visit.priceLevel != null && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Price Level</Text>
+            <Text style={styles.sectionValue}>{"$".repeat(visit.priceLevel)}</Text>
           </View>
         )}
 
@@ -284,7 +297,14 @@ const styles = StyleSheet.create({
   },
   ratingRow: {
     flexDirection: "row",
-    gap: 4,
+    alignItems: "center",
+    gap: 6,
+  },
+  ratingNumber: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.text,
+    marginRight: 2,
   },
   tagRow: {
     flexDirection: "row",
