@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import {
   startOfWeek,
   startOfMonth,
@@ -44,23 +45,25 @@ export default function StatsTab() {
     return { dateFrom: format(customFrom, "yyyy-MM-dd"), dateTo: format(customTo, "yyyy-MM-dd") };
   }, [range, customFrom, customTo]);
 
-  useEffect(() => {
-    const load = async () => {
-      const { dateFrom, dateTo } = getDateRange();
-      const [overallResult] = await getOverallStats(dateFrom, dateTo);
-      setOverall(overallResult ?? null);
+  useFocusEffect(
+    useCallback(() => {
+      const load = async () => {
+        const { dateFrom, dateTo } = getDateRange();
+        const [overallResult] = await getOverallStats(dateFrom, dateTo);
+        setOverall(overallResult ?? null);
 
-      const catResults = await getStatsByCategory(dateFrom, dateTo);
-      setByCategory(catResults);
+        const catResults = await getStatsByCategory(dateFrom, dateTo);
+        setByCategory(catResults);
 
-      const timeResults = await getStatsByTimePeriod("month", dateFrom, dateTo);
-      setByTime(timeResults);
+        const timeResults = await getStatsByTimePeriod("month", dateFrom, dateTo);
+        setByTime(timeResults);
 
-      const topResults = await getTopPlaces(5, dateFrom, dateTo);
-      setTopPlaces(topResults);
-    };
-    load();
-  }, [getDateRange]);
+        const topResults = await getTopPlaces(5, dateFrom, dateTo);
+        setTopPlaces(topResults);
+      };
+      load();
+    }, [getDateRange])
+  );
 
   const chips: { key: TimeRange; label: string }[] = [
     { key: "all", label: "All Time" },
@@ -89,43 +92,51 @@ export default function StatsTab() {
 
       {/* Custom Date Range Pickers */}
       {range === "custom" && (
-        <View style={styles.dateRow}>
-          <View style={styles.dateField}>
-            <Text style={styles.dateLabel}>From</Text>
-            <Pressable style={styles.dateButton} onPress={() => setShowFromPicker(true)}>
-              <Text style={styles.dateText}>{format(customFrom, "MMM d, yyyy")}</Text>
-            </Pressable>
-            {showFromPicker && (
-              <DateTimePicker
-                value={customFrom}
-                mode="date"
-                maximumDate={customTo}
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={(_, date) => {
-                  setShowFromPicker(Platform.OS === "ios");
-                  if (date) setCustomFrom(date);
-                }}
-              />
-            )}
+        <View style={{ marginBottom: 16 }}>
+          <View style={styles.dateRow}>
+            <View style={styles.dateField}>
+              <Text style={styles.dateLabel}>From</Text>
+              <Pressable
+                style={[styles.dateButton, showFromPicker && styles.dateButtonActive]}
+                onPress={() => { setShowToPicker(false); setShowFromPicker(!showFromPicker); }}
+              >
+                <Text style={styles.dateText}>{format(customFrom, "MMM d, yyyy")}</Text>
+              </Pressable>
+            </View>
+            <View style={styles.dateField}>
+              <Text style={styles.dateLabel}>To</Text>
+              <Pressable
+                style={[styles.dateButton, showToPicker && styles.dateButtonActive]}
+                onPress={() => { setShowFromPicker(false); setShowToPicker(!showToPicker); }}
+              >
+                <Text style={styles.dateText}>{format(customTo, "MMM d, yyyy")}</Text>
+              </Pressable>
+            </View>
           </View>
-          <View style={styles.dateField}>
-            <Text style={styles.dateLabel}>To</Text>
-            <Pressable style={styles.dateButton} onPress={() => setShowToPicker(true)}>
-              <Text style={styles.dateText}>{format(customTo, "MMM d, yyyy")}</Text>
-            </Pressable>
-            {showToPicker && (
-              <DateTimePicker
-                value={customTo}
-                mode="date"
-                minimumDate={customFrom}
-                display={Platform.OS === "ios" ? "spinner" : "default"}
-                onChange={(_, date) => {
-                  setShowToPicker(Platform.OS === "ios");
-                  if (date) setCustomTo(date);
-                }}
-              />
-            )}
-          </View>
+          {showFromPicker && (
+            <DateTimePicker
+              value={customFrom}
+              mode="date"
+              maximumDate={customTo}
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(_, date) => {
+                setShowFromPicker(Platform.OS === "ios");
+                if (date) setCustomFrom(date);
+              }}
+            />
+          )}
+          {showToPicker && (
+            <DateTimePicker
+              value={customTo}
+              mode="date"
+              minimumDate={customFrom}
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(_, date) => {
+                setShowToPicker(Platform.OS === "ios");
+                if (date) setCustomTo(date);
+              }}
+            />
+          )}
         </View>
       )}
 
@@ -246,6 +257,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 10,
     backgroundColor: colors.surface,
+  },
+  dateButtonActive: {
+    borderColor: colors.accent,
   },
   dateText: {
     fontSize: 15,

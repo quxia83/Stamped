@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
+import { deleteOrphanPlace } from "@/db/queries/places";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { getPhotosForVisit, deletePhotosForVisit } from "@/db/queries/photos";
 import { useFilterStore } from "@/stores/useFilterStore";
@@ -53,8 +54,10 @@ export default function VisitDetailScreen() {
         style: "destructive",
         onPress: async () => {
           const visitId = parseInt(id!);
+          const placeId = visit?.placeId;
           await deletePhotosForVisit(visitId);
           await deleteVisit(visitId);
+          if (placeId) await deleteOrphanPlace(placeId);
           router.back();
         },
       },
@@ -150,7 +153,7 @@ export default function VisitDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>Date</Text>
           <Text style={styles.sectionValue}>
-            {format(parseISO(visit.date), "EEEE, MMMM d, yyyy")}
+            {format(parseISO(visit.date + "T00:00:00"), "EEEE, MMMM d, yyyy")}
           </Text>
         </View>
 

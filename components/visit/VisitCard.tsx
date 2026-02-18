@@ -63,7 +63,7 @@ export function VisitCard({
                 {placeName ?? "Unknown"}
               </Text>
             </View>
-            <Text style={styles.date}>{format(parseISO(date), "MMM d, yyyy")}</Text>
+            <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "MMM d, yyyy")}</Text>
             <View style={styles.meta}>
               {rating != null && (
                 <View style={styles.ratingRow}>

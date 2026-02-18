@@ -1,12 +1,14 @@
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, Alert, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
-import { getPlaceWithStats } from "@/db/queries/places";
-import { getVisitsByPlaceId } from "@/db/queries/visits";
+import { getPlaceWithStats, deletePlace } from "@/db/queries/places";
+import { getVisitsByPlaceId, deleteVisit } from "@/db/queries/visits";
+import { deletePhotosForVisit } from "@/db/queries/photos";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { IconButton } from "@/components/ui/IconButton";
 import { colors } from "@/lib/constants";
 
 type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
@@ -24,11 +26,43 @@ export default function PlaceDetailScreen() {
     getVisitsByPlaceId(placeId).then(setVisits);
   }, [id]);
 
+  const handleDeletePlace = () => {
+    const placeId = parseInt(id!);
+    const hasVisits = placeVisits.length > 0;
+    const message = hasVisits
+      ? `This will delete "${place?.name}" and its ${placeVisits.length} visit(s). This cannot be undone.`
+      : `Delete "${place?.name}" from the map?`;
+
+    Alert.alert("Delete Place", message, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          // Delete all visits and their photos first
+          for (const v of placeVisits) {
+            await deletePhotosForVisit(v.id);
+            await deleteVisit(v.id);
+          }
+          await deletePlace(placeId);
+          router.back();
+        },
+      },
+    ]);
+  };
+
   if (!place) return null;
 
   return (
     <>
-      <Stack.Screen options={{ title: place.name }} />
+      <Stack.Screen
+        options={{
+          title: place.name,
+          headerRight: () => (
+            <IconButton name="trash" color="#dc3545" onPress={handleDeletePlace} />
+          ),
+        }}
+      />
       <FlatList
         data={placeVisits}
         keyExtractor={(item) => item.id.toString()}
@@ -87,7 +121,7 @@ export default function PlaceDetailScreen() {
             <View style={styles.visitRow}>
               <View style={styles.visitInfo}>
                 <Text style={styles.visitDate}>
-                  {format(parseISO(item.date), "MMM d, yyyy")}
+                  {format(parseISO(item.date + "T00:00:00"), "MMM d, yyyy")}
                 </Text>
                 {item.rating != null && (
                   <View style={styles.ratingRow}>

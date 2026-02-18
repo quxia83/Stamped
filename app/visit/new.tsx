@@ -51,6 +51,7 @@ export default function NewVisitScreen() {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [localPhotos, setLocalPhotos] = useState<PhotoItem[]>([]);
   const [saving, setSaving] = useState(false);
+  const [addressManuallyEdited, setAddressManuallyEdited] = useState(false);
   const [lat, setLat] = useState(params.lat ? parseFloat(params.lat) : 0);
   const [lng, setLng] = useState(params.lng ? parseFloat(params.lng) : 0);
   const [existingPlaceId, setExistingPlaceId] = useState<number | undefined>(
@@ -97,13 +98,16 @@ export default function NewVisitScreen() {
     setName(visit.placeName ?? "");
     setAddress(visit.placeAddress ?? "");
     setCategoryId(visit.categoryId ?? undefined);
-    setDate(new Date(visit.date));
+    const [y, m, d] = visit.date.split("-").map(Number);
+    setDate(new Date(y, m - 1, d));
     setRating(visit.rating ?? 0);
     setCost(visit.cost?.toString() ?? "");
     setCurrency(visit.currency ?? "USD");
     setWhoPaidId(visit.whoPaidId ?? undefined);
     setNotes(visit.notes ?? "");
     setExistingPlaceId(visit.placeId);
+    setLat(visit.placeLatitude ?? 0);
+    setLng(visit.placeLongitude ?? 0);
 
     const visitTags = await getTagsForVisit(visitId);
     setSelectedTags(visitTags.map((t) => t.id));
@@ -134,26 +138,46 @@ export default function NewVisitScreen() {
 
     setSaving(true);
     try {
+      let placeLat = lat;
+      let placeLng = lng;
+
+      // Forward-geocode if address was manually changed, or if we still have no coordinates
+      if (address.trim() && (addressManuallyEdited || (placeLat === 0 && placeLng === 0))) {
+        try {
+          const results = await Location.geocodeAsync(address.trim());
+          if (results.length > 0) {
+            placeLat = results[0].latitude;
+            placeLng = results[0].longitude;
+          }
+        } catch {}
+      }
+
       let placeId = existingPlaceId;
 
       if (!placeId) {
         const [place] = await insertPlace({
           name: name.trim(),
           address: address.trim() || undefined,
-          latitude: lat,
-          longitude: lng,
+          latitude: placeLat,
+          longitude: placeLng,
           categoryId,
         });
         placeId = place.id;
       }
 
-      if (existingPlaceId && categoryId !== undefined) {
-        await updatePlace(existingPlaceId, { categoryId });
+      if (existingPlaceId) {
+        await updatePlace(existingPlaceId, {
+          name: name.trim(),
+          address: address.trim() || undefined,
+          latitude: placeLat,
+          longitude: placeLng,
+          categoryId,
+        });
       }
 
       const visitData = {
         placeId: placeId!,
-        date: date.toISOString().split("T")[0],
+        date: format(date, "yyyy-MM-dd"),
         rating: rating || undefined,
         cost: cost ? parseFloat(cost) : undefined,
         currency,
@@ -224,7 +248,7 @@ export default function NewVisitScreen() {
           <TextInput
             style={styles.input}
             value={address}
-            onChangeText={setAddress}
+            onChangeText={(t) => { setAddress(t); setAddressManuallyEdited(true); }}
             placeholder="123 Main St"
             placeholderTextColor={colors.textSecondary}
           />
