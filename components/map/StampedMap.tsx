@@ -12,6 +12,7 @@ type Place = {
   longitude: number;
   categoryId: number | null;
   categoryIcon: string | null;
+  firstPhotoUri: string | null;
 };
 
 type Props = {
@@ -73,6 +74,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
           longitude={place.longitude}
           categoryIcon={place.categoryIcon}
           categoryIndex={(place.categoryId ?? 7) - 1}
+          firstPhotoUri={place.firstPhotoUri}
           onPress={onMarkerPress}
           onCalloutPress={onCalloutPress}
         />

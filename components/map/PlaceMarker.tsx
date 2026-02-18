@@ -1,5 +1,5 @@
 import { Marker, Callout } from "react-native-maps";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { colors } from "@/lib/constants";
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   longitude: number;
   categoryIcon: string | null;
   categoryIndex: number;
+  firstPhotoUri: string | null;
   onPress: (id: number) => void;
   onCalloutPress: (id: number) => void;
 };
@@ -20,6 +21,7 @@ export function PlaceMarker({
   longitude,
   categoryIcon,
   categoryIndex,
+  firstPhotoUri,
   onPress,
   onCalloutPress,
 }: Props) {
@@ -33,7 +35,11 @@ export function PlaceMarker({
     >
       <Callout onPress={() => onCalloutPress(id)}>
         <View style={styles.callout}>
-          <Text style={styles.calloutIcon}>{categoryIcon ?? "📍"}</Text>
+          {firstPhotoUri ? (
+            <Image source={{ uri: firstPhotoUri }} style={styles.calloutImage} />
+          ) : (
+            <Text style={styles.calloutIcon}>{categoryIcon ?? "📍"}</Text>
+          )}
           <Text style={styles.calloutText} numberOfLines={2}>
             {name}
           </Text>
@@ -53,6 +59,11 @@ const styles = StyleSheet.create({
   },
   calloutIcon: {
     fontSize: 18,
+  },
+  calloutImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 4,
   },
   calloutText: {
     fontSize: 14,
