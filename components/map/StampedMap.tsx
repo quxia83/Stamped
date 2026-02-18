@@ -131,10 +131,11 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
     >
       {searchPin && (
         <Marker
+          key={`${searchPin.latitude},${searchPin.longitude}`}
           coordinate={{ latitude: searchPin.latitude, longitude: searchPin.longitude }}
           anchor={{ x: 0.5, y: 0.78 }}
           zIndex={999}
-          tracksViewChanges
+          tracksViewChanges={false}
         >
           <SearchPinMarker pin={searchPin} accentColor={pinColor} />
           <Callout onPress={() => onSearchPinPress(searchPin)}>

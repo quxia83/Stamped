@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Background -->
+  <rect width="1024" height="1024" rx="224" fill="#1a1a2e"/>
+
+  <!-- Outer circle ring -->
+  <circle cx="512" cy="460" r="280" fill="none" stroke="#e94560" stroke-width="40" stroke-dasharray="88 44" transform="rotate(-15, 512, 460)"/>
+
+  <!-- Inner filled circle -->
+  <circle cx="512" cy="460" r="180" fill="#e94560"/>
+
+  <!-- Star in center -->
+  <polygon points="512,320 545,410 640,410 563,465 590,555 512,500 434,555 461,465 384,410 479,410" fill="#1a1a2e"/>
+
+  <!-- Map pin drop shadow hint -->
+  <ellipse cx="512" cy="800" rx="120" ry="24" fill="#e94560" opacity="0.25"/>
+
+  <!-- Pin tail -->
+  <polygon points="462,620 512,780 562,620" fill="#e94560"/>
+
+  <!-- STAMPED text -->
+  <text x="512" y="940" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="100" letter-spacing="12" fill="#ffffff">STAMPED</text>
+</svg>

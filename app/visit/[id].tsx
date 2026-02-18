@@ -180,6 +180,16 @@ export default function VisitDetailScreen() {
           </View>
         )}
 
+        {/* Attendees */}
+        {visit.attendeeCount != null && visit.attendeeCount > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionLabel}>Attendees</Text>
+            <Text style={styles.sectionValue}>
+              {visit.attendeeCount} {visit.attendeeCount === 1 ? "person" : "people"}
+            </Text>
+          </View>
+        )}
+
         {/* Price Level */}
         {visit.priceLevel != null && (
           <View style={styles.section}>

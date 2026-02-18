@@ -4,10 +4,13 @@ import journal from './meta/_journal.json';
 import m0000 from './0000_curious_wendell_rand.sql';
 import m0001 from './0001_add_price_level.sql';
 
+const m0002 = `ALTER TABLE \`visits\` ADD \`attendee_count\` integer;`;
+
   export default {
     journal,
     migrations: {
       m0000,
-      m0001
+      m0001,
+      m0002
     }
   }

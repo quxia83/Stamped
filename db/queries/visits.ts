@@ -27,6 +27,7 @@ export function getAllVisitsWithPlace() {
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
       priceLevel: visits.priceLevel,
+      attendeeCount: visits.attendeeCount,
       notes: visits.notes,
       createdAt: visits.createdAt,
       updatedAt: visits.updatedAt,
@@ -55,6 +56,7 @@ export function getVisitById(id: number) {
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
       priceLevel: visits.priceLevel,
+      attendeeCount: visits.attendeeCount,
       notes: visits.notes,
       createdAt: visits.createdAt,
       updatedAt: visits.updatedAt,
@@ -134,6 +136,7 @@ export async function getFilteredVisits(filters: VisitFilters) {
       cost: visits.cost,
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
+      attendeeCount: visits.attendeeCount,
       notes: visits.notes,
       createdAt: visits.createdAt,
       updatedAt: visits.updatedAt,
@@ -176,6 +179,7 @@ export function insertVisit(data: {
   currency?: string;
   whoPaidId?: number;
   priceLevel?: number;
+  attendeeCount?: number;
   notes?: string;
 }) {
   const now = new Date().toISOString();
@@ -194,6 +198,7 @@ export function updateVisit(
     currency: string;
     whoPaidId: number;
     priceLevel: number;
+    attendeeCount: number;
     notes: string;
   }>
 ) {

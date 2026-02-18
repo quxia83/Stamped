@@ -1,6 +1,6 @@
 import { db } from "@/db/client";
 import { places, categories, visits } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, like } from "drizzle-orm";
 
 export function getAllPlaces() {
   return db
@@ -58,6 +58,14 @@ export function getPlaceWithStats(id: number) {
     .leftJoin(visits, eq(visits.placeId, places.id))
     .where(eq(places.id, id))
     .groupBy(places.id);
+}
+
+export function findPlaceByName(name: string) {
+  return db
+    .select({ id: places.id })
+    .from(places)
+    .where(like(places.name, name))
+    .limit(1);
 }
 
 export function insertPlace(data: {

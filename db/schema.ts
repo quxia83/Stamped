@@ -32,6 +32,7 @@ export const visits = sqliteTable("visits", {
   currency: text("currency").default("USD"),
   whoPaidId: integer("who_paid_id").references(() => people.id),
   priceLevel: integer("price_level"),
+  attendeeCount: integer("attendee_count"),
   notes: text("notes"),
   createdAt: text("created_at").notNull(),
   updatedAt: text("updated_at").notNull(),

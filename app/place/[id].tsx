@@ -1,7 +1,7 @@
 import { View, Text, FlatList, Alert, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { getPlaceWithStats, deletePlace } from "@/db/queries/places";
 import { getVisitsByPlaceId, deleteVisit } from "@/db/queries/visits";
@@ -9,6 +9,7 @@ import { deletePhotosForVisit } from "@/db/queries/photos";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
+import { StarDisplay } from "@/components/visit/RatingInput";
 import { colors } from "@/lib/constants";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -22,11 +23,13 @@ export default function PlaceDetailScreen() {
   const [place, setPlace] = useState<PlaceStats | null>(null);
   const [placeVisits, setVisits] = useState<Visit[]>([]);
 
-  useEffect(() => {
-    const placeId = parseInt(id!);
-    getPlaceWithStats(placeId).then(([p]) => setPlace(p ?? null));
-    getVisitsByPlaceId(placeId).then(setVisits);
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      const placeId = parseInt(id!);
+      getPlaceWithStats(placeId).then(([p]) => setPlace(p ?? null));
+      getVisitsByPlaceId(placeId).then(setVisits);
+    }, [id])
+  );
 
   const handleDeletePlace = () => {
     const placeId = parseInt(id!);
@@ -126,18 +129,7 @@ export default function PlaceDetailScreen() {
                   {format(parseISO(item.date + "T00:00:00"), "MMM d, yyyy")}
                 </Text>
                 {item.rating != null && (
-                  <View style={styles.ratingRow}>
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <FontAwesome
-                        key={s}
-                        name={s <= item.rating! ? "star" : "star-o"}
-                        size={14}
-                        color={
-                          s <= item.rating! ? colors.star : colors.starEmpty
-                        }
-                      />
-                    ))}
-                  </View>
+                  <StarDisplay rating={item.rating} size={14} />
                 )}
               </View>
               {item.cost != null && item.cost > 0 && (
@@ -232,10 +224,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: colors.text,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    gap: 2,
   },
   visitCost: {
     fontSize: 14,

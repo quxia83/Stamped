@@ -20,7 +20,7 @@ import { TagPicker } from "@/components/visit/TagPicker";
 import { PhotoPicker } from "@/components/visit/PhotoPicker";
 import { PriceLevelPicker } from "@/components/visit/PriceLevelPicker";
 import { Button } from "@/components/ui/Button";
-import { insertPlace, updatePlace } from "@/db/queries/places";
+import { insertPlace, updatePlace, findPlaceByName } from "@/db/queries/places";
 import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
 import { insertPhoto, getPhotosForVisit, deletePhoto } from "@/db/queries/photos";
 import { getTagsForVisit, setVisitTags } from "@/db/queries/tags";
@@ -52,6 +52,7 @@ export default function NewVisitScreen() {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [localPhotos, setLocalPhotos] = useState<PhotoItem[]>([]);
   const [priceLevel, setPriceLevel] = useState<number | undefined>();
+  const [attendeeCount, setAttendeeCount] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [addressManuallyEdited, setAddressManuallyEdited] = useState(false);
   const [lat, setLat] = useState(params.lat ? parseFloat(params.lat) : 0);
@@ -107,6 +108,7 @@ export default function NewVisitScreen() {
     setCurrency(visit.currency ?? "USD");
     setWhoPaidId(visit.whoPaidId ?? undefined);
     setPriceLevel(visit.priceLevel ?? undefined);
+    setAttendeeCount(visit.attendeeCount?.toString() ?? "");
     setNotes(visit.notes ?? "");
     setExistingPlaceId(visit.placeId);
     setLat(visit.placeLatitude ?? 0);
@@ -158,14 +160,19 @@ export default function NewVisitScreen() {
       let placeId = existingPlaceId;
 
       if (!placeId) {
-        const [place] = await insertPlace({
-          name: name.trim(),
-          address: address.trim() || undefined,
-          latitude: placeLat,
-          longitude: placeLng,
-          categoryId,
-        });
-        placeId = place.id;
+        const [existing] = await findPlaceByName(name.trim());
+        if (existing) {
+          placeId = existing.id;
+        } else {
+          const [place] = await insertPlace({
+            name: name.trim(),
+            address: address.trim() || undefined,
+            latitude: placeLat,
+            longitude: placeLng,
+            categoryId,
+          });
+          placeId = place.id;
+        }
       }
 
       if (existingPlaceId) {
@@ -186,6 +193,7 @@ export default function NewVisitScreen() {
         currency,
         whoPaidId,
         priceLevel,
+        attendeeCount: attendeeCount ? parseInt(attendeeCount) : undefined,
         notes: notes.trim() || undefined,
       };
 
@@ -272,6 +280,17 @@ export default function NewVisitScreen() {
             currency={currency}
             onCostChange={setCost}
             onCurrencyChange={setCurrency}
+          />
+
+          <Text style={styles.label}>Attendees</Text>
+          <TextInput
+            style={styles.input}
+            value={attendeeCount}
+            onChangeText={(t) => setAttendeeCount(t.replace(/[^0-9]/g, ""))}
+            keyboardType="number-pad"
+            placeholder="Number of people"
+            placeholderTextColor={colors.textSecondary}
+            maxLength={3}
           />
 
           <Text style={styles.label}>Price Level</Text>

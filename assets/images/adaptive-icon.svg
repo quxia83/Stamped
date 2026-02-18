@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Transparent background for adaptive icon -->
+
+  <!-- Outer circle ring -->
+  <circle cx="512" cy="440" r="260" fill="none" stroke="#e94560" stroke-width="36" stroke-dasharray="82 41" transform="rotate(-15, 512, 440)"/>
+
+  <!-- Inner filled circle -->
+  <circle cx="512" cy="440" r="168" fill="#e94560"/>
+
+  <!-- Star in center -->
+  <polygon points="512,310 542,394 630,394 558,444 584,528 512,478 440,528 466,444 394,394 482,394" fill="#ffffff"/>
+
+  <!-- Pin tail -->
+  <polygon points="466,590 512,740 558,590" fill="#e94560"/>
+
+  <!-- STAMPED text -->
+  <text x="512" y="880" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="96" letter-spacing="10" fill="#1a1a2e">STAMPED</text>
+</svg>
