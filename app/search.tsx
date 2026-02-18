@@ -10,6 +10,7 @@ import { getTagsForVisit } from "@/db/queries/tags";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
 import { useMapStore } from "@/stores/useMapStore";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type VisitRow = VisitWithPlace & {
   tags: { label: string; color: string }[];
@@ -21,6 +22,7 @@ export default function SearchScreen() {
   const [places, setPlaces] = useState<PlaceResult[]>([]);
   const region = useMapStore((s) => s.region);
   const setSearchPin = useMapStore((s) => s.setSearchPin);
+  const accentColor = useThemeStore((s) => s.accentColor);
   const router = useRouter();
 
   const search = useCallback(async (q: string) => {
@@ -93,7 +95,7 @@ export default function SearchScreen() {
                     <Ionicons
                       name="location-outline"
                       size={20}
-                      color={colors.accent}
+                      color={accentColor}
                       style={styles.placeIcon}
                     />
                     <View style={styles.placeText}>

@@ -1,8 +1,10 @@
 import { View, Image, Pressable, Text, ScrollView, StyleSheet, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Paths, Directory, File } from "expo-file-system/next";
+import { File } from "expo-file-system/next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { colors } from "@/lib/constants";
+import { PHOTO_DIR, resolvePhotoUri } from "@/lib/photoUtils";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type PhotoItem = {
   id?: number;
@@ -15,8 +17,6 @@ type Props = {
   onRemove: (index: number) => void;
 };
 
-const PHOTO_DIR = new Directory(Paths.document, "photos");
-
 function ensureDir() {
   if (!PHOTO_DIR.exists) {
     PHOTO_DIR.create();
@@ -24,6 +24,7 @@ function ensureDir() {
 }
 
 export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const pickImage = async (fromCamera: boolean) => {
     const permMethod = fromCamera
       ? ImagePicker.requestCameraPermissionsAsync
@@ -53,7 +54,7 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
       const source = new File(asset.uri);
       const dest = new File(PHOTO_DIR, filename);
       source.copy(dest);
-      onAdd(dest.uri);
+      onAdd(filename); // store just the filename, not the absolute path
     }
   };
 
@@ -62,7 +63,7 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scroll}>
         {photos.map((photo, index) => (
           <View key={photo.uri} style={styles.photoContainer}>
-            <Image source={{ uri: photo.uri }} style={styles.photo} />
+            <Image source={{ uri: resolvePhotoUri(photo.uri) }} style={styles.photo} />
             <Pressable style={styles.removeBtn} onPress={() => onRemove(index)}>
               <FontAwesome name="times-circle" size={22} color="#dc3545" />
             </Pressable>
@@ -70,12 +71,12 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
         ))}
         <View style={styles.addButtons}>
           <Pressable style={styles.addBtn} onPress={() => pickImage(false)}>
-            <FontAwesome name="photo" size={24} color={colors.accent} />
-            <Text style={styles.addText}>Gallery</Text>
+            <FontAwesome name="photo" size={24} color={accentColor} />
+            <Text style={[styles.addText, { color: accentColor }]}>Gallery</Text>
           </Pressable>
           <Pressable style={styles.addBtn} onPress={() => pickImage(true)}>
-            <FontAwesome name="camera" size={24} color={colors.accent} />
-            <Text style={styles.addText}>Camera</Text>
+            <FontAwesome name="camera" size={24} color={accentColor} />
+            <Text style={[styles.addText, { color: accentColor }]}>Camera</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -120,6 +121,5 @@ const styles = StyleSheet.create({
   },
   addText: {
     fontSize: 12,
-    color: colors.accent,
   },
 });

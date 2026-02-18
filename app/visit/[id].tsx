@@ -12,13 +12,16 @@ import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
+import { StarDisplay } from "@/components/visit/RatingInput";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
 import { deleteOrphanPlace } from "@/db/queries/places";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { getPhotosForVisit, deletePhotosForVisit } from "@/db/queries/photos";
+import { resolvePhotoUri } from "@/lib/photoUtils";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type VisitDetail = Awaited<ReturnType<typeof getVisitById>>[number];
 type Tag = { id: number; label: string; color: string };
@@ -28,6 +31,7 @@ export default function VisitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [visit, setVisit] = useState<VisitDetail | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -94,7 +98,7 @@ export default function VisitDetailScreen() {
             <View style={styles.headerButtons}>
               <IconButton
                 name="pencil"
-                color={colors.accent}
+                color={accentColor}
                 onPress={() =>
                   router.push({
                     pathname: "/visit/new",
@@ -118,7 +122,7 @@ export default function VisitDetailScreen() {
             {photos.map((photo) => (
               <Image
                 key={photo.id}
-                source={{ uri: photo.uri }}
+                source={{ uri: resolvePhotoUri(photo.uri) }}
                 style={styles.photo}
               />
             ))}
@@ -136,7 +140,7 @@ export default function VisitDetailScreen() {
             <Text style={styles.placeName}>{visit.placeName}</Text>
             {visit.placeAddress && (
               <Pressable onPress={openInMaps}>
-                <Text style={[styles.placeAddress, styles.addressLink]}>
+                <Text style={[styles.placeAddress, styles.addressLink, { color: accentColor }]}>
                   {visit.placeAddress} ↗
                 </Text>
               </Pressable>
@@ -161,21 +165,7 @@ export default function VisitDetailScreen() {
         {visit.rating != null && (
           <View style={styles.section}>
             <Text style={styles.sectionLabel}>Rating</Text>
-            <View style={styles.ratingRow}>
-              <Text style={styles.ratingNumber}>{visit.rating}</Text>
-              {[1, 2, 3, 4, 5].map((s) => {
-                const fill = Math.min(1, Math.max(0, visit.rating! - (s - 1)));
-                const name = fill >= 1 ? "star" : fill >= 0.5 ? "star-half-o" : "star-o";
-                return (
-                  <FontAwesome
-                    key={s}
-                    name={name}
-                    size={22}
-                    color={fill > 0 ? colors.star : colors.starEmpty}
-                  />
-                );
-              })}
-            </View>
+            <StarDisplay rating={visit.rating} size={24} />
           </View>
         )}
 
@@ -276,7 +266,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   addressLink: {
-    color: colors.accent,
     textDecorationLine: "underline",
   },
   section: {
@@ -294,17 +283,6 @@ const styles = StyleSheet.create({
   sectionValue: {
     fontSize: 16,
     color: colors.text,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  ratingNumber: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.text,
-    marginRight: 2,
   },
   tagRow: {
     flexDirection: "row",

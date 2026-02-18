@@ -7,19 +7,20 @@ type Props = {
   onChange: (rating: number) => void;
 };
 
-function StarDisplay({ rating }: { rating: number }) {
+export function StarDisplay({ rating, size = 22 }: { rating: number; size?: number }) {
   return (
-    <View style={styles.stars}>
+    <View style={[styles.stars, { gap: size * 0.18 }]}>
       {[1, 2, 3, 4, 5].map((s) => {
         const fill = Math.min(1, Math.max(0, rating - (s - 1)));
-        const name = fill >= 1 ? "star" : fill >= 0.5 ? "star-half-o" : "star-o";
         return (
-          <FontAwesome
-            key={s}
-            name={name}
-            size={22}
-            color={fill > 0 ? colors.star : colors.starEmpty}
-          />
+          <View key={s} style={{ width: size, height: size }}>
+            <FontAwesome name="star-o" size={size} color={colors.starEmpty} />
+            {fill > 0 && (
+              <View style={{ position: "absolute", width: fill * size, overflow: "hidden" }}>
+                <FontAwesome name="star" size={size} color={colors.star} />
+              </View>
+            )}
+          </View>
         );
       })}
     </View>

@@ -89,3 +89,13 @@ export function updatePlace(
 export function deletePlace(id: number) {
   return db.delete(places).where(eq(places.id, id));
 }
+
+export async function deleteOrphanPlace(placeId: number) {
+  const [row] = await db
+    .select({ count: sql<number>`count(${visits.id})` })
+    .from(visits)
+    .where(eq(visits.placeId, placeId));
+  if (row && row.count === 0) {
+    await db.delete(places).where(eq(places.id, placeId));
+  }
+}

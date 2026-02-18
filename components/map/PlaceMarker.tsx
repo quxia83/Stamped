@@ -1,6 +1,7 @@
 import { Marker, Callout } from "react-native-maps";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useThemeStore } from "@/stores/useThemeStore";
+import { resolvePhotoUri } from "@/lib/photoUtils";
 
 type Props = {
   id: number;
@@ -25,7 +26,7 @@ export function PlaceMarker({
   onPress,
   onCalloutPress,
 }: Props) {
-  const pinColor = useThemeStore((s) => s.pinColor);
+  const pinColor = useThemeStore((s) => s.accentColor);
 
   return (
     <Marker
@@ -36,7 +37,7 @@ export function PlaceMarker({
       <Callout onPress={() => onCalloutPress(id)}>
         <View style={styles.callout}>
           {firstPhotoUri ? (
-            <Image source={{ uri: firstPhotoUri }} style={styles.calloutImage} />
+            <Image source={{ uri: resolvePhotoUri(firstPhotoUri) }} style={styles.calloutImage} />
           ) : (
             <Text style={styles.calloutIcon}>{categoryIcon ?? "📍"}</Text>
           )}

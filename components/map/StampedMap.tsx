@@ -1,7 +1,7 @@
 import { useRef, useCallback, useImperativeHandle, forwardRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import MapView from "react-native-map-clustering";
-import { Marker, Region, LongPressEvent } from "react-native-maps";
+import { Marker, Callout, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
 import { useMapStore, type SearchPin } from "@/stores/useMapStore";
 import { useThemeStore } from "@/stores/useThemeStore";
@@ -22,6 +22,7 @@ type Props = {
   onLongPress: (latitude: number, longitude: number) => void;
   onMarkerPress: (placeId: number) => void;
   onCalloutPress: (placeId: number) => void;
+  onSearchPinPress: (pin: SearchPin) => void;
 };
 
 export type StampedMapHandle = {
@@ -29,12 +30,12 @@ export type StampedMapHandle = {
 };
 
 export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMap(
-  { places, searchPin, onLongPress, onMarkerPress, onCalloutPress },
+  { places, searchPin, onLongPress, onMarkerPress, onCalloutPress, onSearchPinPress },
   ref
 ) {
   const mapRef = useRef<any>(null);
   const { region, setRegion } = useMapStore();
-  const pinColor = useThemeStore((s) => s.pinColor);
+  const pinColor = useThemeStore((s) => s.accentColor);
 
   const renderCluster = useCallback(
     (cluster: any) => {
@@ -102,6 +103,12 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
             <View style={searchPinStyles.pin} />
             <View style={searchPinStyles.dot} />
           </View>
+          <Callout onPress={() => onSearchPinPress(searchPin)}>
+            <View style={searchPinStyles.callout}>
+              <Text style={searchPinStyles.calloutName} numberOfLines={2}>{searchPin.name}</Text>
+              <Text style={[searchPinStyles.calloutAction, { color: pinColor }]}>+ Add Visit</Text>
+            </View>
+          </Callout>
         </Marker>
       )}
       {places.map((place) => (
@@ -131,6 +138,22 @@ const styles = StyleSheet.create({
 const searchPinStyles = StyleSheet.create({
   container: {
     alignItems: "center",
+  },
+  callout: {
+    padding: 10,
+    minWidth: 160,
+    maxWidth: 220,
+  },
+  calloutName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a1a2e",
+    marginBottom: 6,
+  },
+  calloutAction: {
+    fontSize: 14,
+    fontWeight: "700",
+    textAlign: "center",
   },
   label: {
     backgroundColor: "#1a1a2e",

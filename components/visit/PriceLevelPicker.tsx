@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 const LEVELS = [1, 2, 3, 4] as const;
 
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function PriceLevelPicker({ value, onChange }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   return (
     <View style={styles.row}>
       {LEVELS.map((level) => {
@@ -20,7 +22,7 @@ export function PriceLevelPicker({ value, onChange }: Props) {
         return (
           <Pressable
             key={level}
-            style={[styles.chip, selected && styles.chipSelected]}
+            style={[styles.chip, selected && { backgroundColor: accentColor, borderColor: accentColor }]}
             onPress={() => onChange(selected ? undefined : level)}
           >
             <Text style={[styles.label, selected && styles.labelSelected]}>
@@ -45,10 +47,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
-  },
-  chipSelected: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
   },
   label: {
     fontSize: 15,

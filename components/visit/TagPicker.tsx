@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getAllTags, insertTag } from "@/db/queries/tags";
 import { Chip } from "@/components/ui/Chip";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Tag = { id: number; label: string; color: string };
 
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function TagPicker({ selectedIds, onToggle }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newLabel, setNewLabel] = useState("");
@@ -46,8 +48,8 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
             onPress={() => onToggle(tag.id)}
           />
         ))}
-        <Pressable style={styles.addBtn} onPress={() => setShowAdd(true)}>
-          <Text style={styles.addText}>+ Tag</Text>
+        <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
+          <Text style={[styles.addText, { color: accentColor }]}>+ Tag</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -60,7 +62,7 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
             autoFocus
             onSubmitEditing={addTag}
           />
-          <Pressable onPress={addTag} style={styles.saveBtn}>
+          <Pressable onPress={addTag} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
             <Text style={styles.saveText}>Add</Text>
           </Pressable>
         </View>
@@ -79,13 +81,11 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.accent,
     borderStyle: "dashed",
     marginBottom: 8,
   },
   addText: {
     fontSize: 14,
-    color: colors.accent,
   },
   addRow: {
     flexDirection: "row",
@@ -102,7 +102,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   saveBtn: {
-    backgroundColor: colors.accent,
     borderRadius: 8,
     paddingHorizontal: 16,
     justifyContent: "center",

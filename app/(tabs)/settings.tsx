@@ -23,19 +23,19 @@ import { useThemeStore, PIN_COLORS } from "@/stores/useThemeStore";
 type Item = { id: number; name: string; extra?: string };
 type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
 
-function PinColorPicker() {
-  const { pinColor, setPinColor } = useThemeStore();
+function ThemeColorPicker() {
+  const { accentColor, setAccentColor } = useThemeStore();
   return (
     <View style={styles.pinSection}>
-      <Text style={styles.sectionTitle}>Map Pin Color</Text>
+      <Text style={styles.sectionTitle}>Theme Color</Text>
       <View style={styles.swatchRow}>
         {PIN_COLORS.map((c) => (
           <Pressable
             key={c}
-            style={[styles.swatch, { backgroundColor: c }, pinColor === c && styles.swatchSelected]}
-            onPress={() => setPinColor(c)}
+            style={[styles.swatch, { backgroundColor: c }, accentColor === c && styles.swatchSelected]}
+            onPress={() => setAccentColor(c)}
           >
-            {pinColor === c && (
+            {accentColor === c && (
               <FontAwesome name="check" size={14} color="#fff" />
             )}
           </Pressable>
@@ -46,6 +46,7 @@ function PinColorPicker() {
 }
 
 export default function SettingsTab() {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [sections, setSections] = useState<Section[]>([]);
   const [addMode, setAddMode] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
@@ -125,12 +126,12 @@ export default function SettingsTab() {
     <SectionList
       sections={sections}
       keyExtractor={(item) => `${item.id}`}
-      ListHeaderComponent={<PinColorPicker />}
+      ListHeaderComponent={<ThemeColorPicker />}
       renderSectionHeader={({ section }) => (
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
           <Pressable onPress={() => setAddMode(section.type)}>
-            <FontAwesome name="plus-circle" size={22} color={colors.accent} />
+            <FontAwesome name="plus-circle" size={22} color={accentColor} />
           </Pressable>
         </View>
       )}
@@ -149,7 +150,7 @@ export default function SettingsTab() {
               onChangeText={setEditName}
               onSubmitEditing={handleEditSave}
             />
-            <Pressable style={styles.addBtn} onPress={handleEditSave}>
+            <Pressable style={[styles.addBtn, { backgroundColor: accentColor }]} onPress={handleEditSave}>
               <Text style={styles.addBtnText}>Save</Text>
             </Pressable>
             <Pressable style={styles.deleteBtn} onPress={() => setEditingId(null)}>
@@ -196,7 +197,7 @@ export default function SettingsTab() {
               onSubmitEditing={() => handleAdd(section.type)}
             />
             <Pressable
-              style={styles.addBtn}
+              style={[styles.addBtn, { backgroundColor: accentColor }]}
               onPress={() => handleAdd(section.type)}
             >
               <Text style={styles.addBtnText}>Add</Text>
@@ -304,7 +305,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   addBtn: {
-    backgroundColor: colors.accent,
     borderRadius: 8,
     paddingHorizontal: 16,
     justifyContent: "center",

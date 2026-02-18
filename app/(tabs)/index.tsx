@@ -11,16 +11,17 @@ export default function MapTab() {
   const router = useRouter();
   const mapRef = useRef<StampedMapHandle>(null);
   const { data: places } = usePlaces();
-  const { setRegion, pendingRegion, clearPendingRegion, searchPin, clearSearchPin } = useMapStore();
+  const { setRegion, searchPin, clearSearchPin } = useMapStore();
   const categoryId = useFilterStore((s) => s.categoryId);
 
   useFocusEffect(
     useCallback(() => {
+      const { pendingRegion, clearPendingRegion } = useMapStore.getState();
       if (pendingRegion) {
         mapRef.current?.animateToRegion(pendingRegion, 600);
         clearPendingRegion();
       }
-    }, [pendingRegion, clearPendingRegion])
+    }, [])
   );
 
   const filteredPlaces = categoryId
@@ -52,6 +53,21 @@ export default function MapTab() {
     [router]
   );
 
+  const handleSearchPinPress = useCallback(
+    (pin: { name: string; latitude: number; longitude: number }) => {
+      clearSearchPin();
+      router.navigate({
+        pathname: "/visit/new",
+        params: {
+          lat: pin.latitude.toString(),
+          lng: pin.longitude.toString(),
+          placeName: pin.name,
+        },
+      });
+    },
+    [router, clearSearchPin]
+  );
+
   const handleLocationFound = useCallback(
     (latitude: number, longitude: number) => {
       const newRegion = {
@@ -75,6 +91,7 @@ export default function MapTab() {
         onLongPress={handleLongPress}
         onMarkerPress={handleMarkerPress}
         onCalloutPress={handleCalloutPress}
+        onSearchPinPress={handleSearchPinPress}
       />
       <MapControls onLocationFound={handleLocationFound} />
     </View>

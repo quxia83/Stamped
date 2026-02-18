@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import { VisitCard } from "@/components/visit/VisitCard";
 import { FilterBar } from "@/components/common/FilterBar";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -16,6 +17,15 @@ type VisitRow = VisitWithPlace & {
 export default function ListTab() {
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const filters = useFilterStore();
+  const clearFilters = useFilterStore((s) => s.clearFilters);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        clearFilters();
+      };
+    }, [clearFilters])
+  );
 
   useEffect(() => {
     let cancelled = false;

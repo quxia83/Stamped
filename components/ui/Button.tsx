@@ -1,5 +1,6 @@
 import { Pressable, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Props = {
   title: string;
@@ -16,15 +17,16 @@ export function Button({
   disabled,
   loading,
 }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const bg =
     variant === "primary"
-      ? colors.accent
+      ? accentColor
       : variant === "danger"
         ? "#dc3545"
         : "transparent";
   const textColor =
-    variant === "secondary" ? colors.accent : "#fff";
-  const borderColor = variant === "secondary" ? colors.accent : bg;
+    variant === "secondary" ? accentColor : "#fff";
+  const borderColor = variant === "secondary" ? accentColor : bg;
 
   return (
     <Pressable

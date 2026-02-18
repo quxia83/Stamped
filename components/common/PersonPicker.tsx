@@ -2,6 +2,7 @@ import { View, Text, Pressable, TextInput, StyleSheet, Alert } from "react-nativ
 import { useEffect, useState } from "react";
 import { getAllPeople, insertPerson } from "@/db/queries/people";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Person = { id: number; name: string };
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function PersonPicker({ selectedId, onSelect }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [people, setPeople] = useState<Person[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
@@ -34,7 +36,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
     <View>
       <View style={styles.row}>
         <Pressable
-          style={[styles.option, !selectedId && styles.selected]}
+          style={[styles.option, !selectedId && { backgroundColor: accentColor, borderColor: accentColor }]}
           onPress={() => onSelect(undefined)}
         >
           <Text style={[styles.optionText, !selectedId && styles.selectedText]}>
@@ -44,7 +46,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
         {people.map((p) => (
           <Pressable
             key={p.id}
-            style={[styles.option, selectedId === p.id && styles.selected]}
+            style={[styles.option, selectedId === p.id && { backgroundColor: accentColor, borderColor: accentColor }]}
             onPress={() => onSelect(p.id)}
           >
             <Text
@@ -57,8 +59,8 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
             </Text>
           </Pressable>
         ))}
-        <Pressable style={styles.addBtn} onPress={() => setShowAdd(true)}>
-          <Text style={styles.addText}>+ Add</Text>
+        <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
+          <Text style={[styles.addText, { color: accentColor }]}>+ Add</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -71,7 +73,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
             autoFocus
             onSubmitEditing={addPerson}
           />
-          <Pressable onPress={addPerson} style={styles.saveBtn}>
+          <Pressable onPress={addPerson} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
             <Text style={styles.saveText}>Save</Text>
           </Pressable>
         </View>
@@ -94,10 +96,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     backgroundColor: colors.surface,
   },
-  selected: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
-  },
   optionText: {
     fontSize: 14,
     color: colors.text,
@@ -110,12 +108,10 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.accent,
     borderStyle: "dashed",
   },
   addText: {
     fontSize: 14,
-    color: colors.accent,
   },
   addRow: {
     flexDirection: "row",
@@ -132,7 +128,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   saveBtn: {
-    backgroundColor: colors.accent,
     borderRadius: 8,
     paddingHorizontal: 16,
     justifyContent: "center",

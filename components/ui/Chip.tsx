@@ -1,5 +1,6 @@
 import { Pressable, Text, StyleSheet } from "react-native";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Props = {
   label: string;
@@ -9,7 +10,8 @@ type Props = {
 };
 
 export function Chip({ label, selected, color, onPress }: Props) {
-  const bgColor = selected ? (color ?? colors.accent) : colors.surface;
+  const accentColor = useThemeStore((s) => s.accentColor);
+  const bgColor = selected ? (color ?? accentColor) : colors.surface;
   const textColor = selected ? "#fff" : colors.text;
   const borderColor = selected ? bgColor : colors.border;
 

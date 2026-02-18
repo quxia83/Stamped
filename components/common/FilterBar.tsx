@@ -7,6 +7,7 @@ import { useFilterStore } from "@/stores/useFilterStore";
 import { getAllCategories } from "@/db/queries/categories";
 import { getAllTags } from "@/db/queries/tags";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Category = { id: number; name: string; icon: string };
 type Tag = { id: number; label: string; color: string };
@@ -20,6 +21,7 @@ const sortOptions = [
 
 export function FilterBar() {
   const store = useFilterStore();
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [cats, setCats] = useState<Category[]>([]);
   const [allTags, setTags] = useState<Tag[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -44,6 +46,13 @@ export function FilterBar() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.bar}
       >
+        {/* All / reset */}
+        <Chip
+          label="All"
+          selected={!hasFilters}
+          onPress={() => store.clearFilters()}
+        />
+
         {/* Sort toggle */}
         {sortOptions.map((opt) => (
           <Chip
@@ -69,7 +78,10 @@ export function FilterBar() {
 
         {/* Filter button */}
         <Pressable
-          style={[styles.filterBtn, hasFilters && styles.filterBtnActive]}
+          style={[
+            styles.filterBtn,
+            hasFilters && { backgroundColor: accentColor, borderColor: accentColor },
+          ]}
           onPress={() => setShowFilters(true)}
         >
           <FontAwesome
@@ -87,11 +99,6 @@ export function FilterBar() {
           </Text>
         </Pressable>
 
-        {hasFilters && (
-          <Pressable style={styles.clearBtn} onPress={store.resetFilters}>
-            <Text style={styles.clearText}>Clear</Text>
-          </Pressable>
-        )}
       </ScrollView>
 
       <BottomSheet visible={showFilters} onClose={() => setShowFilters(false)}>
@@ -170,23 +177,10 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     marginRight: 8,
   },
-  filterBtnActive: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
-  },
   filterText: {
     fontSize: 14,
     fontWeight: "500",
     color: colors.text,
-  },
-  clearBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-  },
-  clearText: {
-    fontSize: 14,
-    color: colors.accent,
-    fontWeight: "500",
   },
   sheetTitle: {
     fontSize: 16,

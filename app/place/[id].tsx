@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
 type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
@@ -17,6 +18,7 @@ type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
 export default function PlaceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [place, setPlace] = useState<PlaceStats | null>(null);
   const [placeVisits, setVisits] = useState<Visit[]>([]);
 
@@ -75,7 +77,7 @@ export default function PlaceDetailScreen() {
               {place.address && (
                 <Text style={styles.address}>{place.address}</Text>
               )}
-              <Text style={styles.category}>{place.categoryName ?? "Other"}</Text>
+              <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ?? "Other"}</Text>
             </View>
 
             {/* Stats */}
@@ -185,7 +187,6 @@ const styles = StyleSheet.create({
   },
   category: {
     fontSize: 13,
-    color: colors.accent,
     fontWeight: "600",
     marginTop: 6,
   },

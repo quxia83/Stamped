@@ -1,10 +1,10 @@
 import { View, Text, Pressable, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { colors } from "@/lib/constants";
+import { StarDisplay } from "@/components/visit/RatingInput";
 
 type Props = {
   id: number;
@@ -66,10 +66,7 @@ export function VisitCard({
             <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "MMM d, yyyy")}</Text>
             <View style={styles.meta}>
               {rating != null && (
-                <View style={styles.ratingRow}>
-                  <FontAwesome name="star" size={13} color={colors.star} />
-                  <Text style={styles.ratingValue}>{rating}</Text>
-                </View>
+                <StarDisplay rating={rating} size={13} />
               )}
               {cost != null && cost > 0 && (
                 <Text style={styles.cost}>
@@ -136,16 +133,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
     marginTop: 6,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  ratingValue: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.text,
   },
   cost: {
     fontSize: 13,

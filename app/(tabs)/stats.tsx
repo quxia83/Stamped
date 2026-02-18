@@ -18,6 +18,7 @@ import {
 } from "@/db/queries/stats";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type TimeRange = "all" | "week" | "month" | "year" | "custom";
@@ -31,6 +32,7 @@ export default function StatsTab() {
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
   const resetFilters = useFilterStore((s) => s.resetFilters);
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [range, setRange] = useState<TimeRange>("all");
   const [overall, setOverall] = useState<OverallStats | null>(null);
   const [byCategory, setByCategory] = useState<CategoryStat[]>([]);
@@ -86,7 +88,7 @@ export default function StatsTab() {
         {chips.map((c) => (
           <Pressable
             key={c.key}
-            style={[styles.chip, range === c.key && styles.chipActive]}
+            style={[styles.chip, range === c.key && { backgroundColor: accentColor, borderColor: accentColor }]}
             onPress={() => setRange(c.key)}
           >
             <Text style={[styles.chipText, range === c.key && styles.chipTextActive]}>
@@ -103,7 +105,7 @@ export default function StatsTab() {
             <View style={styles.dateField}>
               <Text style={styles.dateLabel}>From</Text>
               <Pressable
-                style={[styles.dateButton, showFromPicker && styles.dateButtonActive]}
+                style={[styles.dateButton, showFromPicker && { borderColor: accentColor }]}
                 onPress={() => { setShowToPicker(false); setShowFromPicker(!showFromPicker); }}
               >
                 <Text style={styles.dateText}>{format(customFrom, "MMM d, yyyy")}</Text>
@@ -112,7 +114,7 @@ export default function StatsTab() {
             <View style={styles.dateField}>
               <Text style={styles.dateLabel}>To</Text>
               <Pressable
-                style={[styles.dateButton, showToPicker && styles.dateButtonActive]}
+                style={[styles.dateButton, showToPicker && { borderColor: accentColor }]}
                 onPress={() => { setShowFromPicker(false); setShowToPicker(!showToPicker); }}
               >
                 <Text style={styles.dateText}>{format(customTo, "MMM d, yyyy")}</Text>
@@ -184,7 +186,7 @@ export default function StatsTab() {
               <Text style={styles.catStat}>
                 {cat.visitCount} visit{cat.visitCount !== 1 ? "s" : ""}
               </Text>
-              <Text style={[styles.catStat, { color: colors.accent }]}>
+              <Text style={[styles.catStat, { color: accentColor }]}>
                 ${Number(cat.totalSpent ?? 0).toFixed(0)}
               </Text>
               <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
@@ -213,7 +215,7 @@ export default function StatsTab() {
               <Text style={styles.catStat}>
                 {t.visitCount} visit{t.visitCount !== 1 ? "s" : ""}
               </Text>
-              <Text style={[styles.catStat, { color: colors.accent }]}>
+              <Text style={[styles.catStat, { color: accentColor }]}>
                 ${Number(t.totalSpent ?? 0).toFixed(0)}
               </Text>
               <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
@@ -289,9 +291,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.surface,
   },
-  dateButtonActive: {
-    borderColor: colors.accent,
-  },
   dateText: {
     fontSize: 15,
     color: colors.text,
@@ -309,10 +308,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-  },
-  chipActive: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
   },
   chipText: {
     fontSize: 13,

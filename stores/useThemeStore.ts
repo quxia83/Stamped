@@ -36,15 +36,15 @@ export const PIN_COLORS = [
 ] as const;
 
 type ThemeStore = {
-  pinColor: string;
-  setPinColor: (color: string) => void;
+  accentColor: string;
+  setAccentColor: (color: string) => void;
 };
 
 export const useThemeStore = create<ThemeStore>()(
   persist(
     (set) => ({
-      pinColor: PIN_COLORS[0],
-      setPinColor: (color) => set({ pinColor: color }),
+      accentColor: PIN_COLORS[0],
+      setAccentColor: (color) => set({ accentColor: color }),
     }),
     {
       name: "theme",

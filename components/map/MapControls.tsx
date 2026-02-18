@@ -2,12 +2,14 @@ import { View, Pressable, StyleSheet, Alert } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import * as Location from "expo-location";
 import { colors } from "@/lib/constants";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 type Props = {
   onLocationFound: (latitude: number, longitude: number) => void;
 };
 
 export function MapControls({ onLocationFound }: Props) {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const goToMyLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -24,7 +26,7 @@ export function MapControls({ onLocationFound }: Props) {
         style={({ pressed }) => [styles.button, { opacity: pressed ? 0.7 : 1 }]}
         onPress={goToMyLocation}
       >
-        <FontAwesome name="location-arrow" size={20} color={colors.accent} />
+        <FontAwesome name="location-arrow" size={20} color={accentColor} />
       </Pressable>
     </View>
   );
