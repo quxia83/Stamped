@@ -1,5 +1,5 @@
-import { useRef, useCallback, useImperativeHandle, forwardRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { useRef, useCallback, useImperativeHandle, forwardRef, useEffect } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
 import MapView from "react-native-map-clustering";
 import { Marker, Callout, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
@@ -24,6 +24,45 @@ type Props = {
   onCalloutPress: (placeId: number) => void;
   onSearchPinPress: (pin: SearchPin) => void;
 };
+
+const PIN_SIZE = 44;
+
+function SearchPinMarker({ pin, accentColor }: { pin: SearchPin; accentColor: string }) {
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 850, useNativeDriver: true }),
+        Animated.timing(pulse, { toValue: 0, duration: 850, useNativeDriver: true }),
+      ])
+    );
+    anim.start();
+    return () => anim.stop();
+  }, []);
+
+  const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 2.6] });
+  const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.55, 0] });
+
+  return (
+    <View style={pinStyles.container}>
+      <View style={[pinStyles.label, { backgroundColor: accentColor }]}>
+        <Text style={pinStyles.labelText} numberOfLines={1}>{pin.name}</Text>
+      </View>
+      <View style={pinStyles.pinArea}>
+        <Animated.View
+          style={[
+            pinStyles.ring,
+            { backgroundColor: accentColor, transform: [{ scale: pulseScale }], opacity: pulseOpacity },
+          ]}
+        />
+        <View style={[pinStyles.circle, { backgroundColor: accentColor }]}>
+          <View style={pinStyles.dot} />
+        </View>
+      </View>
+    </View>
+  );
+}
 
 export type StampedMapHandle = {
   animateToRegion: (region: Region, duration?: number) => void;
@@ -93,16 +132,11 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
       {searchPin && (
         <Marker
           coordinate={{ latitude: searchPin.latitude, longitude: searchPin.longitude }}
-          anchor={{ x: 0.5, y: 1 }}
+          anchor={{ x: 0.5, y: 0.78 }}
           zIndex={999}
+          tracksViewChanges
         >
-          <View style={searchPinStyles.container}>
-            <View style={searchPinStyles.label}>
-              <Text style={searchPinStyles.labelText} numberOfLines={2}>{searchPin.name}</Text>
-            </View>
-            <View style={searchPinStyles.pin} />
-            <View style={searchPinStyles.dot} />
-          </View>
+          <SearchPinMarker pin={searchPin} accentColor={pinColor} />
           <Callout onPress={() => onSearchPinPress(searchPin)}>
             <View style={searchPinStyles.callout}>
               <Text style={searchPinStyles.calloutName} numberOfLines={2}>{searchPin.name}</Text>
@@ -135,10 +169,63 @@ const styles = StyleSheet.create({
   },
 });
 
-const searchPinStyles = StyleSheet.create({
+const pinStyles = StyleSheet.create({
   container: {
     alignItems: "center",
   },
+  label: {
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    maxWidth: 210,
+    marginBottom: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  labelText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  pinArea: {
+    width: PIN_SIZE,
+    height: PIN_SIZE,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ring: {
+    position: "absolute",
+    width: PIN_SIZE,
+    height: PIN_SIZE,
+    borderRadius: PIN_SIZE / 2,
+  },
+  circle: {
+    width: PIN_SIZE,
+    height: PIN_SIZE,
+    borderRadius: PIN_SIZE / 2,
+    borderWidth: 3,
+    borderColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
+  },
+  dot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: "#fff",
+  },
+});
+
+const searchPinStyles = StyleSheet.create({
   callout: {
     padding: 10,
     minWidth: 160,
@@ -154,35 +241,6 @@ const searchPinStyles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "700",
     textAlign: "center",
-  },
-  label: {
-    backgroundColor: "#1a1a2e",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    maxWidth: 180,
-    marginBottom: 4,
-  },
-  labelText: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  pin: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: "#1a1a2e",
-    borderWidth: 3,
-    borderColor: "#fff",
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#1a1a2e",
-    marginTop: 2,
   },
 });
 
