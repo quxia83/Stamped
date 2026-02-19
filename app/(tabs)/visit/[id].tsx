@@ -73,7 +73,7 @@ export default function VisitDetailScreen() {
     const q = visit.placeAddress
       ? encodeURIComponent(visit.placeAddress)
       : `${visit.placeLatitude},${visit.placeLongitude}`;
-    Linking.openURL(`maps://?q=${q}`);
+    Linking.openURL(`https://maps.apple.com/?q=${q}`);
   };
 
   const filterByCategory = () => {

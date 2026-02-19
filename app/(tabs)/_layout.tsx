@@ -36,7 +36,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
           headerRight: () => (
             <Pressable
-              onPress={() => router.navigate("/search")}
+              onPress={() => router.push("/search")}
               style={{ marginRight: 16 }}
             >
               <FontAwesome name="search" size={20} color={colors.text} />
@@ -51,7 +51,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="bookmark" color={color} />,
           headerLeft: () => (
             <Pressable
-              onPress={() => router.navigate("/visit/new")}
+              onPress={() => router.push("/visit/new")}
               style={{ marginLeft: 16 }}
               hitSlop={8}
             >
@@ -60,7 +60,7 @@ export default function TabLayout() {
           ),
           headerRight: () => (
             <Pressable
-              onPress={() => router.navigate("/search")}
+              onPress={() => router.push("/search")}
               style={{ marginRight: 16 }}
               hitSlop={8}
             >
