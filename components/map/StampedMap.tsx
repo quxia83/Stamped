@@ -66,6 +66,7 @@ function SearchPinMarker({ pin, accentColor }: { pin: SearchPin; accentColor: st
 
 export type StampedMapHandle = {
   animateToRegion: (region: Region, duration?: number) => void;
+  fitToMarkers: (coords: { latitude: number; longitude: number }[]) => void;
 };
 
 export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMap(
@@ -99,6 +100,22 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   useImperativeHandle(ref, () => ({
     animateToRegion: (r: Region, duration = 500) => {
       mapRef.current?.animateToRegion(r, duration);
+    },
+    fitToMarkers: (coords: { latitude: number; longitude: number }[]) => {
+      if (coords.length === 0) return;
+      if (coords.length === 1) {
+        mapRef.current?.animateToRegion({
+          latitude: coords[0].latitude,
+          longitude: coords[0].longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }, 600);
+        return;
+      }
+      mapRef.current?.fitToCoordinates(coords, {
+        edgePadding: { top: 80, right: 60, bottom: 80, left: 60 },
+        animated: true,
+      });
     },
   }));
 

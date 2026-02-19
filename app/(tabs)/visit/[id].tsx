@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Pressable,
   Linking,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { format, parseISO } from "date-fns";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
@@ -73,7 +73,10 @@ export default function VisitDetailScreen() {
     const q = visit.placeAddress
       ? encodeURIComponent(visit.placeAddress)
       : `${visit.placeLatitude},${visit.placeLongitude}`;
-    Linking.openURL(`https://maps.apple.com/?q=${q}`);
+    const url = Platform.OS === "ios"
+      ? `https://maps.apple.com/?q=${q}`
+      : `geo:${visit.placeLatitude},${visit.placeLongitude}?q=${q}`;
+    Linking.openURL(url);
   };
 
   const filterByCategory = () => {
@@ -136,21 +139,30 @@ export default function VisitDetailScreen() {
               {visit.categoryIcon ?? "📍"}
             </Text>
           </Pressable>
-          <Pressable style={{ flex: 1 }} onPress={() => router.push(`/place/${visit.placeId}`)}>
-            <Text style={styles.placeName}>{visit.placeName}</Text>
+          <View style={{ flex: 1 }}>
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/visit/new",
+                  params: {
+                    placeId: visit.placeId.toString(),
+                    placeName: visit.placeName ?? "",
+                    lat: visit.placeLatitude?.toString() ?? "0",
+                    lng: visit.placeLongitude?.toString() ?? "0",
+                  },
+                })
+              }
+            >
+              <Text style={styles.placeName}>{visit.placeName}</Text>
+            </Pressable>
             {visit.placeAddress && (
               <Pressable onPress={openInMaps}>
-                <Text style={[styles.placeAddress, styles.addressLink, { color: accentColor }]}>
+                <Text style={[styles.placeAddress, { color: accentColor }]}>
                   {visit.placeAddress} ↗
                 </Text>
               </Pressable>
             )}
-          </Pressable>
-          <FontAwesome
-            name="chevron-right"
-            size={14}
-            color={colors.textSecondary}
-          />
+          </View>
         </View>
 
         {/* Date */}
@@ -274,9 +286,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     marginTop: 2,
-  },
-  addressLink: {
-    textDecorationLine: "underline",
   },
   section: {
     paddingHorizontal: 16,

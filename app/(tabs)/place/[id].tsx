@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Alert, StyleSheet, Pressable } from "react-native";
+import { View, Text, FlatList, Alert, StyleSheet, Pressable, Linking, Platform } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -32,6 +32,17 @@ export default function PlaceDetailScreen() {
       getVisitsByPlaceId(placeId).then(setVisits);
     }, [id])
   );
+
+  const openInMaps = () => {
+    if (!place) return;
+    const q = place.address
+      ? encodeURIComponent(place.address)
+      : `${place.latitude},${place.longitude}`;
+    const url = Platform.OS === "ios"
+      ? `https://maps.apple.com/?q=${q}`
+      : `geo:${place.latitude},${place.longitude}?q=${q}`;
+    Linking.openURL(url);
+  };
 
   const handleDeletePlace = () => {
     const placeId = parseInt(id!);
@@ -80,7 +91,11 @@ export default function PlaceDetailScreen() {
               <Text style={styles.icon}>{place.categoryIcon ?? "📍"}</Text>
               <Text style={styles.name}>{place.name}</Text>
               {place.address && (
-                <Text style={styles.address}>{place.address}</Text>
+                <Pressable onPress={openInMaps}>
+                  <Text style={[styles.address, { color: accentColor }]}>
+                    {place.address} ↗
+                  </Text>
+                </Pressable>
               )}
               <Pressable
                 onPress={() => {

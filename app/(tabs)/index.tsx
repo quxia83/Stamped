@@ -20,8 +20,18 @@ export default function MapTab() {
       if (pendingRegion) {
         mapRef.current?.animateToRegion(pendingRegion, 600);
         clearPendingRegion();
+      } else {
+        const coords = places
+          .filter((p) => p.latitude && p.longitude)
+          .map((p) => ({ latitude: p.latitude, longitude: p.longitude }));
+        if (coords.length > 0) {
+          setTimeout(() => mapRef.current?.fitToMarkers(coords), 300);
+        }
       }
-    }, [])
+      return () => {
+        clearSearchPin();
+      };
+    }, [clearSearchPin, places])
   );
 
   const filteredPlaces = categoryId

@@ -51,15 +51,15 @@ export function VisitCard({
     <Pressable onPress={() => router.push(`/visit/${id}`)}>
       <Card>
         <View style={styles.row}>
-          <Pressable onPress={filterByCategory} hitSlop={4}>
-            {thumbnail ? (
-              <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
-            ) : (
+          {thumbnail ? (
+            <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
+          ) : (
+            <Pressable onPress={filterByCategory} hitSlop={4}>
               <View style={styles.iconBox}>
                 <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
               </View>
-            )}
-          </Pressable>
+            </Pressable>
+          )}
           <View style={styles.content}>
             <View style={styles.header}>
               <Text style={styles.name} numberOfLines={1}>

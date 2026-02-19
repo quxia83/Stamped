@@ -1,5 +1,6 @@
 import { Marker, Callout } from "react-native-maps";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { resolvePhotoUri } from "@/lib/photoUtils";
 
@@ -26,16 +27,24 @@ export function PlaceMarker({
   onCalloutPress,
 }: Props) {
   const pinColor = useThemeStore((s) => s.accentColor);
+  const [tracksViewChanges, setTracksViewChanges] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setTracksViewChanges(false), 500);
+    return () => clearTimeout(t);
+  }, []);
 
   return (
     <Marker
       coordinate={{ latitude, longitude }}
       onPress={() => onPress(id)}
       anchor={{ x: 0.5, y: 1 }}
-      tracksViewChanges={false}
+      tracksViewChanges={tracksViewChanges}
     >
       {/* Custom pin view */}
       <View style={styles.pinWrapper}>
+        <View style={styles.label}>
+          <Text style={styles.labelText} numberOfLines={1}>{name}</Text>
+        </View>
         <View style={[styles.bubble, { backgroundColor: pinColor }]}>
           <Text style={styles.emoji}>{categoryIcon ?? "📍"}</Text>
         </View>
@@ -64,6 +73,25 @@ const TAIL = 10;
 const styles = StyleSheet.create({
   pinWrapper: {
     alignItems: "center",
+  },
+  label: {
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    marginBottom: 5,
+    maxWidth: 120,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.18,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  labelText: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#1a1a2e",
+    textAlign: "center",
   },
   bubble: {
     width: BUBBLE,
