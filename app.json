@@ -2,7 +2,7 @@
   "expo": {
     "name": "stamped",
     "slug": "stamped",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "stamped",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.stamped.app",
-      "buildNumber": "7",
+      "buildNumber": "8",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We need your location to show you on the map.",
         "NSCameraUsageDescription": "Take photos of places you visit.",
