@@ -2,7 +2,6 @@ import { ScrollView, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { Chip } from "@/components/ui/Chip";
 import { getAllCategories } from "@/db/queries/categories";
-import { colors } from "@/lib/constants";
 
 type Category = { id: number; name: string; icon: string };
 
@@ -24,12 +23,11 @@ export function CategoryPicker({ selectedId, onSelect }: Props) {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.container}
     >
-      {cats.map((cat, i) => (
+      {cats.map((cat) => (
         <Chip
           key={cat.id}
           label={`${cat.icon} ${cat.name}`}
           selected={selectedId === cat.id}
-          color={colors.categoryColors[i % colors.categoryColors.length]}
           onPress={() => onSelect(cat.id)}
         />
       ))}

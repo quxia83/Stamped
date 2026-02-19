@@ -148,7 +148,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
       )}
       {places.map((place) => (
         <PlaceMarker
-          key={place.id}
+          key={`${place.id}-${pinColor}`}
           id={place.id}
           name={place.name}
           latitude={place.latitude}

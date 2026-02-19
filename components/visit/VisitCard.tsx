@@ -51,14 +51,17 @@ export function VisitCard({
     <Pressable onPress={() => router.push(`/visit/${id}`)}>
       <Card>
         <View style={styles.row}>
-          {thumbnail && (
-            <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
-          )}
+          <Pressable onPress={filterByCategory} hitSlop={4}>
+            {thumbnail ? (
+              <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
+            ) : (
+              <View style={styles.iconBox}>
+                <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
+              </View>
+            )}
+          </Pressable>
           <View style={styles.content}>
             <View style={styles.header}>
-              <Pressable onPress={filterByCategory} hitSlop={4}>
-                <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
-              </Pressable>
               <Text style={styles.name} numberOfLines={1}>
                 {placeName ?? "Unknown"}
               </Text>
@@ -102,9 +105,22 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   thumbnail: {
-    width: 64,
-    height: 64,
+    width: 56,
+    height: 56,
     borderRadius: 8,
+  },
+  iconBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  icon: {
+    fontSize: 24,
   },
   content: {
     flex: 1,
@@ -112,10 +128,6 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
-  },
-  icon: {
-    fontSize: 16,
   },
   name: {
     fontSize: 16,

@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Alert, StyleSheet } from "react-native";
+import { View, Text, FlatList, Alert, StyleSheet, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
@@ -64,7 +64,7 @@ export default function PlaceDetailScreen() {
         options={{
           title: place.name,
           headerRight: () => (
-            <IconButton name="trash" color="#dc3545" onPress={handleDeletePlace} />
+            <IconButton name="trash" color={accentColor} onPress={handleDeletePlace} />
           ),
         }}
       />
@@ -122,28 +122,30 @@ export default function PlaceDetailScreen() {
           </View>
         }
         renderItem={({ item }) => (
-          <Card>
-            <View style={styles.visitRow}>
-              <View style={styles.visitInfo}>
-                <Text style={styles.visitDate}>
-                  {format(parseISO(item.date + "T00:00:00"), "MMM d, yyyy")}
-                </Text>
-                {item.rating != null && (
-                  <StarDisplay rating={item.rating} size={14} />
+          <Pressable onPress={() => router.push(`/visit/${item.id}`)}>
+            <Card>
+              <View style={styles.visitRow}>
+                <View style={styles.visitInfo}>
+                  <Text style={styles.visitDate}>
+                    {format(parseISO(item.date + "T00:00:00"), "MMM d, yyyy")}
+                  </Text>
+                  {item.rating != null && (
+                    <StarDisplay rating={item.rating} size={14} />
+                  )}
+                </View>
+                {item.cost != null && item.cost > 0 && (
+                  <Text style={styles.visitCost}>
+                    {item.currency ?? "USD"} {item.cost.toFixed(2)}
+                  </Text>
+                )}
+                {item.notes && (
+                  <Text style={styles.visitNotes} numberOfLines={2}>
+                    {item.notes}
+                  </Text>
                 )}
               </View>
-              {item.cost != null && item.cost > 0 && (
-                <Text style={styles.visitCost}>
-                  {item.currency ?? "USD"} {item.cost.toFixed(2)}
-                </Text>
-              )}
-              {item.notes && (
-                <Text style={styles.visitNotes} numberOfLines={2}>
-                  {item.notes}
-                </Text>
-              )}
-            </View>
-          </Card>
+            </Card>
+          </Pressable>
         )}
         contentContainerStyle={styles.container}
       />

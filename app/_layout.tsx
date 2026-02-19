@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View, Text } from "react-native";
 import { useDatabase } from "@/hooks/useDatabase";
+import { useThemeStore } from "@/stores/useThemeStore";
 import { colors } from "@/lib/constants";
 
 export { ErrorBoundary } from "expo-router";
@@ -16,16 +17,8 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: colors.accent,
-    background: colors.background,
-  },
-};
-
 export default function RootLayout() {
+  const accentColor = useThemeStore((s) => s.accentColor);
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -58,6 +51,15 @@ export default function RootLayout() {
       </View>
     );
   }
+
+  const theme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: accentColor,
+      background: colors.background,
+    },
+  };
 
   return (
     <ThemeProvider value={theme}>

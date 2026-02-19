@@ -180,7 +180,7 @@ export default function SettingsTab() {
               onPress={() => handleDelete(section.type, item.id, item.name)}
               style={styles.deleteBtn}
             >
-              <FontAwesome name="trash-o" size={18} color="#dc3545" />
+              <FontAwesome name="trash-o" size={18} color={accentColor} />
             </Pressable>
           </Pressable>
         )

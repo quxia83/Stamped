@@ -8,6 +8,7 @@ import { useFilterStore } from "@/stores/useFilterStore";
 import { getFilteredVisits, type VisitWithPlace } from "@/db/queries/visits";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { getPhotosForVisit } from "@/db/queries/photos";
+import { resolvePhotoUri } from "@/lib/photoUtils";
 
 type VisitRow = VisitWithPlace & {
   tags: { label: string; color: string }[];
@@ -39,7 +40,7 @@ export default function ListTab() {
           return {
             ...v,
             tags,
-            thumbnail: photos[0]?.uri,
+            thumbnail: photos[0] ? resolvePhotoUri(photos[0].uri) : undefined,
           };
         })
       );

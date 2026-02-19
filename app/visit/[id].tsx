@@ -106,7 +106,7 @@ export default function VisitDetailScreen() {
                   })
                 }
               />
-              <IconButton name="trash" color="#dc3545" onPress={handleDelete} />
+              <IconButton name="trash" color={accentColor} onPress={handleDelete} />
             </View>
           ),
         }}
