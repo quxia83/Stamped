@@ -64,13 +64,33 @@ export default function NewVisitScreen() {
   useEffect(() => {
     if (params.editId) {
       loadVisit(parseInt(params.editId));
-    } else if (params.lat && params.lng) {
-      reverseGeocode(parseFloat(params.lat), parseFloat(params.lng));
-    } else if (!params.lat && !params.lng && !params.placeId) {
-      // Adding without map — use current location
-      getCurrentLocation();
+    } else {
+      // Reset all form state for a new visit
+      setName(params.placeName ?? "");
+      setAddress("");
+      setCategoryId(undefined);
+      setDate(new Date());
+      setRating(0);
+      setCost("");
+      setCurrency("USD");
+      setWhoPaidId(undefined);
+      setNotes("");
+      setSelectedTags([]);
+      setLocalPhotos([]);
+      setPriceLevel(undefined);
+      setAttendeeCount("");
+      setAddressManuallyEdited(false);
+      setExistingPlaceId(params.placeId ? parseInt(params.placeId) : undefined);
+      setLat(params.lat ? parseFloat(params.lat) : 0);
+      setLng(params.lng ? parseFloat(params.lng) : 0);
+
+      if (params.lat && params.lng) {
+        reverseGeocode(parseFloat(params.lat), parseFloat(params.lng));
+      } else if (!params.lat && !params.lng && !params.placeId) {
+        getCurrentLocation();
+      }
     }
-  }, [params.editId, params.lat, params.lng]);
+  }, [params.editId, params.lat, params.lng, params.placeName, params.placeId]);
 
   const getCurrentLocation = async () => {
     try {

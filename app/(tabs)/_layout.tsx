@@ -25,7 +25,8 @@ export default function TabLayout() {
           borderTopColor: colors.border,
         },
         headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: colors.text,
+        headerTintColor: accentColor,
+        headerBackTitleVisible: false,
       }}
     >
       <Tabs.Screen
@@ -84,6 +85,11 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="sliders" color={color} />,
         }}
       />
+      {/* Hidden screens — keep tab bar visible */}
+      <Tabs.Screen name="place/[id]" options={{ href: null, title: "Place" }} />
+      <Tabs.Screen name="visit/[id]" options={{ href: null, title: "Visit" }} />
+      <Tabs.Screen name="visit/new" options={{ href: null, title: "New Visit" }} />
+      <Tabs.Screen name="search" options={{ href: null, title: "Search" }} />
     </Tabs>
   );
 }

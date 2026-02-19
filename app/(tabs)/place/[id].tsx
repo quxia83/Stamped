@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StarDisplay } from "@/components/visit/RatingInput";
+import { useFilterStore } from "@/stores/useFilterStore";
 import { colors } from "@/lib/constants";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -20,6 +21,7 @@ export default function PlaceDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const accentColor = useThemeStore((s) => s.accentColor);
+  const setFilter = useFilterStore((s) => s.setFilter);
   const [place, setPlace] = useState<PlaceStats | null>(null);
   const [placeVisits, setVisits] = useState<Visit[]>([]);
 
@@ -80,7 +82,16 @@ export default function PlaceDetailScreen() {
               {place.address && (
                 <Text style={styles.address}>{place.address}</Text>
               )}
-              <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ?? "Other"}</Text>
+              <Pressable
+                onPress={() => {
+                  if (place.categoryId) {
+                    setFilter("categoryId", place.categoryId);
+                    router.navigate("/(tabs)/list");
+                  }
+                }}
+              >
+                <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ?? "Other"}</Text>
+              </Pressable>
             </View>
 
             {/* Stats */}

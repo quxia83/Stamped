@@ -63,12 +63,8 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={theme}>
-      <Stack screenOptions={{ headerBackTitleVisible: false }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "" }} />
-        <Stack.Screen name="visit/new" options={{ title: "New Visit" }} />
-        <Stack.Screen name="visit/[id]" options={{ title: "Visit" }} />
-        <Stack.Screen name="place/[id]" options={{ title: "Place" }} />
-        <Stack.Screen name="search" options={{ title: "Search" }} />
+      <Stack screenOptions={{ headerBackTitleVisible: false, headerTintColor: accentColor }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Stamped" }} />
       </Stack>
     </ThemeProvider>
   );
