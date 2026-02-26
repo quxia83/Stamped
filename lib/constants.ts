@@ -15,6 +15,7 @@ export const colors = {
     "#10b981", // Shopping
     "#3b82f6", // Event
     "#ec4899", // Travel
+    "#14b8a6", // Health
     "#6b7280", // Other
   ],
 } as const;

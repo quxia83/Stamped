@@ -1,6 +1,6 @@
 import { db } from "./client";
 import { categories } from "./schema";
-import { count } from "drizzle-orm";
+
 
 const defaultCategories = [
   { name: "Restaurant", icon: "🍽️" },
@@ -9,12 +9,15 @@ const defaultCategories = [
   { name: "Shopping", icon: "🛍️" },
   { name: "Event", icon: "🎉" },
   { name: "Travel", icon: "✈️" },
+  { name: "Health", icon: "🏥" },
   { name: "Other", icon: "📍" },
 ];
 
 export async function seedDatabase() {
-  const [{ value }] = await db.select({ value: count() }).from(categories);
-  if (value === 0) {
-    await db.insert(categories).values(defaultCategories);
+  const existing = await db.select({ name: categories.name }).from(categories);
+  const existingNames = new Set(existing.map((c) => c.name));
+  const missing = defaultCategories.filter((c) => !existingNames.has(c.name));
+  if (missing.length > 0) {
+    await db.insert(categories).values(missing);
   }
 }
