@@ -6,6 +6,7 @@ import { format, parseISO } from "date-fns";
 import { getPlaceWithStats, deletePlace } from "@/db/queries/places";
 import { getVisitsByPlaceId, deleteVisit } from "@/db/queries/visits";
 import { deletePhotosForVisit } from "@/db/queries/photos";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
@@ -18,6 +19,7 @@ type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
 type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
 
 export default function PlaceDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const accentColor = useThemeStore((s) => s.accentColor);
@@ -48,13 +50,13 @@ export default function PlaceDetailScreen() {
     const placeId = parseInt(id!);
     const hasVisits = placeVisits.length > 0;
     const message = hasVisits
-      ? `This will delete "${place?.name}" and its ${placeVisits.length} visit(s). This cannot be undone.`
-      : `Delete "${place?.name}" from the map?`;
+      ? t("place.deletePlaceWithVisits", { name: place?.name, count: placeVisits.length })
+      : t("place.deletePlaceNoVisits", { name: place?.name });
 
-    Alert.alert("Delete Place", message, [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("place.deletePlace"), message, [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           // Delete all visits and their photos first
@@ -105,7 +107,7 @@ export default function PlaceDetailScreen() {
                   }
                 }}
               >
-                <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ?? "Other"}</Text>
+                <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ? t(`category.${place.categoryName}`, { defaultValue: place.categoryName }) : t("place.other")}</Text>
               </Pressable>
             </View>
 
@@ -113,24 +115,24 @@ export default function PlaceDetailScreen() {
             <View style={styles.statsRow}>
               <View style={styles.stat}>
                 <Text style={styles.statValue}>{place.visitCount}</Text>
-                <Text style={styles.statLabel}>Visits</Text>
+                <Text style={styles.statLabel}>{t("place.visits")}</Text>
               </View>
               <View style={styles.stat}>
                 <Text style={styles.statValue}>
                   {place.avgRating ? place.avgRating.toFixed(1) : "-"}
                 </Text>
-                <Text style={styles.statLabel}>Avg Rating</Text>
+                <Text style={styles.statLabel}>{t("place.avgRating")}</Text>
               </View>
               <View style={styles.stat}>
                 <Text style={styles.statValue}>
                   {place.totalSpent ? `$${place.totalSpent.toFixed(0)}` : "-"}
                 </Text>
-                <Text style={styles.statLabel}>Total Spent</Text>
+                <Text style={styles.statLabel}>{t("place.totalSpent")}</Text>
               </View>
             </View>
 
             <Button
-              title="Add Visit Here"
+              title={t("place.addVisitHere")}
               onPress={() =>
                 router.push({
                   pathname: "/visit/new",
@@ -144,7 +146,7 @@ export default function PlaceDetailScreen() {
               }
             />
 
-            <Text style={styles.visitListTitle}>Visit History</Text>
+            <Text style={styles.visitListTitle}>{t("place.visitHistory")}</Text>
           </View>
         }
         renderItem={({ item }) => (

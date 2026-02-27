@@ -1,0 +1,168 @@
+{
+  "tabs": {
+    "map": "Map",
+    "visits": "Visits",
+    "stats": "Stats",
+    "settings": "Settings"
+  },
+  "screens": {
+    "place": "Place",
+    "visit": "Visit",
+    "newVisit": "New Visit",
+    "editVisit": "Edit Visit",
+    "search": "Search"
+  },
+  "list": {
+    "emptyTitle": "No visits yet",
+    "emptyMessage": "Long-press on the map to add your first visit."
+  },
+  "search": {
+    "placeholder": "Search places, notes, tags...",
+    "places": "Places",
+    "yourVisits": "Your Visits",
+    "noResultsTitle": "No results",
+    "noResultsMessage": "No matches for \"{{query}}\""
+  },
+  "stats": {
+    "allTime": "All Time",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "thisYear": "This Year",
+    "custom": "Custom",
+    "from": "From",
+    "to": "To",
+    "overview": "Overview",
+    "visits": "Visits",
+    "avgRating": "Avg Rating",
+    "totalSpent": "Total Spent",
+    "byCategory": "By Category",
+    "uncategorized": "Uncategorized",
+    "visitCount_one": "{{count}} visit",
+    "visitCount_other": "{{count}} visits",
+    "monthlyTrend": "Monthly Trend",
+    "topPlaces": "Top Places",
+    "unknown": "Unknown"
+  },
+  "settings": {
+    "themeColor": "Theme Color",
+    "categories": "Categories",
+    "tags": "Tags",
+    "people": "People",
+    "newCategory": "New category",
+    "newTag": "New tag",
+    "newPerson": "New person",
+    "save": "Save",
+    "add": "Add",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{{name}}\"?"
+  },
+  "place": {
+    "visits": "Visits",
+    "avgRating": "Avg Rating",
+    "totalSpent": "Total Spent",
+    "addVisitHere": "Add Visit Here",
+    "visitHistory": "Visit History",
+    "deletePlace": "Delete Place",
+    "deletePlaceWithVisits": "This will delete \"{{name}}\" and its {{count}} visit(s). This cannot be undone.",
+    "deletePlaceNoVisits": "Delete \"{{name}}\" from the map?",
+    "other": "Other"
+  },
+  "visit": {
+    "date": "Date",
+    "rating": "Rating",
+    "cost": "Cost",
+    "paidBy": "paid by {{name}}",
+    "attendees": "Attendees",
+    "attendeeCount_one": "{{count}} person",
+    "attendeeCount_other": "{{count}} people",
+    "priceLevel": "Price Level",
+    "tags": "Tags",
+    "notes": "Notes",
+    "deleteVisit": "Delete Visit",
+    "deleteConfirm": "Are you sure?"
+  },
+  "form": {
+    "placeName": "Place Name *",
+    "placeNamePlaceholder": "e.g. The Coffee House",
+    "address": "Address",
+    "addressPlaceholder": "123 Main St",
+    "category": "Category",
+    "date": "Date",
+    "rating": "Rating",
+    "cost": "Cost",
+    "attendees": "Attendees",
+    "attendeesPlaceholder": "Number of people",
+    "priceLevel": "Price Level",
+    "whoPaid": "Who Paid",
+    "tags": "Tags",
+    "photos": "Photos",
+    "notes": "Notes",
+    "notesPlaceholder": "How was it?",
+    "addVisit": "Add Visit",
+    "saveChanges": "Save Changes",
+    "required": "Required",
+    "enterPlaceName": "Please enter a place name.",
+    "error": "Error"
+  },
+  "filter": {
+    "all": "All",
+    "date": "Date",
+    "rating": "Rating",
+    "cost": "Cost",
+    "name": "Name",
+    "filter": "Filter",
+    "category": "Category",
+    "minRating": "Min Rating",
+    "any": "Any",
+    "tags": "Tags"
+  },
+  "common": {
+    "none": "None",
+    "addPerson": "+ Add",
+    "personName": "Name",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "unknown": "Unknown",
+    "searchPlaceholder": "Search..."
+  },
+  "map": {
+    "placeCount_one": "{{count}} place",
+    "placeCount_other": "{{count}} places",
+    "noLocation": "{{count}} no location",
+    "permissionDenied": "Permission denied",
+    "locationPermissionNeeded": "Location permission is needed.",
+    "addVisit": "+ Add Visit",
+    "yourPlaces": "Your Places",
+    "noPlaces": "No places yet. Use the Visits tab to add one."
+  },
+  "notFound": {
+    "title": "Oops!",
+    "message": "This screen doesn't exist.",
+    "goHome": "Go to home screen!"
+  },
+  "error": {
+    "databaseError": "Database error: {{message}}"
+  },
+  "tag": {
+    "addTag": "+ Tag",
+    "tagName": "Tag name",
+    "add": "Add"
+  },
+  "photo": {
+    "permissionNeeded": "Permission needed",
+    "grantAccess": "Please grant access to continue.",
+    "gallery": "Gallery",
+    "camera": "Camera"
+  },
+  "category": {
+    "Food": "Food",
+    "Cafe": "Cafe",
+    "Bar": "Bar",
+    "Shopping": "Shopping",
+    "Entertainment": "Entertainment",
+    "Travel": "Travel",
+    "Other": "Other",
+    "Health": "Health"
+  }
+}

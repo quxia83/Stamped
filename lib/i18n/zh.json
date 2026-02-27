@@ -1,0 +1,168 @@
+{
+  "tabs": {
+    "map": "地图",
+    "visits": "访问",
+    "stats": "统计",
+    "settings": "设置"
+  },
+  "screens": {
+    "place": "地点",
+    "visit": "访问",
+    "newVisit": "新访问",
+    "editVisit": "编辑访问",
+    "search": "搜索"
+  },
+  "list": {
+    "emptyTitle": "还没有访问记录",
+    "emptyMessage": "长按地图添加您的第一次访问。"
+  },
+  "search": {
+    "placeholder": "搜索地点、笔记、标签...",
+    "places": "地点",
+    "yourVisits": "我的访问",
+    "noResultsTitle": "无结果",
+    "noResultsMessage": "未找到 \"{{query}}\" 的匹配项"
+  },
+  "stats": {
+    "allTime": "全部",
+    "thisWeek": "本周",
+    "thisMonth": "本月",
+    "thisYear": "今年",
+    "custom": "自定义",
+    "from": "开始",
+    "to": "结束",
+    "overview": "概览",
+    "visits": "访问次数",
+    "avgRating": "平均评分",
+    "totalSpent": "总花费",
+    "byCategory": "按分类",
+    "uncategorized": "未分类",
+    "visitCount_one": "{{count}} 次",
+    "visitCount_other": "{{count}} 次",
+    "monthlyTrend": "月度趋势",
+    "topPlaces": "热门地点",
+    "unknown": "未知"
+  },
+  "settings": {
+    "themeColor": "主题颜色",
+    "categories": "分类",
+    "tags": "标签",
+    "people": "人物",
+    "newCategory": "新分类",
+    "newTag": "新标签",
+    "newPerson": "新人物",
+    "save": "保存",
+    "add": "添加",
+    "delete": "删除",
+    "deleteConfirm": "确定删除 \"{{name}}\"？"
+  },
+  "place": {
+    "visits": "访问次数",
+    "avgRating": "平均评分",
+    "totalSpent": "总花费",
+    "addVisitHere": "在此添加访问",
+    "visitHistory": "访问历史",
+    "deletePlace": "删除地点",
+    "deletePlaceWithVisits": "将删除 \"{{name}}\" 及其 {{count}} 次访问，此操作不可撤销。",
+    "deletePlaceNoVisits": "从地图上删除 \"{{name}}\"？",
+    "other": "其他"
+  },
+  "visit": {
+    "date": "日期",
+    "rating": "评分",
+    "cost": "费用",
+    "paidBy": "{{name}} 付款",
+    "attendees": "参与人数",
+    "attendeeCount_one": "{{count}} 人",
+    "attendeeCount_other": "{{count}} 人",
+    "priceLevel": "价位",
+    "tags": "标签",
+    "notes": "备注",
+    "deleteVisit": "删除访问",
+    "deleteConfirm": "确定删除？"
+  },
+  "form": {
+    "placeName": "地点名称 *",
+    "placeNamePlaceholder": "例如 星巴克",
+    "address": "地址",
+    "addressPlaceholder": "街道地址",
+    "category": "分类",
+    "date": "日期",
+    "rating": "评分",
+    "cost": "费用",
+    "attendees": "参与人数",
+    "attendeesPlaceholder": "人数",
+    "priceLevel": "价位",
+    "whoPaid": "谁付款",
+    "tags": "标签",
+    "photos": "照片",
+    "notes": "备注",
+    "notesPlaceholder": "体验如何？",
+    "addVisit": "添加访问",
+    "saveChanges": "保存更改",
+    "required": "必填",
+    "enterPlaceName": "请输入地点名称。",
+    "error": "错误"
+  },
+  "filter": {
+    "all": "全部",
+    "date": "日期",
+    "rating": "评分",
+    "cost": "费用",
+    "name": "名称",
+    "filter": "筛选",
+    "category": "分类",
+    "minRating": "最低评分",
+    "any": "不限",
+    "tags": "标签"
+  },
+  "common": {
+    "none": "无",
+    "addPerson": "+ 添加",
+    "personName": "姓名",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "unknown": "未知",
+    "searchPlaceholder": "搜索..."
+  },
+  "map": {
+    "placeCount_one": "{{count}} 个地点",
+    "placeCount_other": "{{count}} 个地点",
+    "noLocation": "{{count}} 个无位置",
+    "permissionDenied": "权限被拒绝",
+    "locationPermissionNeeded": "需要位置权限。",
+    "addVisit": "+ 添加访问",
+    "yourPlaces": "我的地点",
+    "noPlaces": "还没有地点。前往访问标签页添加。"
+  },
+  "notFound": {
+    "title": "出错了！",
+    "message": "此页面不存在。",
+    "goHome": "返回主页！"
+  },
+  "error": {
+    "databaseError": "数据库错误：{{message}}"
+  },
+  "tag": {
+    "addTag": "+ 标签",
+    "tagName": "标签名称",
+    "add": "添加"
+  },
+  "photo": {
+    "permissionNeeded": "需要权限",
+    "grantAccess": "请授予访问权限以继续。",
+    "gallery": "相册",
+    "camera": "相机"
+  },
+  "category": {
+    "Food": "美食",
+    "Cafe": "咖啡",
+    "Bar": "酒吧",
+    "Shopping": "购物",
+    "Entertainment": "娱乐",
+    "Travel": "旅行",
+    "Other": "其他",
+    "Health": "健康"
+  }
+}

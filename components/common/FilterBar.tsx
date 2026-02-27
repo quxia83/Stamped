@@ -1,5 +1,6 @@
 import { View, ScrollView, Pressable, Text, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Chip } from "@/components/ui/Chip";
 import { BottomSheet } from "@/components/ui/BottomSheet";
@@ -12,16 +13,17 @@ import { useThemeStore } from "@/stores/useThemeStore";
 type Category = { id: number; name: string; icon: string };
 type Tag = { id: number; label: string; color: string };
 
-const sortOptions = [
-  { field: "date" as const, label: "Date" },
-  { field: "rating" as const, label: "Rating" },
-  { field: "cost" as const, label: "Cost" },
-  { field: "name" as const, label: "Name" },
-];
-
 export function FilterBar() {
+  const { t } = useTranslation();
   const store = useFilterStore();
   const accentColor = useThemeStore((s) => s.accentColor);
+
+  const sortOptions = [
+    { field: "date" as const, label: t("filter.date") },
+    { field: "rating" as const, label: t("filter.rating") },
+    { field: "cost" as const, label: t("filter.cost") },
+    { field: "name" as const, label: t("filter.name") },
+  ];
   const [cats, setCats] = useState<Category[]>([]);
   const [allTags, setTags] = useState<Tag[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -48,7 +50,7 @@ export function FilterBar() {
       >
         {/* All / reset */}
         <Chip
-          label="All"
+          label={t("filter.all")}
           selected={!hasFilters}
           onPress={() => store.clearFilters()}
         />
@@ -95,24 +97,24 @@ export function FilterBar() {
               hasFilters && { color: "#fff" },
             ]}
           >
-            Filter
+            {t("filter.filter")}
           </Text>
         </Pressable>
 
       </ScrollView>
 
       <BottomSheet visible={showFilters} onClose={() => setShowFilters(false)}>
-        <Text style={styles.sheetTitle}>Category</Text>
+        <Text style={styles.sheetTitle}>{t("filter.category")}</Text>
         <View style={styles.chipRow}>
           <Chip
-            label="All"
+            label={t("filter.all")}
             selected={!store.categoryId}
             onPress={() => store.setFilter("categoryId", undefined)}
           />
           {cats.map((cat, i) => (
             <Chip
               key={cat.id}
-              label={`${cat.icon} ${cat.name}`}
+              label={`${cat.icon} ${t(`category.${cat.name}`, { defaultValue: cat.name })}`}
               selected={store.categoryId === cat.id}
               color={colors.categoryColors[i % colors.categoryColors.length]}
               onPress={() => store.setFilter("categoryId", cat.id)}
@@ -120,12 +122,12 @@ export function FilterBar() {
           ))}
         </View>
 
-        <Text style={styles.sheetTitle}>Min Rating</Text>
+        <Text style={styles.sheetTitle}>{t("filter.minRating")}</Text>
         <View style={styles.chipRow}>
           {[0, 1, 2, 3, 4, 5].map((r) => (
             <Chip
               key={r}
-              label={r === 0 ? "Any" : `${"★".repeat(r)}`}
+              label={r === 0 ? t("filter.any") : `${"★".repeat(r)}`}
               selected={(store.minRating ?? 0) === r}
               onPress={() => store.setFilter("minRating", r || undefined)}
             />
@@ -134,7 +136,7 @@ export function FilterBar() {
 
         {allTags.length > 0 && (
           <>
-            <Text style={styles.sheetTitle}>Tags</Text>
+            <Text style={styles.sheetTitle}>{t("filter.tags")}</Text>
             <View style={styles.chipRow}>
               {allTags.map((tag) => (
                 <Chip

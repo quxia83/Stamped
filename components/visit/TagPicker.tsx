@@ -1,5 +1,6 @@
 import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAllTags, insertTag } from "@/db/queries/tags";
 import { Chip } from "@/components/ui/Chip";
 import { colors } from "@/lib/constants";
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export function TagPicker({ selectedIds, onToggle }: Props) {
+  const { t } = useTranslation();
   const accentColor = useThemeStore((s) => s.accentColor);
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -49,7 +51,7 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
           />
         ))}
         <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
-          <Text style={[styles.addText, { color: accentColor }]}>+ Tag</Text>
+          <Text style={[styles.addText, { color: accentColor }]}>{t("tag.addTag")}</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -58,12 +60,12 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
             style={styles.input}
             value={newLabel}
             onChangeText={setNewLabel}
-            placeholder="Tag name"
+            placeholder={t("tag.tagName")}
             autoFocus
             onSubmitEditing={addTag}
           />
           <Pressable onPress={addTag} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
-            <Text style={styles.saveText}>Add</Text>
+            <Text style={styles.saveText}>{t("tag.add")}</Text>
           </Pressable>
         </View>
       )}

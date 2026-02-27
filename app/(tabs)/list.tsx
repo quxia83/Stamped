@@ -1,5 +1,6 @@
 import { FlatList, StyleSheet } from "react-native";
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { VisitCard } from "@/components/visit/VisitCard";
 import { FilterBar } from "@/components/common/FilterBar";
@@ -16,6 +17,7 @@ type VisitRow = VisitWithPlace & {
 };
 
 export default function ListTab() {
+  const { t } = useTranslation();
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const filters = useFilterStore();
   const clearFilters = useFilterStore((s) => s.clearFilters);
@@ -91,8 +93,8 @@ export default function ListTab() {
         ListEmptyComponent={
           <EmptyState
             icon="list"
-            title="No visits yet"
-            message="Long-press on the map to add your first visit."
+            title={t("list.emptyTitle")}
+            message={t("list.emptyMessage")}
           />
         }
       />

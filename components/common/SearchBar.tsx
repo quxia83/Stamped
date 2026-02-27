@@ -1,5 +1,6 @@
 import { View, TextInput, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useTranslation } from "react-i18next";
 import { colors } from "@/lib/constants";
 
 type Props = {
@@ -11,8 +12,10 @@ type Props = {
 export function SearchBar({
   value,
   onChangeText,
-  placeholder = "Search...",
+  placeholder,
 }: Props) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t("common.searchPlaceholder");
   return (
     <View style={styles.container}>
       <FontAwesome name="search" size={16} color={colors.textSecondary} />
@@ -20,7 +23,7 @@ export function SearchBar({
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         placeholderTextColor={colors.textSecondary}
         autoCapitalize="none"
         autoCorrect={false}

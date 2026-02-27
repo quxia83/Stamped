@@ -1,5 +1,6 @@
 import { View, Text, Pressable, Image, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
 import { useFilterStore } from "@/stores/useFilterStore";
@@ -33,6 +34,7 @@ export function VisitCard({
   thumbnail,
   tags,
 }: Props) {
+  const { t } = useTranslation();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
 
@@ -63,7 +65,7 @@ export function VisitCard({
           <View style={styles.content}>
             <View style={styles.header}>
               <Text style={styles.name} numberOfLines={1}>
-                {placeName ?? "Unknown"}
+                {placeName ?? t("common.unknown")}
               </Text>
             </View>
             <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "MMM d, yyyy")}</Text>

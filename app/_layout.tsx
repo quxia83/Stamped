@@ -1,3 +1,4 @@
+import "@/lib/i18n";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -6,6 +7,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View, Text } from "react-native";
 import { useDatabase } from "@/hooks/useDatabase";
+import { useTranslation } from "react-i18next";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { colors } from "@/lib/constants";
 
@@ -18,6 +20,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const { t } = useTranslation();
   const accentColor = useThemeStore((s) => s.accentColor);
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
@@ -39,7 +42,7 @@ export default function RootLayout() {
   if (dbError) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Database error: {dbError.message}</Text>
+        <Text>{t("error.databaseError", { message: dbError.message })}</Text>
       </View>
     );
   }

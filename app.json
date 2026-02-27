@@ -2,7 +2,7 @@
   "expo": {
     "name": "stamped",
     "slug": "stamped",
-    "version": "1.0.7",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "stamped",
@@ -13,10 +13,14 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "locales": {
+      "en": "./lib/i18n/en.json",
+      "zh": "./lib/i18n/zh.json"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.stamped.app",
-      "buildNumber": "8",
+      "buildNumber": "10",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "We need your location to show you on the map.",
         "NSCameraUsageDescription": "Take photos of places you visit.",
@@ -59,7 +63,8 @@
         {
           "locationWhenInUsePermission": "Allow Stamped to access your location to show you on the map."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

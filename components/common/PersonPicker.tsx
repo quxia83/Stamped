@@ -1,5 +1,6 @@
 import { View, Text, Pressable, TextInput, StyleSheet, Alert } from "react-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAllPeople, insertPerson } from "@/db/queries/people";
 import { colors } from "@/lib/constants";
 import { useThemeStore } from "@/stores/useThemeStore";
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function PersonPicker({ selectedId, onSelect }: Props) {
+  const { t } = useTranslation();
   const accentColor = useThemeStore((s) => s.accentColor);
   const [people, setPeople] = useState<Person[]>([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -40,7 +42,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
           onPress={() => onSelect(undefined)}
         >
           <Text style={[styles.optionText, !selectedId && styles.selectedText]}>
-            None
+            {t("common.none")}
           </Text>
         </Pressable>
         {people.map((p) => (
@@ -60,7 +62,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
           </Pressable>
         ))}
         <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
-          <Text style={[styles.addText, { color: accentColor }]}>+ Add</Text>
+          <Text style={[styles.addText, { color: accentColor }]}>{t("common.addPerson")}</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -69,12 +71,12 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
             style={styles.input}
             value={newName}
             onChangeText={setNewName}
-            placeholder="Name"
+            placeholder={t("common.personName")}
             autoFocus
             onSubmitEditing={addPerson}
           />
           <Pressable onPress={addPerson} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
-            <Text style={styles.saveText}>Save</Text>
+            <Text style={styles.saveText}>{t("common.save")}</Text>
           </Pressable>
         </View>
       )}

@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   getAllCategories,
@@ -24,10 +25,11 @@ type Item = { id: number; name: string; extra?: string };
 type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
 
 function ThemeColorPicker() {
+  const { t } = useTranslation();
   const { accentColor, setAccentColor } = useThemeStore();
   return (
     <View style={styles.pinSection}>
-      <Text style={styles.sectionTitle}>Theme Color</Text>
+      <Text style={styles.sectionTitle}>{t("settings.themeColor")}</Text>
       <View style={styles.swatchRow}>
         {PIN_COLORS.map((c) => (
           <Pressable
@@ -46,6 +48,7 @@ function ThemeColorPicker() {
 }
 
 export default function SettingsTab() {
+  const { t } = useTranslation();
   const accentColor = useThemeStore((s) => s.accentColor);
   const [sections, setSections] = useState<Section[]>([]);
   const [addMode, setAddMode] = useState<string | null>(null);
@@ -62,17 +65,17 @@ export default function SettingsTab() {
     ]);
     setSections([
       {
-        title: "Categories",
+        title: t("settings.categories"),
         type: "category",
         data: cats.map((c) => ({ id: c.id, name: c.name, extra: c.icon })),
       },
       {
-        title: "Tags",
+        title: t("settings.tags"),
         type: "tag",
-        data: allTags.map((t) => ({ id: t.id, name: t.label, extra: t.color })),
+        data: allTags.map((tg) => ({ id: tg.id, name: tg.label, extra: tg.color })),
       },
       {
-        title: "People",
+        title: t("settings.people"),
         type: "person",
         data: people.map((p) => ({ id: p.id, name: p.name })),
       },
@@ -107,10 +110,10 @@ export default function SettingsTab() {
   };
 
   const handleDelete = (type: string, id: number, name: string) => {
-    Alert.alert("Delete", `Delete "${name}"?`, [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("settings.delete"), t("settings.deleteConfirm", { name }), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           if (type === "category") await deleteCategory(id);
@@ -151,7 +154,7 @@ export default function SettingsTab() {
               onSubmitEditing={handleEditSave}
             />
             <Pressable style={[styles.addBtn, { backgroundColor: accentColor }]} onPress={handleEditSave}>
-              <Text style={styles.addBtnText}>Save</Text>
+              <Text style={styles.addBtnText}>{t("settings.save")}</Text>
             </Pressable>
             <Pressable style={styles.deleteBtn} onPress={() => setEditingId(null)}>
               <FontAwesome name="times" size={18} color={colors.textSecondary} />
@@ -192,7 +195,7 @@ export default function SettingsTab() {
               style={styles.addInput}
               value={newName}
               onChangeText={setNewName}
-              placeholder={`New ${section.type}`}
+              placeholder={t(`settings.new${section.type.charAt(0).toUpperCase() + section.type.slice(1)}` as any)}
               autoFocus
               onSubmitEditing={() => handleAdd(section.type)}
             />
@@ -200,7 +203,7 @@ export default function SettingsTab() {
               style={[styles.addBtn, { backgroundColor: accentColor }]}
               onPress={() => handleAdd(section.type)}
             >
-              <Text style={styles.addBtnText}>Add</Text>
+              <Text style={styles.addBtnText}>{t("settings.add")}</Text>
             </Pressable>
           </View>
         ) : null

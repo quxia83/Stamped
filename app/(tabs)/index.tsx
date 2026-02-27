@@ -34,9 +34,12 @@ export default function MapTab() {
     }, [clearSearchPin, places])
   );
 
+  const validPlaces = places.filter((p) => p.latitude !== 0 || p.longitude !== 0);
+  const noLocationCount = places.length - validPlaces.length;
+
   const filteredPlaces = categoryId
-    ? places.filter((p) => p.categoryId === categoryId)
-    : places;
+    ? validPlaces.filter((p) => p.categoryId === categoryId)
+    : validPlaces;
 
   const handleLongPress = useCallback(
     (latitude: number, longitude: number) => {
@@ -103,7 +106,11 @@ export default function MapTab() {
         onCalloutPress={handleCalloutPress}
         onSearchPinPress={handleSearchPinPress}
       />
-      <MapControls onLocationFound={handleLocationFound} />
+      <MapControls
+        onLocationFound={handleLocationFound}
+        placeCount={filteredPlaces.length}
+        noLocationCount={noLocationCount}
+      />
     </View>
   );
 }

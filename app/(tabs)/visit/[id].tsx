@@ -10,8 +10,10 @@ import {
   Platform,
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import { format, parseISO } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
 import { deleteOrphanPlace } from "@/db/queries/places";
@@ -28,6 +30,7 @@ type Tag = { id: number; label: string; color: string };
 type Photo = { id: number; uri: string };
 
 export default function VisitDetailScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
@@ -46,15 +49,17 @@ export default function VisitDetailScreen() {
     }
   };
 
-  useEffect(() => {
-    load();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      load();
+    }, [id])
+  );
 
   const handleDelete = () => {
-    Alert.alert("Delete Visit", "Are you sure?", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("visit.deleteVisit"), t("visit.deleteConfirm"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           const visitId = parseInt(id!);
@@ -167,7 +172,7 @@ export default function VisitDetailScreen() {
 
         {/* Date */}
         <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Date</Text>
+          <Text style={styles.sectionLabel}>{t("visit.date")}</Text>
           <Text style={styles.sectionValue}>
             {format(parseISO(visit.date + "T00:00:00"), "EEEE, MMMM d, yyyy")}
           </Text>
@@ -176,7 +181,7 @@ export default function VisitDetailScreen() {
         {/* Rating */}
         {visit.rating != null && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Rating</Text>
+            <Text style={styles.sectionLabel}>{t("visit.rating")}</Text>
             <StarDisplay rating={visit.rating} size={24} />
           </View>
         )}
@@ -184,10 +189,10 @@ export default function VisitDetailScreen() {
         {/* Cost */}
         {visit.cost != null && visit.cost > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Cost</Text>
+            <Text style={styles.sectionLabel}>{t("visit.cost")}</Text>
             <Text style={styles.sectionValue}>
               {visit.currency ?? "USD"} {visit.cost.toFixed(2)}
-              {visit.whoPaidName ? ` (paid by ${visit.whoPaidName})` : ""}
+              {visit.whoPaidName ? ` (${t("visit.paidBy", { name: visit.whoPaidName })})` : ""}
             </Text>
           </View>
         )}
@@ -195,9 +200,9 @@ export default function VisitDetailScreen() {
         {/* Attendees */}
         {visit.attendeeCount != null && visit.attendeeCount > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Attendees</Text>
+            <Text style={styles.sectionLabel}>{t("visit.attendees")}</Text>
             <Text style={styles.sectionValue}>
-              {visit.attendeeCount} {visit.attendeeCount === 1 ? "person" : "people"}
+              {t("visit.attendeeCount", { count: visit.attendeeCount })}
             </Text>
           </View>
         )}
@@ -205,7 +210,7 @@ export default function VisitDetailScreen() {
         {/* Price Level */}
         {visit.priceLevel != null && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Price Level</Text>
+            <Text style={styles.sectionLabel}>{t("visit.priceLevel")}</Text>
             <Text style={styles.sectionValue}>{"$".repeat(visit.priceLevel)}</Text>
           </View>
         )}
@@ -213,7 +218,7 @@ export default function VisitDetailScreen() {
         {/* Tags */}
         {tags.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Tags</Text>
+            <Text style={styles.sectionLabel}>{t("visit.tags")}</Text>
             <View style={styles.tagRow}>
               {tags.map((tag) => (
                 <Pressable
@@ -233,7 +238,7 @@ export default function VisitDetailScreen() {
         {/* Notes */}
         {visit.notes && (
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Notes</Text>
+            <Text style={styles.sectionLabel}>{t("visit.notes")}</Text>
             <Text style={styles.notes}>{visit.notes}</Text>
           </View>
         )}

@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
 import { colors } from "@/lib/constants";
 
 type Place = {
@@ -26,15 +27,17 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   { places, onCalloutPress },
   ref
 ) {
+  const { t } = useTranslation();
+
   useImperativeHandle(ref, () => ({
     animateToRegion: () => {},
   }));
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Your Places</Text>
+      <Text style={styles.title}>{t("map.yourPlaces")}</Text>
       {places.length === 0 && (
-        <Text style={styles.empty}>No places yet. Use the Visits tab to add one.</Text>
+        <Text style={styles.empty}>{t("map.noPlaces")}</Text>
       )}
       {places.map((place) => (
         <Pressable

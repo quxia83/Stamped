@@ -1,5 +1,6 @@
 import { useRef, useCallback, useImperativeHandle, forwardRef, useEffect } from "react";
 import { View, Text, StyleSheet, Animated } from "react-native";
+import { useTranslation } from "react-i18next";
 import MapView from "react-native-map-clustering";
 import { Marker, Callout, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
@@ -73,6 +74,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   { places, searchPin, onLongPress, onMarkerPress, onCalloutPress, onSearchPinPress },
   ref
 ) {
+  const { t } = useTranslation();
   const mapRef = useRef<any>(null);
   const { region, setRegion } = useMapStore();
   const pinColor = useThemeStore((s) => s.accentColor);
@@ -158,7 +160,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
           <Callout onPress={() => onSearchPinPress(searchPin)}>
             <View style={searchPinStyles.callout}>
               <Text style={searchPinStyles.calloutName} numberOfLines={2}>{searchPin.name}</Text>
-              <Text style={[searchPinStyles.calloutAction, { color: pinColor }]}>+ Add Visit</Text>
+              <Text style={[searchPinStyles.calloutAction, { color: pinColor }]}>{t("map.addVisit")}</Text>
             </View>
           </Callout>
         </Marker>

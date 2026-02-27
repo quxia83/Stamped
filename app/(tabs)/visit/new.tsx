@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { CategoryPicker } from "@/components/common/CategoryPicker";
 import { DatePicker } from "@/components/common/DatePicker";
@@ -30,6 +31,7 @@ import { colors } from "@/lib/constants";
 type PhotoItem = { id?: number; uri: string };
 
 export default function NewVisitScreen() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{
     lat?: string;
     lng?: string;
@@ -157,7 +159,7 @@ export default function NewVisitScreen() {
 
   const save = async () => {
     if (!name.trim()) {
-      Alert.alert("Required", "Please enter a place name.");
+      Alert.alert(t("form.required"), t("form.enterPlaceName"));
       return;
     }
 
@@ -251,7 +253,7 @@ export default function NewVisitScreen() {
 
       router.back();
     } catch (e: any) {
-      Alert.alert("Error", e.message);
+      Alert.alert(t("form.error"), e.message);
     } finally {
       setSaving(false);
     }
@@ -260,41 +262,41 @@ export default function NewVisitScreen() {
   return (
     <>
       <Stack.Screen
-        options={{ title: isEdit ? "Edit Visit" : "New Visit" }}
+        options={{ title: isEdit ? t("screens.editVisit") : t("screens.newVisit") }}
       />
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-          <Text style={styles.label}>Place Name *</Text>
+          <Text style={styles.label}>{t("form.placeName")}</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
-            placeholder="e.g. The Coffee House"
+            placeholder={t("form.placeNamePlaceholder")}
             placeholderTextColor={colors.textSecondary}
           />
 
-          <Text style={styles.label}>Address</Text>
+          <Text style={styles.label}>{t("form.address")}</Text>
           <TextInput
             style={styles.input}
             value={address}
-            onChangeText={(t) => { setAddress(t); setAddressManuallyEdited(true); }}
-            placeholder="123 Main St"
+            onChangeText={(v) => { setAddress(v); setAddressManuallyEdited(true); }}
+            placeholder={t("form.addressPlaceholder")}
             placeholderTextColor={colors.textSecondary}
           />
 
-          <Text style={styles.label}>Category</Text>
+          <Text style={styles.label}>{t("form.category")}</Text>
           <CategoryPicker selectedId={categoryId} onSelect={setCategoryId} />
 
-          <Text style={styles.label}>Date</Text>
+          <Text style={styles.label}>{t("form.date")}</Text>
           <DatePicker value={date} onChange={setDate} />
 
-          <Text style={styles.label}>Rating</Text>
+          <Text style={styles.label}>{t("form.rating")}</Text>
           <RatingInput value={rating} onChange={setRating} />
 
-          <Text style={styles.label}>Cost</Text>
+          <Text style={styles.label}>{t("form.cost")}</Text>
           <CostInput
             cost={cost}
             currency={currency}
@@ -302,39 +304,39 @@ export default function NewVisitScreen() {
             onCurrencyChange={setCurrency}
           />
 
-          <Text style={styles.label}>Attendees</Text>
+          <Text style={styles.label}>{t("form.attendees")}</Text>
           <TextInput
             style={styles.input}
             value={attendeeCount}
-            onChangeText={(t) => setAttendeeCount(t.replace(/[^0-9]/g, ""))}
+            onChangeText={(v) => setAttendeeCount(v.replace(/[^0-9]/g, ""))}
             keyboardType="number-pad"
-            placeholder="Number of people"
+            placeholder={t("form.attendeesPlaceholder")}
             placeholderTextColor={colors.textSecondary}
             maxLength={3}
           />
 
-          <Text style={styles.label}>Price Level</Text>
+          <Text style={styles.label}>{t("form.priceLevel")}</Text>
           <PriceLevelPicker value={priceLevel} onChange={setPriceLevel} />
 
-          <Text style={styles.label}>Who Paid</Text>
+          <Text style={styles.label}>{t("form.whoPaid")}</Text>
           <PersonPicker selectedId={whoPaidId} onSelect={setWhoPaidId} />
 
-          <Text style={styles.label}>Tags</Text>
+          <Text style={styles.label}>{t("form.tags")}</Text>
           <TagPicker selectedIds={selectedTags} onToggle={toggleTag} />
 
-          <Text style={styles.label}>Photos</Text>
+          <Text style={styles.label}>{t("form.photos")}</Text>
           <PhotoPicker
             photos={localPhotos}
             onAdd={addPhoto}
             onRemove={removePhoto}
           />
 
-          <Text style={styles.label}>Notes</Text>
+          <Text style={styles.label}>{t("form.notes")}</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={notes}
             onChangeText={setNotes}
-            placeholder="How was it?"
+            placeholder={t("form.notesPlaceholder")}
             placeholderTextColor={colors.textSecondary}
             multiline
             numberOfLines={4}
@@ -342,7 +344,7 @@ export default function NewVisitScreen() {
 
           <View style={styles.buttonRow}>
             <Button
-              title={isEdit ? "Save Changes" : "Add Visit"}
+              title={isEdit ? t("form.saveChanges") : t("form.addVisit")}
               onPress={save}
               loading={saving}
             />

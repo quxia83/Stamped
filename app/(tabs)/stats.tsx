@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
+import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState, useCallback } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -29,6 +30,7 @@ type TimeStat = { period: string; visitCount: number; totalSpent: number | null 
 type TopPlace = { placeId: number | null; name: string | null; categoryIcon: string | null; visitCount: number; avgRating: number | null };
 
 export default function StatsTab() {
+  const { t } = useTranslation();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
   const resetFilters = useFilterStore((s) => s.resetFilters);
@@ -74,11 +76,11 @@ export default function StatsTab() {
   );
 
   const chips: { key: TimeRange; label: string }[] = [
-    { key: "all", label: "All Time" },
-    { key: "week", label: "This Week" },
-    { key: "month", label: "This Month" },
-    { key: "year", label: "This Year" },
-    { key: "custom", label: "Custom" },
+    { key: "all", label: t("stats.allTime") },
+    { key: "week", label: t("stats.thisWeek") },
+    { key: "month", label: t("stats.thisMonth") },
+    { key: "year", label: t("stats.thisYear") },
+    { key: "custom", label: t("stats.custom") },
   ];
 
   return (
@@ -103,7 +105,7 @@ export default function StatsTab() {
         <View style={{ marginBottom: 16 }}>
           <View style={styles.dateRow}>
             <View style={styles.dateField}>
-              <Text style={styles.dateLabel}>From</Text>
+              <Text style={styles.dateLabel}>{t("stats.from")}</Text>
               <Pressable
                 style={[styles.dateButton, showFromPicker && { borderColor: accentColor }]}
                 onPress={() => { setShowToPicker(false); setShowFromPicker(!showFromPicker); }}
@@ -112,7 +114,7 @@ export default function StatsTab() {
               </Pressable>
             </View>
             <View style={styles.dateField}>
-              <Text style={styles.dateLabel}>To</Text>
+              <Text style={styles.dateLabel}>{t("stats.to")}</Text>
               <Pressable
                 style={[styles.dateButton, showToPicker && { borderColor: accentColor }]}
                 onPress={() => { setShowFromPicker(false); setShowToPicker(!showToPicker); }}
@@ -151,16 +153,16 @@ export default function StatsTab() {
       {/* Overview Card */}
       {overall && (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Overview</Text>
+          <Text style={styles.cardTitle}>{t("stats.overview")}</Text>
           <View style={styles.statRow}>
-            <StatBlock label="Visits" value={String(overall.totalVisits)} />
+            <StatBlock label={t("stats.visits")} value={String(overall.totalVisits)} />
             <StatBlock
-              label="Avg Rating"
+              label={t("stats.avgRating")}
               value={overall.avgRating != null ? overall.avgRating.toFixed(1) : "—"}
               icon="star"
             />
             <StatBlock
-              label="Total Spent"
+              label={t("stats.totalSpent")}
               value={overall.totalSpent ? `$${Number(overall.totalSpent).toFixed(0)}` : "$0"}
             />
           </View>
@@ -170,7 +172,7 @@ export default function StatsTab() {
       {/* Category Breakdown */}
       {byCategory.length > 0 && (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>By Category</Text>
+          <Text style={styles.cardTitle}>{t("stats.byCategory")}</Text>
           {byCategory.map((cat, i) => (
             <Pressable
               key={cat.id ?? i}
@@ -182,9 +184,9 @@ export default function StatsTab() {
               }}
             >
               <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
-              <Text style={styles.catName}>{cat.name ?? "Uncategorized"}</Text>
+              <Text style={styles.catName}>{cat.name ? t(`category.${cat.name}`, { defaultValue: cat.name }) : t("stats.uncategorized")}</Text>
               <Text style={styles.catStat}>
-                {cat.visitCount} visit{cat.visitCount !== 1 ? "s" : ""}
+                {t("stats.visitCount", { count: cat.visitCount })}
               </Text>
               <Text style={[styles.catStat, { color: accentColor }]}>
                 ${Number(cat.totalSpent ?? 0).toFixed(0)}
@@ -198,25 +200,25 @@ export default function StatsTab() {
       {/* Time Trend */}
       {byTime.length > 0 && (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Monthly Trend</Text>
-          {byTime.map((t) => (
+          <Text style={styles.cardTitle}>{t("stats.monthlyTrend")}</Text>
+          {byTime.map((tm) => (
             <Pressable
-              key={t.period}
+              key={tm.period}
               style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
               onPress={() => {
-                const d = parseISO(t.period + "-01");
+                const d = parseISO(tm.period + "-01");
                 resetFilters();
                 setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
                 setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
                 router.navigate("/(tabs)/list");
               }}
             >
-              <Text style={styles.catName}>{t.period}</Text>
+              <Text style={styles.catName}>{tm.period}</Text>
               <Text style={styles.catStat}>
-                {t.visitCount} visit{t.visitCount !== 1 ? "s" : ""}
+                {t("stats.visitCount", { count: tm.visitCount })}
               </Text>
               <Text style={[styles.catStat, { color: accentColor }]}>
-                ${Number(t.totalSpent ?? 0).toFixed(0)}
+                ${Number(tm.totalSpent ?? 0).toFixed(0)}
               </Text>
               <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
             </Pressable>
@@ -227,7 +229,7 @@ export default function StatsTab() {
       {/* Top Places */}
       {topPlaces.length > 0 && (
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Top Places</Text>
+          <Text style={styles.cardTitle}>{t("stats.topPlaces")}</Text>
           {topPlaces.map((p, i) => (
             <Pressable
               key={p.placeId ?? i}
@@ -235,7 +237,7 @@ export default function StatsTab() {
               onPress={() => p.placeId != null && router.push(`/place/${p.placeId}`)}
             >
               <Text style={styles.catIcon}>{p.categoryIcon ?? "📍"}</Text>
-              <Text style={styles.catName}>{p.name ?? "Unknown"}</Text>
+              <Text style={styles.catName}>{p.name ?? t("stats.unknown")}</Text>
               <Text style={styles.catStat}>{p.visitCount}x</Text>
               {p.avgRating != null && (
                 <View style={styles.ratingBadge}>

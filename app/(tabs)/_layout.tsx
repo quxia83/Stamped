@@ -1,6 +1,7 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs, useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
+import { useTranslation } from "react-i18next";
 import { colors } from "@/lib/constants";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -12,6 +13,7 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+  const { t } = useTranslation();
   const router = useRouter();
   const accentColor = useThemeStore((s) => s.accentColor);
 
@@ -32,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Map",
+          title: t("tabs.map"),
           tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
           headerRight: () => (
             <Pressable
@@ -47,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="list"
         options={{
-          title: "Visits",
+          title: t("tabs.visits"),
           tabBarIcon: ({ color }) => <TabBarIcon name="bookmark" color={color} />,
           headerLeft: () => (
             <Pressable
@@ -72,7 +74,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: "Stats",
+          title: t("tabs.stats"),
           tabBarIcon: ({ color }) => (
             <TabBarIcon name="signal" color={color} />
           ),
@@ -81,15 +83,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: t("tabs.settings"),
           tabBarIcon: ({ color }) => <TabBarIcon name="sliders" color={color} />,
         }}
       />
       {/* Hidden screens — keep tab bar visible */}
-      <Tabs.Screen name="place/[id]" options={{ href: null, title: "Place" }} />
-      <Tabs.Screen name="visit/[id]" options={{ href: null, title: "Visit" }} />
-      <Tabs.Screen name="visit/new" options={{ href: null, title: "New Visit" }} />
-      <Tabs.Screen name="search" options={{ href: null, title: "Search" }} />
+      <Tabs.Screen name="place/[id]" options={{ href: null, title: t("screens.place") }} />
+      <Tabs.Screen name="visit/[id]" options={{ href: null, title: t("screens.visit") }} />
+      <Tabs.Screen name="visit/new" options={{ href: null, title: t("screens.newVisit") }} />
+      <Tabs.Screen name="search" options={{ href: null, title: t("screens.search") }} />
     </Tabs>
   );
 }

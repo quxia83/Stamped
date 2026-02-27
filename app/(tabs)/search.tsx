@@ -1,5 +1,6 @@
 import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { SearchBar } from "@/components/common/SearchBar";
@@ -17,6 +18,7 @@ type VisitRow = VisitWithPlace & {
 };
 
 export default function SearchScreen() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const [places, setPlaces] = useState<PlaceResult[]>([]);
@@ -73,7 +75,7 @@ export default function SearchScreen() {
       <SearchBar
         value={query}
         onChangeText={setQuery}
-        placeholder="Search places, notes, tags..."
+        placeholder={t("search.placeholder")}
       />
       <FlatList
         data={[]}
@@ -85,7 +87,7 @@ export default function SearchScreen() {
           <>
             {places.length > 0 && (
               <View>
-                <Text style={styles.sectionHeader}>Places</Text>
+                <Text style={styles.sectionHeader}>{t("search.places")}</Text>
                 {places.map((place, i) => (
                   <Pressable
                     key={`place-${i}`}
@@ -111,7 +113,7 @@ export default function SearchScreen() {
               </View>
             )}
             {visits.length > 0 && (
-              <Text style={styles.sectionHeader}>Your Visits</Text>
+              <Text style={styles.sectionHeader}>{t("search.yourVisits")}</Text>
             )}
           </>
         }
@@ -138,8 +140,8 @@ export default function SearchScreen() {
           query && !hasResults ? (
             <EmptyState
               icon="search"
-              title="No results"
-              message={`No matches for "${query}"`}
+              title={t("search.noResultsTitle")}
+              message={t("search.noResultsMessage", { query })}
             />
           ) : null
         }

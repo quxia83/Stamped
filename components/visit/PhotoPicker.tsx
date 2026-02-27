@@ -1,4 +1,5 @@
 import { View, Image, Pressable, Text, ScrollView, StyleSheet, Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
 import { File } from "expo-file-system/next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -24,6 +25,7 @@ function ensureDir() {
 }
 
 export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
+  const { t } = useTranslation();
   const accentColor = useThemeStore((s) => s.accentColor);
   const pickImage = async (fromCamera: boolean) => {
     const permMethod = fromCamera
@@ -31,7 +33,7 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
       : ImagePicker.requestMediaLibraryPermissionsAsync;
     const { granted } = await permMethod();
     if (!granted) {
-      Alert.alert("Permission needed", "Please grant access to continue.");
+      Alert.alert(t("photo.permissionNeeded"), t("photo.grantAccess"));
       return;
     }
 
@@ -72,11 +74,11 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
         <View style={styles.addButtons}>
           <Pressable style={styles.addBtn} onPress={() => pickImage(false)}>
             <FontAwesome name="photo" size={24} color={accentColor} />
-            <Text style={[styles.addText, { color: accentColor }]}>Gallery</Text>
+            <Text style={[styles.addText, { color: accentColor }]}>{t("photo.gallery")}</Text>
           </Pressable>
           <Pressable style={styles.addBtn} onPress={() => pickImage(true)}>
             <FontAwesome name="camera" size={24} color={accentColor} />
-            <Text style={[styles.addText, { color: accentColor }]}>Camera</Text>
+            <Text style={[styles.addText, { color: accentColor }]}>{t("photo.camera")}</Text>
           </Pressable>
         </View>
       </ScrollView>
