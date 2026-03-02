@@ -182,8 +182,10 @@ export default function SettingsTab() {
             <Pressable
               onPress={() => handleDelete(section.type, item.id, item.name)}
               style={styles.deleteBtn}
+              accessibilityLabel={`Delete ${item.name}`}
+              accessibilityRole="button"
             >
-              <FontAwesome name="trash-o" size={18} color={accentColor} />
+              <FontAwesome name="trash-o" size={18} color={colors.destructive} />
             </Pressable>
           </Pressable>
         )
@@ -280,6 +282,10 @@ const styles = StyleSheet.create({
   },
   deleteBtn: {
     padding: 8,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   addRow: {
     flexDirection: "row",

@@ -66,17 +66,17 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
         {photos.map((photo, index) => (
           <View key={photo.uri} style={styles.photoContainer}>
             <Image source={{ uri: resolvePhotoUri(photo.uri) }} style={styles.photo} />
-            <Pressable style={styles.removeBtn} onPress={() => onRemove(index)}>
+            <Pressable style={styles.removeBtn} hitSlop={8} onPress={() => onRemove(index)} accessibilityLabel={t("photo.remove")} accessibilityRole="button">
               <FontAwesome name="times-circle" size={22} color="#dc3545" />
             </Pressable>
           </View>
         ))}
         <View style={styles.addButtons}>
-          <Pressable style={styles.addBtn} onPress={() => pickImage(false)}>
+          <Pressable style={styles.addBtn} onPress={() => pickImage(false)} accessibilityLabel={t("photo.gallery")} accessibilityRole="button">
             <FontAwesome name="photo" size={24} color={accentColor} />
             <Text style={[styles.addText, { color: accentColor }]}>{t("photo.gallery")}</Text>
           </Pressable>
-          <Pressable style={styles.addBtn} onPress={() => pickImage(true)}>
+          <Pressable style={styles.addBtn} onPress={() => pickImage(true)} accessibilityLabel={t("photo.camera")} accessibilityRole="button">
             <FontAwesome name="camera" size={24} color={accentColor} />
             <Text style={[styles.addText, { color: accentColor }]}>{t("photo.camera")}</Text>
           </Pressable>

@@ -20,6 +20,7 @@ import { deleteOrphanPlace } from "@/db/queries/places";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { getPhotosForVisit, deletePhotosForVisit } from "@/db/queries/photos";
 import { resolvePhotoUri } from "@/lib/photoUtils";
+import * as Haptics from "expo-haptics";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
 import { colors } from "@/lib/constants";
@@ -56,6 +57,7 @@ export default function VisitDetailScreen() {
   );
 
   const handleDelete = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     Alert.alert(t("visit.deleteVisit"), t("visit.deleteConfirm"), [
       { text: t("common.cancel"), style: "cancel" },
       {
@@ -114,7 +116,7 @@ export default function VisitDetailScreen() {
                   })
                 }
               />
-              <IconButton name="trash" color={accentColor} onPress={handleDelete} />
+              <IconButton name="trash" color={colors.destructive} onPress={handleDelete} />
             </View>
           ),
         }}

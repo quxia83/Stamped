@@ -27,6 +27,8 @@ export function SearchBar({
         placeholderTextColor={colors.textSecondary}
         autoCapitalize="none"
         autoCorrect={false}
+        accessibilityLabel={resolvedPlaceholder}
+        accessibilityRole="search"
       />
     </View>
   );

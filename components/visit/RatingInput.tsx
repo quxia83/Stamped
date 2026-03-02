@@ -1,10 +1,11 @@
 import { View, Pressable, StyleSheet } from "react-native";
+import * as Haptics from "expo-haptics";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { colors } from "@/lib/constants";
 
 export function StarDisplay({ rating, size = 22 }: { rating: number; size?: number }) {
   return (
-    <View style={[styles.stars, { gap: size * 0.18 }]}>
+    <View style={[styles.stars, { gap: size * 0.18 }]} accessibilityLabel={`${rating} out of 5 stars`}>
       {[1, 2, 3, 4, 5].map((s) => {
         const fill = Math.min(1, Math.max(0, rating - (s - 1)));
         return (
@@ -32,7 +33,7 @@ const STAR_GAP = 8;
 
 export function RatingInput({ value, onChange }: Props) {
   return (
-    <View style={styles.row}>
+    <View style={styles.row} accessibilityRole="adjustable" accessibilityLabel={`Rating: ${value} out of 5`} accessibilityValue={{ min: 0, max: 5, now: value }}>
       {[1, 2, 3, 4, 5].map((s) => {
         const fill = Math.min(1, Math.max(0, value - (s - 1)));
         return (
@@ -47,12 +48,18 @@ export function RatingInput({ value, onChange }: Props) {
             <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
               <Pressable
                 style={styles.halfLeft}
-                onPress={() => onChange(value === s - 0.5 ? 0 : s - 0.5)}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  onChange(value === s - 0.5 ? 0 : s - 0.5);
+                }}
                 hitSlop={4}
               />
               <Pressable
                 style={styles.halfRight}
-                onPress={() => onChange(value === s ? 0 : s)}
+                onPress={() => {
+                  Haptics.selectionAsync();
+                  onChange(value === s ? 0 : s);
+                }}
                 hitSlop={4}
               />
             </View>

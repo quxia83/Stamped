@@ -85,6 +85,8 @@ export function FilterBar() {
             hasFilters && { backgroundColor: accentColor, borderColor: accentColor },
           ]}
           onPress={() => setShowFilters(true)}
+          accessibilityLabel={hasFilters ? t("filter.filtersActive") : t("filter.filter")}
+          accessibilityRole="button"
         >
           <FontAwesome
             name="filter"

@@ -114,7 +114,8 @@
     "category": "分类",
     "minRating": "最低评分",
     "any": "不限",
-    "tags": "标签"
+    "tags": "标签",
+    "filtersActive": "筛选已启用"
   },
   "common": {
     "none": "无",
@@ -153,7 +154,8 @@
     "permissionNeeded": "需要权限",
     "grantAccess": "请授予访问权限以继续。",
     "gallery": "相册",
-    "camera": "相机"
+    "camera": "相机",
+    "remove": "移除照片"
   },
   "category": {
     "Food": "美食",

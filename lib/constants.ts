@@ -6,6 +6,7 @@ export const colors = {
   text: "#1a1a2e",
   textSecondary: "#6c757d",
   border: "#dee2e6",
+  destructive: "#FF3B30",
   star: "#fbbf24",
   starEmpty: "#d1d5db",
   categoryColors: [

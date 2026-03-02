@@ -1,4 +1,5 @@
 import { Pressable, Text, StyleSheet, ActivityIndicator } from "react-native";
+import * as Haptics from "expo-haptics";
 import { colors } from "@/lib/constants";
 import { useThemeStore } from "@/stores/useThemeStore";
 
@@ -22,7 +23,7 @@ export function Button({
     variant === "primary"
       ? accentColor
       : variant === "danger"
-        ? "#dc3545"
+        ? colors.destructive
         : "transparent";
   const textColor =
     variant === "secondary" ? accentColor : "#fff";
@@ -30,8 +31,14 @@ export function Button({
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled: disabled || loading, busy: loading }}
       style={({ pressed }) => [
         styles.button,
         { backgroundColor: bg, borderColor, opacity: pressed || disabled ? 0.7 : 1 },

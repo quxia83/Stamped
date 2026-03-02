@@ -160,12 +160,12 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 10,
   },
   tagText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "500",
   },
 });

@@ -12,7 +12,10 @@ export function IconButton({ name, size = 22, color = "#333", onPress }: Props) 
   return (
     <Pressable
       onPress={onPress}
+      hitSlop={8}
       style={({ pressed }) => [styles.button, { opacity: pressed ? 0.5 : 1 }]}
+      accessibilityRole="button"
+      accessibilityLabel={name}
     >
       <FontAwesome name={name} size={size} color={color} />
     </Pressable>
@@ -21,7 +24,10 @@ export function IconButton({ name, size = 22, color = "#333", onPress }: Props) 
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
-    borderRadius: 20,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 22,
   },
 });

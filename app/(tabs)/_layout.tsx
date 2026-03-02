@@ -39,7 +39,10 @@ export default function TabLayout() {
           headerRight: () => (
             <Pressable
               onPress={() => router.push("/search")}
-              style={{ marginRight: 16 }}
+              hitSlop={8}
+              style={{ marginRight: 16, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
+              accessibilityLabel="Search"
+              accessibilityRole="button"
             >
               <FontAwesome name="search" size={20} color={colors.text} />
             </Pressable>
@@ -54,8 +57,10 @@ export default function TabLayout() {
           headerLeft: () => (
             <Pressable
               onPress={() => router.push("/visit/new")}
-              style={{ marginLeft: 16 }}
+              style={{ marginLeft: 16, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
               hitSlop={8}
+              accessibilityLabel="Add visit"
+              accessibilityRole="button"
             >
               <FontAwesome name="plus" size={20} color={accentColor} />
             </Pressable>
@@ -63,8 +68,10 @@ export default function TabLayout() {
           headerRight: () => (
             <Pressable
               onPress={() => router.push("/search")}
-              style={{ marginRight: 16 }}
+              style={{ marginRight: 16, minWidth: 44, minHeight: 44, alignItems: "center", justifyContent: "center" }}
               hitSlop={8}
+              accessibilityLabel="Search"
+              accessibilityRole="button"
             >
               <FontAwesome name="search" size={20} color={colors.text} />
             </Pressable>

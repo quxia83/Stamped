@@ -114,7 +114,8 @@
     "category": "Category",
     "minRating": "Min Rating",
     "any": "Any",
-    "tags": "Tags"
+    "tags": "Tags",
+    "filtersActive": "Filters active"
   },
   "common": {
     "none": "None",
@@ -153,7 +154,8 @@
     "permissionNeeded": "Permission needed",
     "grantAccess": "Please grant access to continue.",
     "gallery": "Gallery",
-    "camera": "Camera"
+    "camera": "Camera",
+    "remove": "Remove photo"
   },
   "category": {
     "Food": "Food",

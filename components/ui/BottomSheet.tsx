@@ -1,4 +1,5 @@
 import { View, Modal, Pressable, StyleSheet } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/lib/constants";
 
 type Props = {
@@ -8,12 +9,13 @@ type Props = {
 };
 
 export function BottomSheet({ visible, onClose, children }: Props) {
+  const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
         <View />
       </Pressable>
-      <View style={styles.sheet}>
+      <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 20) + 20 }]}>
         <View style={styles.handle} />
         {children}
       </View>
@@ -31,7 +33,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
-    paddingBottom: 40,
     maxHeight: "60%",
   },
   handle: {

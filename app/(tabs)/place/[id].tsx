@@ -7,6 +7,7 @@ import { getPlaceWithStats, deletePlace } from "@/db/queries/places";
 import { getVisitsByPlaceId, deleteVisit } from "@/db/queries/visits";
 import { deletePhotosForVisit } from "@/db/queries/photos";
 import { useTranslation } from "react-i18next";
+import * as Haptics from "expo-haptics";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
@@ -47,6 +48,7 @@ export default function PlaceDetailScreen() {
   };
 
   const handleDeletePlace = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
     const placeId = parseInt(id!);
     const hasVisits = placeVisits.length > 0;
     const message = hasVisits
@@ -79,7 +81,7 @@ export default function PlaceDetailScreen() {
         options={{
           title: place.name,
           headerRight: () => (
-            <IconButton name="trash" color={accentColor} onPress={handleDeletePlace} />
+            <IconButton name="trash" color={colors.destructive} onPress={handleDeletePlace} />
           ),
         }}
       />
