@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Splash icon: stamp motif centered, no background -->
+
+  <!-- Outer dashed stamp ring -->
+  <circle cx="512" cy="460" r="300" fill="none" stroke="#e94560" stroke-width="42" stroke-dasharray="94 47" transform="rotate(-15, 512, 460)"/>
+
+  <!-- Inner filled circle -->
+  <circle cx="512" cy="460" r="194" fill="#e94560"/>
+
+  <!-- Checkmark inside circle -->
+  <polyline points="422,460 488,526 606,388" fill="none" stroke="#ffffff" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Pin tail -->
+  <polygon points="458,634 512,800 566,634" fill="#e94560"/>
+</svg>

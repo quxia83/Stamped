@@ -1,22 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <!-- Background -->
-  <rect width="1024" height="1024" rx="224" fill="#1a1a2e"/>
+  <!-- Background: no rounded corners — iOS applies its own superellipse mask -->
+  <rect width="1024" height="1024" fill="#e94560"/>
 
-  <!-- Outer circle ring -->
-  <circle cx="512" cy="460" r="280" fill="none" stroke="#e94560" stroke-width="40" stroke-dasharray="88 44" transform="rotate(-15, 512, 460)"/>
+  <!-- Outer dashed stamp ring -->
+  <circle cx="512" cy="480" r="300" fill="none" stroke="#ffffff" stroke-width="42" stroke-dasharray="94 47" transform="rotate(-15, 512, 480)"/>
 
   <!-- Inner filled circle -->
-  <circle cx="512" cy="460" r="180" fill="#e94560"/>
+  <circle cx="512" cy="480" r="194" fill="#ffffff"/>
 
-  <!-- Star in center -->
-  <polygon points="512,320 545,410 640,410 563,465 590,555 512,500 434,555 461,465 384,410 479,410" fill="#1a1a2e"/>
-
-  <!-- Map pin drop shadow hint -->
-  <ellipse cx="512" cy="800" rx="120" ry="24" fill="#e94560" opacity="0.25"/>
+  <!-- Checkmark inside circle -->
+  <polyline points="420,480 488,548 604,412" fill="none" stroke="#e94560" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/>
 
   <!-- Pin tail -->
-  <polygon points="462,620 512,780 562,620" fill="#e94560"/>
+  <polygon points="458,654 512,820 566,654" fill="#ffffff"/>
 
-  <!-- STAMPED text -->
-  <text x="512" y="940" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="100" letter-spacing="12" fill="#ffffff">STAMPED</text>
+  <!-- Map pin drop shadow hint -->
+  <ellipse cx="512" cy="840" rx="110" ry="22" fill="#ffffff" opacity="0.2"/>
 </svg>
