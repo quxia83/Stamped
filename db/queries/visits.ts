@@ -114,7 +114,7 @@ export async function getFilteredVisits(filters: VisitFilters) {
   }
   if (filters.searchQuery) {
     const q = `%${filters.searchQuery}%`;
-    conditions.push(or(like(places.name, q), like(visits.notes, q)));
+    conditions.push(or(like(places.name, q), like(visits.notes, q), like(categories.name, q)));
   }
 
   const orderByMap = {

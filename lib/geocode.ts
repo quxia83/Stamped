@@ -1,3 +1,5 @@
+import Constants from "expo-constants";
+
 export type PlaceResult = {
   name: string;
   displayName: string;
@@ -12,51 +14,70 @@ type LocationBias = {
   longitudeDelta: number;
 };
 
+const GOOGLE_PLACES_API_KEY =
+  Constants.expoConfig?.extra?.googlePlacesApiKey ?? "";
+
 export async function searchPlaces(
   query: string,
   bias?: LocationBias
 ): Promise<PlaceResult[]> {
-  // Try Photon first (better fuzzy matching & native proximity ranking)
-  const photonResults = await searchPhoton(query, bias);
-  if (photonResults.length > 0) return photonResults;
+  // Try Google Places first (best business/POI search)
+  if (GOOGLE_PLACES_API_KEY && GOOGLE_PLACES_API_KEY !== "REPLACE_WITH_YOUR_GOOGLE_PLACES_API_KEY") {
+    const googleResults = await searchGooglePlaces(query, bias);
+    if (googleResults.length > 0) return googleResults;
+  }
 
-  // Fall back to Nominatim if Photon returns nothing
+  // Fall back to Nominatim
   return searchNominatim(query, bias);
 }
 
-async function searchPhoton(
+async function searchGooglePlaces(
   query: string,
   bias?: LocationBias
 ): Promise<PlaceResult[]> {
-  const params: Record<string, string> = {
-    q: query,
-    limit: "8",
+  const body: Record<string, any> = {
+    textQuery: query,
+    maxResultCount: 8,
   };
 
   if (bias) {
-    params.lat = bias.latitude.toFixed(6);
-    params.lon = bias.longitude.toFixed(6);
-    params.zoom = "10"; // city-level bias (~50-100 mile radius)
+    // Convert map deltas to approximate radius in meters
+    const radiusMeters = Math.max(
+      bias.latitudeDelta * 111_320,
+      bias.longitudeDelta * 111_320 * Math.cos(bias.latitude * (Math.PI / 180))
+    );
+    body.locationBias = {
+      circle: {
+        center: { latitude: bias.latitude, longitude: bias.longitude },
+        radius: Math.min(radiusMeters, 50_000), // cap at 50km
+      },
+    };
   }
 
-  const url = `https://photon.komoot.io/api?${new URLSearchParams(params)}`;
-
   try {
-    const res = await fetch(url);
+    const res = await fetch(
+      "https://places.googleapis.com/v1/places:searchText",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
+          "X-Goog-FieldMask":
+            "places.displayName,places.formattedAddress,places.location",
+        },
+        body: JSON.stringify(body),
+      }
+    );
+
     if (!res.ok) return [];
 
     const data = await res.json();
-    return (data.features ?? []).map((f: any) => {
-      const props = f.properties ?? {};
-      const [lng, lat] = f.geometry?.coordinates ?? [0, 0];
-      const parts = [props.street, props.city, props.state, props.country].filter(Boolean);
-      return {
-        name: props.name || parts[0] || "Unknown",
-        displayName: parts.join(", ") || props.name || "Unknown",
-        latitude: lat,
-        longitude: lng,
-      };
-    });
+    return (data.places ?? []).map((place: any) => ({
+      name: place.displayName?.text ?? "Unknown",
+      displayName: place.formattedAddress ?? place.displayName?.text ?? "Unknown",
+      latitude: place.location?.latitude ?? 0,
+      longitude: place.location?.longitude ?? 0,
+    }));
   } catch {
     return [];
   }
