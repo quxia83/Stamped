@@ -97,7 +97,19 @@ export default function VisitDetailScreen() {
     router.navigate("/(tabs)/list");
   };
 
-  if (!visit) return null;
+  if (!visit) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "" }} />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+          <Text style={{ fontSize: 16, color: colors.textSecondary, marginBottom: 16 }}>{t("visit.notFound", { defaultValue: "Visit not found" })}</Text>
+          <Pressable onPress={() => router.back()}>
+            <Text style={{ fontSize: 16, color: colors.accent }}>{t("common.goBack", { defaultValue: "Go Back" })}</Text>
+          </Pressable>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>

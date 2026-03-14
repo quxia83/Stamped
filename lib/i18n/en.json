@@ -158,11 +158,11 @@
     "remove": "Remove photo"
   },
   "category": {
-    "Food": "Food",
+    "Restaurant": "Restaurant",
     "Cafe": "Cafe",
     "Bar": "Bar",
     "Shopping": "Shopping",
-    "Entertainment": "Entertainment",
+    "Event": "Event",
     "Travel": "Travel",
     "Other": "Other",
     "Health": "Health"

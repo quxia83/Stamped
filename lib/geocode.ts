@@ -17,6 +17,11 @@ type LocationBias = {
 const GOOGLE_PLACES_API_KEY =
   Constants.expoConfig?.extra?.googlePlacesApiKey ?? "";
 
+export type SearchResult = {
+  places: PlaceResult[];
+  error?: string;
+};
+
 export async function searchPlaces(
   query: string,
   bias?: LocationBias

@@ -1,6 +1,6 @@
 import { db } from "@/db/client";
-import { categories } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { categories, places } from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 export function getAllCategories() {
   return db.select().from(categories);
@@ -18,6 +18,7 @@ export function updateCategory(id: number, name: string, icon: string) {
   return db.update(categories).set({ name, icon }).where(eq(categories.id, id));
 }
 
-export function deleteCategory(id: number) {
-  return db.delete(categories).where(eq(categories.id, id));
+export async function deleteCategory(id: number) {
+  await db.update(places).set({ categoryId: null }).where(eq(places.categoryId, id));
+  await db.delete(categories).where(eq(categories.id, id));
 }

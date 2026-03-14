@@ -55,7 +55,7 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
       const filename = `${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
       const source = new File(asset.uri);
       const dest = new File(PHOTO_DIR, filename);
-      source.copy(dest);
+      await source.copy(dest);
       onAdd(filename); // store just the filename, not the absolute path
     }
   };

@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Chip } from "@/components/ui/Chip";
 import { getAllCategories } from "@/db/queries/categories";
 
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function CategoryPicker({ selectedId, onSelect }: Props) {
+  const { t } = useTranslation();
   const [cats, setCats] = useState<Category[]>([]);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function CategoryPicker({ selectedId, onSelect }: Props) {
       {cats.map((cat) => (
         <Chip
           key={cat.id}
-          label={`${cat.icon} ${cat.name}`}
+          label={`${cat.icon} ${t(`category.${cat.name}`, { defaultValue: cat.name })}`}
           selected={selectedId === cat.id}
           onPress={() => onSelect(cat.id)}
         />

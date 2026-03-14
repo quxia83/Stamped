@@ -1,6 +1,6 @@
 import { db } from "@/db/client";
 import { places, categories, visits } from "@/db/schema";
-import { eq, sql, like } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export function getAllPlaces() {
   return db
@@ -64,7 +64,7 @@ export function findPlaceByName(name: string) {
   return db
     .select({ id: places.id })
     .from(places)
-    .where(like(places.name, name))
+    .where(eq(places.name, name))
     .limit(1);
 }
 
@@ -94,16 +94,13 @@ export function updatePlace(
   return db.update(places).set(data).where(eq(places.id, id));
 }
 
-export function deletePlace(id: number) {
-  return db.delete(places).where(eq(places.id, id));
+export async function deletePlace(id: number) {
+  await db.delete(visits).where(eq(visits.placeId, id));
+  await db.delete(places).where(eq(places.id, id));
 }
 
 export async function deleteOrphanPlace(placeId: number) {
-  const [row] = await db
-    .select({ count: sql<number>`count(${visits.id})` })
-    .from(visits)
-    .where(eq(visits.placeId, placeId));
-  if (row && row.count === 0) {
-    await db.delete(places).where(eq(places.id, placeId));
-  }
+  await db.delete(places).where(
+    sql`${places.id} = ${placeId} AND NOT EXISTS (SELECT 1 FROM ${visits} WHERE ${visits.placeId} = ${placeId})`
+  );
 }

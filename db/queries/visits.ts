@@ -100,7 +100,7 @@ export async function getFilteredVisits(filters: VisitFilters) {
   if (filters.categoryId) {
     conditions.push(eq(places.categoryId, filters.categoryId));
   }
-  if (filters.minRating) {
+  if (filters.minRating !== undefined) {
     conditions.push(gte(visits.rating, filters.minRating));
   }
   if (filters.whoPaidId) {
@@ -152,23 +152,22 @@ export async function getFilteredVisits(filters: VisitFilters) {
     .leftJoin(categories, eq(places.categoryId, categories.id))
     .leftJoin(people, eq(visits.whoPaidId, people.id));
 
-  if (conditions.length > 0) {
-    query = query.where(and(...conditions)) as typeof query;
-  }
-
-  let results = await query.orderBy(sortFn(sortField));
-
-  // Filter by tags post-query if needed
+  // Filter by tags — pre-query tag IDs then add as SQL condition
   if (filters.tagIds && filters.tagIds.length > 0) {
     const taggedVisitIds = await db
       .selectDistinct({ visitId: visitTags.visitId })
       .from(visitTags)
       .where(inArray(visitTags.tagId, filters.tagIds));
-    const idSet = new Set(taggedVisitIds.map((r) => r.visitId));
-    results = results.filter((v) => idSet.has(v.id));
+    const ids = taggedVisitIds.map((r) => r.visitId);
+    if (ids.length === 0) return [];
+    conditions.push(inArray(visits.id, ids));
   }
 
-  return results;
+  if (conditions.length > 0) {
+    query = query.where(and(...conditions)) as typeof query;
+  }
+
+  return query.orderBy(sortFn(sortField));
 }
 
 export function insertVisit(data: {

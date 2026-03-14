@@ -135,6 +135,7 @@ export default function NewVisitScreen() {
     setExistingPlaceId(visit.placeId);
     setLat(visit.placeLatitude ?? 0);
     setLng(visit.placeLongitude ?? 0);
+    setAddressManuallyEdited(false);
 
     const visitTags = await getTagsForVisit(visitId);
     setSelectedTags(visitTags.map((t) => t.id));
@@ -193,6 +194,7 @@ export default function NewVisitScreen() {
             longitude: placeLng,
             categoryId,
           });
+          if (!place) throw new Error("Failed to create place");
           placeId = place.id;
         }
       }
@@ -208,10 +210,10 @@ export default function NewVisitScreen() {
       }
 
       const visitData = {
-        placeId: placeId!,
+        placeId: placeId as number,
         date: format(date, "yyyy-MM-dd"),
         rating: rating || undefined,
-        cost: cost ? parseFloat(cost) : undefined,
+        cost: cost ? (isNaN(parseFloat(cost)) ? undefined : parseFloat(cost)) : undefined,
         currency,
         whoPaidId,
         priceLevel,

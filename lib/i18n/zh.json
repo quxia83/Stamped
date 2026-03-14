@@ -158,11 +158,11 @@
     "remove": "移除照片"
   },
   "category": {
-    "Food": "美食",
+    "Restaurant": "餐厅",
     "Cafe": "咖啡",
     "Bar": "酒吧",
     "Shopping": "购物",
-    "Entertainment": "娱乐",
+    "Event": "活动",
     "Travel": "旅行",
     "Other": "其他",
     "Health": "健康"

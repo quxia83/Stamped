@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useFocusEffect, useRouter } from "expo-router";
 import {
   startOfWeek,
@@ -55,25 +55,33 @@ export default function StatsTab() {
     return { dateFrom: format(customFrom, "yyyy-MM-dd"), dateTo: format(customTo, "yyyy-MM-dd") };
   }, [range, customFrom, customTo]);
 
+  const [focused, setFocused] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
-      const load = async () => {
-        const { dateFrom, dateTo } = getDateRange();
-        const [overallResult] = await getOverallStats(dateFrom, dateTo);
-        setOverall(overallResult ?? null);
-
-        const catResults = await getStatsByCategory(dateFrom, dateTo);
-        setByCategory(catResults);
-
-        const timeResults = await getStatsByTimePeriod("month", dateFrom, dateTo);
-        setByTime(timeResults);
-
-        const topResults = await getTopPlaces(5, dateFrom, dateTo);
-        setTopPlaces(topResults);
-      };
-      load();
-    }, [getDateRange])
+      setFocused(true);
+      return () => setFocused(false);
+    }, [])
   );
+
+  useEffect(() => {
+    if (!focused) return;
+    const load = async () => {
+      const { dateFrom, dateTo } = getDateRange();
+      const [overallResult] = await getOverallStats(dateFrom, dateTo);
+      setOverall(overallResult ?? null);
+
+      const catResults = await getStatsByCategory(dateFrom, dateTo);
+      setByCategory(catResults);
+
+      const timeResults = await getStatsByTimePeriod("month", dateFrom, dateTo);
+      setByTime(timeResults);
+
+      const topResults = await getTopPlaces(5, dateFrom, dateTo);
+      setTopPlaces(topResults);
+    };
+    load();
+  }, [focused, getDateRange]);
 
   const chips: { key: TimeRange; label: string }[] = [
     { key: "all", label: t("stats.allTime") },
@@ -163,7 +171,7 @@ export default function StatsTab() {
             />
             <StatBlock
               label={t("stats.totalSpent")}
-              value={overall.totalSpent ? `$${Number(overall.totalSpent).toFixed(0)}` : "$0"}
+              value={overall.totalSpent ? Number(overall.totalSpent).toFixed(0) : "0"}
             />
           </View>
         </View>
@@ -189,7 +197,7 @@ export default function StatsTab() {
                 {t("stats.visitCount", { count: cat.visitCount })}
               </Text>
               <Text style={[styles.catStat, { color: accentColor }]}>
-                ${Number(cat.totalSpent ?? 0).toFixed(0)}
+                {Number(cat.totalSpent ?? 0).toFixed(0)}
               </Text>
               <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
             </Pressable>
@@ -218,7 +226,7 @@ export default function StatsTab() {
                 {t("stats.visitCount", { count: tm.visitCount })}
               </Text>
               <Text style={[styles.catStat, { color: accentColor }]}>
-                ${Number(tm.totalSpent ?? 0).toFixed(0)}
+                {Number(tm.totalSpent ?? 0).toFixed(0)}
               </Text>
               <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
             </Pressable>

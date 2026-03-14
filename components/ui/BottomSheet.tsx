@@ -1,4 +1,4 @@
-import { View, Modal, Pressable, StyleSheet } from "react-native";
+import { View, Modal, Pressable, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "@/lib/constants";
 
@@ -17,7 +17,9 @@ export function BottomSheet({ visible, onClose, children }: Props) {
       </Pressable>
       <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 20) + 20 }]}>
         <View style={styles.handle} />
-        {children}
+        <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+          {children}
+        </ScrollView>
       </View>
     </Modal>
   );

@@ -5,17 +5,20 @@ import migrations from "@/drizzle/migrations";
 import { seedDatabase } from "@/db/seed";
 
 export function useDatabase() {
-  const { success, error } = useMigrations(db, migrations);
+  const { success, error: dbError } = useMigrations(db, migrations);
   const [seeded, setSeeded] = useState(false);
+  const [seedError, setSeedError] = useState<Error | null>(null);
 
   useEffect(() => {
     if (success) {
-      seedDatabase().then(() => setSeeded(true));
+      seedDatabase()
+        .then(() => setSeeded(true))
+        .catch((e) => setSeedError(e instanceof Error ? e : new Error(String(e))));
     }
   }, [success]);
 
   return {
     isReady: success && seeded,
-    error,
+    error: dbError ?? seedError,
   };
 }

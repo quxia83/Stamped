@@ -22,6 +22,7 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("");
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const [places, setPlaces] = useState<PlaceResult[]>([]);
+  const [searchError, setSearchError] = useState(false);
   const region = useMapStore((s) => s.region);
   const setSearchPin = useMapStore((s) => s.setSearchPin);
   const accentColor = useThemeStore((s) => s.accentColor);
@@ -31,22 +32,28 @@ export default function SearchScreen() {
     if (!q.trim()) {
       setVisits([]);
       setPlaces([]);
+      setSearchError(false);
       return;
     }
 
-    const [raw, placeResults] = await Promise.all([
-      getFilteredVisits({ searchQuery: q }),
-      searchPlaces(q, region),
-    ]);
+    try {
+      setSearchError(false);
+      const [raw, placeResults] = await Promise.all([
+        getFilteredVisits({ searchQuery: q }),
+        searchPlaces(q, region),
+      ]);
 
-    const enriched = await Promise.all(
-      raw.map(async (v) => {
-        const tags = await getTagsForVisit(v.id);
-        return { ...v, tags };
-      })
-    );
-    setVisits(enriched);
-    setPlaces(placeResults);
+      const enriched = await Promise.all(
+        raw.map(async (v) => {
+          const tags = await getTagsForVisit(v.id);
+          return { ...v, tags };
+        })
+      );
+      setVisits(enriched);
+      setPlaces(placeResults);
+    } catch {
+      setSearchError(true);
+    }
   }, [region]);
 
   useEffect(() => {
@@ -137,7 +144,13 @@ export default function SearchScreen() {
           </>
         }
         ListEmptyComponent={
-          query && !hasResults ? (
+          searchError ? (
+            <EmptyState
+              icon="exclamation-circle"
+              title={t("search.errorTitle", { defaultValue: "Search failed" })}
+              message={t("search.errorMessage", { defaultValue: "Check your internet connection and try again." })}
+            />
+          ) : query && !hasResults ? (
             <EmptyState
               icon="search"
               title={t("search.noResultsTitle")}

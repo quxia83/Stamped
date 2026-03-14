@@ -73,7 +73,17 @@ export default function PlaceDetailScreen() {
     ]);
   };
 
-  if (!place) return null;
+  if (!place) {
+    return (
+      <>
+        <Stack.Screen options={{ title: "" }} />
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
+          <Text style={{ fontSize: 16, color: colors.textSecondary, marginBottom: 16 }}>{t("place.notFound", { defaultValue: "Place not found" })}</Text>
+          <Button title={t("common.goBack", { defaultValue: "Go Back" })} onPress={() => router.back()} />
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
@@ -101,16 +111,18 @@ export default function PlaceDetailScreen() {
                   </Text>
                 </Pressable>
               )}
-              <Pressable
-                onPress={() => {
-                  if (place.categoryId) {
-                    setFilter("categoryId", place.categoryId);
+              {place.categoryId ? (
+                <Pressable
+                  onPress={() => {
+                    setFilter("categoryId", place.categoryId!);
                     router.navigate("/(tabs)/list");
-                  }
-                }}
-              >
-                <Text style={[styles.category, { color: accentColor }]}>{place.categoryName ? t(`category.${place.categoryName}`, { defaultValue: place.categoryName }) : t("place.other")}</Text>
-              </Pressable>
+                  }}
+                >
+                  <Text style={[styles.category, { color: accentColor }]}>{t(`category.${place.categoryName}`, { defaultValue: place.categoryName ?? "" })}</Text>
+                </Pressable>
+              ) : (
+                <Text style={[styles.category, { color: colors.textSecondary }]}>{t("place.other")}</Text>
+              )}
             </View>
 
             {/* Stats */}

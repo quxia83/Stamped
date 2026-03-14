@@ -1,5 +1,5 @@
 import { FlatList, StyleSheet } from "react-native";
-import { useEffect, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useFocusEffect } from "expo-router";
 import { VisitCard } from "@/components/visit/VisitCard";
@@ -24,49 +24,42 @@ export default function ListTab() {
 
   useFocusEffect(
     useCallback(() => {
+      let cancelled = false;
+
+      async function load() {
+        const raw = await getFilteredVisits(filters);
+        const enriched = await Promise.all(
+          raw.map(async (v) => {
+            const tags = await getTagsForVisit(v.id);
+            const photos = await getPhotosForVisit(v.id);
+            return {
+              ...v,
+              tags,
+              thumbnail: photos[0] ? resolvePhotoUri(photos[0].uri) : undefined,
+            };
+          })
+        );
+        if (!cancelled) setVisits(enriched);
+      }
+
+      load();
       return () => {
+        cancelled = true;
         clearFilters();
       };
-    }, [clearFilters])
+    }, [
+      clearFilters,
+      filters.sortField,
+      filters.sortOrder,
+      filters.categoryId,
+      filters.tagIds,
+      filters.minRating,
+      filters.whoPaidId,
+      filters.dateFrom,
+      filters.dateTo,
+      filters.searchQuery,
+    ])
   );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      const raw = await getFilteredVisits(filters);
-      const enriched = await Promise.all(
-        raw.map(async (v) => {
-          const tags = await getTagsForVisit(v.id);
-          const photos = await getPhotosForVisit(v.id);
-          return {
-            ...v,
-            tags,
-            thumbnail: photos[0] ? resolvePhotoUri(photos[0].uri) : undefined,
-          };
-        })
-      );
-      if (!cancelled) setVisits(enriched);
-    }
-
-    load();
-    // Re-run on filter changes — using a simple interval for reactivity
-    const interval = setInterval(load, 2000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [
-    filters.sortField,
-    filters.sortOrder,
-    filters.categoryId,
-    filters.tagIds,
-    filters.minRating,
-    filters.whoPaidId,
-    filters.dateFrom,
-    filters.dateTo,
-    filters.searchQuery,
-  ]);
 
   return (
     <>
