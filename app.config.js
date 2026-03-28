@@ -1,0 +1,85 @@
+export default {
+  expo: {
+    name: "stamped",
+    slug: "stamped",
+    version: "1.2.1",
+    orientation: "portrait",
+    icon: "./assets/images/icon.png",
+    scheme: "stamped",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    splash: {
+      image: "./assets/images/splash-icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#ffffff",
+    },
+    locales: {
+      en: "./lib/i18n/en.json",
+      zh: "./lib/i18n/zh.json",
+    },
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: "com.stamped.app",
+      buildNumber: "15",
+      infoPlist: {
+        NSLocationWhenInUseUsageDescription:
+          "We need your location to show you on the map.",
+        NSCameraUsageDescription: "Take photos of places you visit.",
+        NSPhotoLibraryUsageDescription: "Attach photos to your visits.",
+        ITSAppUsesNonExemptEncryption: false,
+      },
+    },
+    android: {
+      package: "com.stamped.app",
+      adaptiveIcon: {
+        foregroundImage: "./assets/images/adaptive-icon.png",
+        backgroundColor: "#ffffff",
+      },
+      edgeToEdgeEnabled: true,
+      predictiveBackGestureEnabled: false,
+      permissions: [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+      ],
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/images/favicon.png",
+    },
+    plugins: [
+      "expo-router",
+      "expo-sqlite",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          photosPermission:
+            "Allow Stamped to access your photos to attach them to visits.",
+          cameraPermission:
+            "Allow Stamped to use the camera to take photos of places.",
+        },
+      ],
+      [
+        "expo-location",
+        {
+          locationWhenInUsePermission:
+            "Allow Stamped to access your location to show you on the map.",
+        },
+      ],
+      "expo-localization",
+    ],
+    experiments: {
+      typedRoutes: true,
+    },
+    extra: {
+      router: {},
+      eas: {
+        projectId: "1afa64e0-2a36-49ff-9acb-3244c86d673f",
+      },
+      googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY ?? "",
+    },
+    owner: "momodream",
+  },
+};
