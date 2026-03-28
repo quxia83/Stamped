@@ -40,15 +40,18 @@ export function PlaceMarker({
       anchor={{ x: 0.5, y: 1 }}
       tracksViewChanges={tracksViewChanges}
     >
-      {/* Custom pin view */}
+      {/* Apple Maps–style teardrop pin */}
       <View style={styles.pinWrapper}>
         <View style={styles.label}>
           <Text style={styles.labelText} numberOfLines={1}>{name}</Text>
         </View>
-        <View style={[styles.bubble, { backgroundColor: pinColor }]}>
-          <Text style={styles.emoji}>{categoryIcon ?? "📍"}</Text>
+        <View style={styles.pinContainer}>
+          <View style={[styles.pinHead, { backgroundColor: pinColor }]}>
+            <Text style={styles.emoji}>{categoryIcon ?? "📍"}</Text>
+          </View>
+          <View style={[styles.pinTail, { backgroundColor: pinColor }]} />
+          <View style={styles.pinDot} />
         </View>
-        <View style={[styles.tail, { borderTopColor: pinColor }]} />
       </View>
 
       <Callout onPress={() => onCalloutPress(id)}>
@@ -67,8 +70,8 @@ export function PlaceMarker({
   );
 }
 
-const BUBBLE = 42;
-const TAIL = 10;
+const PIN_SIZE = 36;
+const TAIL_SIZE = 14;
 
 const styles = StyleSheet.create({
   pinWrapper: {
@@ -79,11 +82,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 7,
     paddingVertical: 3,
-    marginBottom: 5,
+    marginBottom: 4,
     maxWidth: 120,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.15,
     shadowRadius: 2,
     elevation: 3,
   },
@@ -93,33 +96,44 @@ const styles = StyleSheet.create({
     color: "#1a1a2e",
     textAlign: "center",
   },
-  bubble: {
-    width: BUBBLE,
-    height: BUBBLE,
-    borderRadius: BUBBLE / 2,
+  pinContainer: {
+    alignItems: "center",
+    width: PIN_SIZE + 4,
+    height: PIN_SIZE + TAIL_SIZE + 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.5,
+    elevation: 8,
+  },
+  pinHead: {
+    width: PIN_SIZE,
+    height: PIN_SIZE,
+    borderRadius: PIN_SIZE / 2,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2.5,
     borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 6,
+    zIndex: 2,
   },
   emoji: {
-    fontSize: 20,
+    fontSize: 17,
   },
-  tail: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: TAIL / 2,
-    borderRightWidth: TAIL / 2,
-    borderTopWidth: TAIL,
-    borderLeftColor: "transparent",
-    borderRightColor: "transparent",
-    // borderTopColor set dynamically
-    marginTop: -1,
+  pinTail: {
+    width: TAIL_SIZE,
+    height: TAIL_SIZE,
+    transform: [{ rotate: "45deg" }],
+    borderRadius: 2,
+    marginTop: -(TAIL_SIZE / 2) - 1,
+    zIndex: 1,
+  },
+  pinDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "rgba(0,0,0,0.2)",
+    marginTop: 2,
+    zIndex: 0,
   },
   callout: {
     flexDirection: "row",
