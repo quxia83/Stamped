@@ -1,32 +1,61 @@
 import "@/lib/i18n";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import {
+  DefaultTheme,
+  DarkTheme,
+  ThemeProvider as NavThemeProvider,
+} from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { ActivityIndicator, View, Text } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useDatabase } from "@/hooks/useDatabase";
 import { useTranslation } from "react-i18next";
-import { useThemeStore } from "@/stores/useThemeStore";
-import { colors } from "@/lib/constants";
+import { ThemeProvider, useTheme } from "@/theme";
 
 export { ErrorBoundary } from "expo-router";
 
-export const unstable_settings = {
-  initialRouteName: "(tabs)",
-};
+export const unstable_settings = { initialRouteName: "(tabs)" };
 
 SplashScreen.preventAutoHideAsync();
 
+function RootNavigator() {
+  const theme = useTheme();
+  const navTheme = theme.scheme === "dark" ? DarkTheme : DefaultTheme;
+  const navThemeWithAccent = {
+    ...navTheme,
+    colors: {
+      ...navTheme.colors,
+      primary: theme.colors.accent,
+      background: theme.colors.background,
+      card: theme.colors.surface,
+      text: theme.colors.text,
+      border: theme.colors.border,
+    },
+  };
+  return (
+    <NavThemeProvider value={navThemeWithAccent}>
+      <Stack
+        screenOptions={{
+          headerTintColor: theme.colors.accent,
+          headerStyle: { backgroundColor: theme.colors.surface },
+          contentStyle: { backgroundColor: theme.colors.background },
+        }}
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Stamped" }} />
+      </Stack>
+    </NavThemeProvider>
+  );
+}
+
 export default function RootLayout() {
   const { t } = useTranslation();
-  const accentColor = useThemeStore((s) => s.accentColor);
   const [fontsLoaded, fontError] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
-
   const { isReady: dbReady, error: dbError } = useDatabase();
 
   useEffect(() => {
@@ -34,9 +63,7 @@ export default function RootLayout() {
   }, [fontError]);
 
   useEffect(() => {
-    if (fontsLoaded && dbReady) {
-      SplashScreen.hideAsync();
-    }
+    if (fontsLoaded && dbReady) SplashScreen.hideAsync();
   }, [fontsLoaded, dbReady]);
 
   if (dbError) {
@@ -50,25 +77,16 @@ export default function RootLayout() {
   if (!fontsLoaded || !dbReady) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={colors.accent} />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
 
-  const theme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: accentColor,
-      background: colors.background,
-    },
-  };
-
   return (
-    <ThemeProvider value={theme}>
-      <Stack screenOptions={{ headerBackTitleVisible: false, headerTintColor: accentColor }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Stamped" }} />
-      </Stack>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <RootNavigator />
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
