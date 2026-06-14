@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, Platform } from "react-native";
+import { View, Text, ScrollView, Pressable, Platform, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState, useCallback, useEffect } from "react";
@@ -354,7 +354,7 @@ const useStyles = makeStyles((t) => ({
     borderRadius: t.radius.md,
     padding: t.spacing.lg,
     marginBottom: t.spacing.md,
-    borderWidth: 0.5,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: t.colors.border,
   },
   cardTitle: {
@@ -375,7 +375,7 @@ const useStyles = makeStyles((t) => ({
     alignItems: "center",
     paddingVertical: t.spacing.sm,
     gap: 10,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: t.colors.border,
   },
   rowPressed: {

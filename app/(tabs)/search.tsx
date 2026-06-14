@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -187,7 +187,7 @@ const useStyles = makeStyles((t) => ({
     alignItems: "center",
     paddingHorizontal: t.spacing.lg,
     paddingVertical: t.spacing.md,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: t.colors.border,
   },
   placeIcon: {
