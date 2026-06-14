@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from "react-native";
+import { View, Text, ScrollView, Pressable, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState, useCallback, useEffect } from "react";
@@ -18,8 +18,8 @@ import {
   getTopPlaces,
 } from "@/db/queries/stats";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
+import { Skeleton } from "@/components/ui/Skeleton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type TimeRange = "all" | "week" | "month" | "year" | "custom";
@@ -31,10 +31,11 @@ type TopPlace = { placeId: number | null; name: string | null; categoryIcon: str
 
 export default function StatsTab() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
   const resetFilters = useFilterStore((s) => s.resetFilters);
-  const accentColor = useThemeStore((s) => s.accentColor);
   const [range, setRange] = useState<TimeRange>("all");
   const [overall, setOverall] = useState<OverallStats | null>(null);
   const [byCategory, setByCategory] = useState<CategoryStat[]>([]);
@@ -44,6 +45,7 @@ export default function StatsTab() {
   const [customTo, setCustomTo] = useState(() => new Date());
   const [showFromPicker, setShowFromPicker] = useState(false);
   const [showToPicker, setShowToPicker] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const getDateRange = useCallback((): { dateFrom?: string; dateTo?: string } => {
     const now = new Date();
@@ -66,6 +68,7 @@ export default function StatsTab() {
 
   useEffect(() => {
     if (!focused) return;
+    setLoading(true);
     const load = async () => {
       const { dateFrom, dateTo } = getDateRange();
       const [overallResult] = await getOverallStats(dateFrom, dateTo);
@@ -80,7 +83,7 @@ export default function StatsTab() {
       const topResults = await getTopPlaces(5, dateFrom, dateTo);
       setTopPlaces(topResults);
     };
-    load();
+    load().finally(() => setLoading(false));
   }, [focused, getDateRange]);
 
   const chips: { key: TimeRange; label: string }[] = [
@@ -92,13 +95,17 @@ export default function StatsTab() {
   ];
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      contentInsetAdjustmentBehavior="automatic"
+    >
       {/* Time Range Chips */}
       <View style={styles.chipRow}>
         {chips.map((c) => (
           <Pressable
             key={c.key}
-            style={[styles.chip, range === c.key && { backgroundColor: accentColor, borderColor: accentColor }]}
+            style={[styles.chip, range === c.key && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }]}
             onPress={() => setRange(c.key)}
           >
             <Text style={[styles.chipText, range === c.key && styles.chipTextActive]}>
@@ -115,7 +122,7 @@ export default function StatsTab() {
             <View style={styles.dateField}>
               <Text style={styles.dateLabel}>{t("stats.from")}</Text>
               <Pressable
-                style={[styles.dateButton, showFromPicker && { borderColor: accentColor }]}
+                style={[styles.dateButton, showFromPicker && { borderColor: theme.colors.accent }]}
                 onPress={() => { setShowToPicker(false); setShowFromPicker(!showFromPicker); }}
               >
                 <Text style={styles.dateText}>{format(customFrom, "MMM d, yyyy")}</Text>
@@ -124,7 +131,7 @@ export default function StatsTab() {
             <View style={styles.dateField}>
               <Text style={styles.dateLabel}>{t("stats.to")}</Text>
               <Pressable
-                style={[styles.dateButton, showToPicker && { borderColor: accentColor }]}
+                style={[styles.dateButton, showToPicker && { borderColor: theme.colors.accent }]}
                 onPress={() => { setShowFromPicker(false); setShowToPicker(!showToPicker); }}
               >
                 <Text style={styles.dateText}>{format(customTo, "MMM d, yyyy")}</Text>
@@ -158,115 +165,130 @@ export default function StatsTab() {
         </View>
       )}
 
-      {/* Overview Card */}
-      {overall && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t("stats.overview")}</Text>
-          <View style={styles.statRow}>
-            <StatBlock label={t("stats.visits")} value={String(overall.totalVisits)} />
-            <StatBlock
-              label={t("stats.avgRating")}
-              value={overall.avgRating != null ? overall.avgRating.toFixed(1) : "—"}
-              icon="star"
-            />
-            <StatBlock
-              label={t("stats.totalSpent")}
-              value={overall.totalSpent ? Number(overall.totalSpent).toFixed(0) : "0"}
-            />
-          </View>
-        </View>
-      )}
-
-      {/* Category Breakdown */}
-      {byCategory.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t("stats.byCategory")}</Text>
-          {byCategory.map((cat, i) => (
-            <Pressable
-              key={cat.id ?? i}
-              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
-              onPress={() => {
-                resetFilters();
-                if (cat.id != null) setFilter("categoryId", cat.id);
-                router.navigate("/(tabs)/list");
-              }}
-            >
-              <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
-              <Text style={styles.catName}>{cat.name ? t(`category.${cat.name}`, { defaultValue: cat.name }) : t("stats.uncategorized")}</Text>
-              <Text style={styles.catStat}>
-                {t("stats.visitCount", { count: cat.visitCount })}
-              </Text>
-              <Text style={[styles.catStat, { color: accentColor }]}>
-                {Number(cat.totalSpent ?? 0).toFixed(0)}
-              </Text>
-              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
-            </Pressable>
+      {loading ? (
+        <>
+          {[0, 1, 2].map((i) => (
+            <View key={i} style={styles.card}>
+              <Skeleton width="40%" height={16} />
+              <Skeleton width="100%" height={48} style={{ marginTop: 12 }} />
+            </View>
           ))}
-        </View>
-      )}
+        </>
+      ) : (
+        <>
+          {/* Overview Card */}
+          {overall && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{t("stats.overview")}</Text>
+              <View style={styles.statRow}>
+                <StatBlock label={t("stats.visits")} value={String(overall.totalVisits)} />
+                <StatBlock
+                  label={t("stats.avgRating")}
+                  value={overall.avgRating != null ? overall.avgRating.toFixed(1) : "—"}
+                  icon="star"
+                />
+                <StatBlock
+                  label={t("stats.totalSpent")}
+                  value={overall.totalSpent ? Number(overall.totalSpent).toFixed(0) : "0"}
+                />
+              </View>
+            </View>
+          )}
 
-      {/* Time Trend */}
-      {byTime.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t("stats.monthlyTrend")}</Text>
-          {byTime.map((tm) => (
-            <Pressable
-              key={tm.period}
-              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
-              onPress={() => {
-                const d = parseISO(tm.period + "-01");
-                resetFilters();
-                setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
-                setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
-                router.navigate("/(tabs)/list");
-              }}
-            >
-              <Text style={styles.catName}>{tm.period}</Text>
-              <Text style={styles.catStat}>
-                {t("stats.visitCount", { count: tm.visitCount })}
-              </Text>
-              <Text style={[styles.catStat, { color: accentColor }]}>
-                {Number(tm.totalSpent ?? 0).toFixed(0)}
-              </Text>
-              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
-            </Pressable>
-          ))}
-        </View>
-      )}
+          {/* Category Breakdown */}
+          {byCategory.length > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{t("stats.byCategory")}</Text>
+              {byCategory.map((cat, i) => (
+                <Pressable
+                  key={cat.id ?? i}
+                  style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+                  onPress={() => {
+                    resetFilters();
+                    if (cat.id != null) setFilter("categoryId", cat.id);
+                    router.navigate("/(tabs)/list");
+                  }}
+                >
+                  <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
+                  <Text style={styles.catName}>{cat.name ? t(`category.${cat.name}`, { defaultValue: cat.name }) : t("stats.uncategorized")}</Text>
+                  <Text style={styles.catStat}>
+                    {t("stats.visitCount", { count: cat.visitCount })}
+                  </Text>
+                  <Text style={[styles.catStat, { color: theme.colors.accent }]}>
+                    {Number(cat.totalSpent ?? 0).toFixed(0)}
+                  </Text>
+                  <FontAwesome name="chevron-right" size={12} color={theme.colors.textSecondary} />
+                </Pressable>
+              ))}
+            </View>
+          )}
 
-      {/* Top Places */}
-      {topPlaces.length > 0 && (
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t("stats.topPlaces")}</Text>
-          {topPlaces.map((p, i) => (
-            <Pressable
-              key={p.placeId ?? i}
-              style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
-              onPress={() => p.placeId != null && router.push(`/place/${p.placeId}`)}
-            >
-              <Text style={styles.catIcon}>{p.categoryIcon ?? "📍"}</Text>
-              <Text style={styles.catName}>{p.name ?? t("stats.unknown")}</Text>
-              <Text style={styles.catStat}>{p.visitCount}x</Text>
-              {p.avgRating != null && (
-                <View style={styles.ratingBadge}>
-                  <FontAwesome name="star" size={12} color={colors.star} />
-                  <Text style={styles.ratingText}>{p.avgRating.toFixed(1)}</Text>
-                </View>
-              )}
-              <FontAwesome name="chevron-right" size={12} color={colors.textSecondary} />
-            </Pressable>
-          ))}
-        </View>
+          {/* Time Trend */}
+          {byTime.length > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{t("stats.monthlyTrend")}</Text>
+              {byTime.map((tm) => (
+                <Pressable
+                  key={tm.period}
+                  style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+                  onPress={() => {
+                    const d = parseISO(tm.period + "-01");
+                    resetFilters();
+                    setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
+                    setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
+                    router.navigate("/(tabs)/list");
+                  }}
+                >
+                  <Text style={styles.catName}>{tm.period}</Text>
+                  <Text style={styles.catStat}>
+                    {t("stats.visitCount", { count: tm.visitCount })}
+                  </Text>
+                  <Text style={[styles.catStat, { color: theme.colors.accent }]}>
+                    {Number(tm.totalSpent ?? 0).toFixed(0)}
+                  </Text>
+                  <FontAwesome name="chevron-right" size={12} color={theme.colors.textSecondary} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {/* Top Places */}
+          {topPlaces.length > 0 && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{t("stats.topPlaces")}</Text>
+              {topPlaces.map((p, i) => (
+                <Pressable
+                  key={p.placeId ?? i}
+                  style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
+                  onPress={() => p.placeId != null && router.push(`/place/${p.placeId}`)}
+                >
+                  <Text style={styles.catIcon}>{p.categoryIcon ?? "📍"}</Text>
+                  <Text style={styles.catName}>{p.name ?? t("stats.unknown")}</Text>
+                  <Text style={styles.catStat}>{p.visitCount}x</Text>
+                  {p.avgRating != null && (
+                    <View style={styles.ratingBadge}>
+                      <FontAwesome name="star" size={12} color={theme.colors.star} />
+                      <Text style={styles.ratingText}>{p.avgRating.toFixed(1)}</Text>
+                    </View>
+                  )}
+                  <FontAwesome name="chevron-right" size={12} color={theme.colors.textSecondary} />
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </>
       )}
     </ScrollView>
   );
 }
 
 function StatBlock({ label, value, icon }: { label: string; value: string; icon?: string }) {
+  const theme = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.statBlock}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-        {icon && <FontAwesome name={icon as any} size={16} color={colors.star} />}
+        {icon && <FontAwesome name={icon as any} size={16} color={theme.colors.star} />}
         <Text style={styles.statValue}>{value}</Text>
       </View>
       <Text style={styles.statLabel}>{label}</Text>
@@ -274,13 +296,13 @@ function StatBlock({ label, value, icon }: { label: string; value: string; icon?
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 16, paddingBottom: 40 },
+const useStyles = makeStyles((t) => ({
+  container: { flex: 1, backgroundColor: t.colors.background },
+  content: { padding: t.spacing.lg, paddingBottom: 40 },
   dateRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 16,
+    gap: t.spacing.md,
+    marginBottom: t.spacing.lg,
   },
   dateField: {
     flex: 1,
@@ -288,84 +310,84 @@ const styles = StyleSheet.create({
   dateLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: colors.textSecondary,
-    marginBottom: 4,
+    color: t.colors.textSecondary,
+    marginBottom: t.spacing.xs,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   dateButton: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
   },
   dateText: {
     fontSize: 15,
-    color: colors.text,
+    color: t.colors.text,
   },
   chipRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
-    marginBottom: 16,
+    gap: t.spacing.sm,
+    marginBottom: t.spacing.lg,
   },
   chip: {
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: t.spacing.sm,
     borderRadius: 20,
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: t.colors.border,
   },
   chipText: {
     fontSize: 13,
     fontWeight: "600",
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
   },
   chipTextActive: {
-    color: "#fff",
+    color: t.colors.onAccent,
   },
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    backgroundColor: t.colors.surface,
+    borderRadius: t.radius.md,
+    padding: t.spacing.lg,
+    marginBottom: t.spacing.md,
+    borderWidth: 0.5,
+    borderColor: t.colors.border,
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: "700",
-    color: colors.text,
-    marginBottom: 12,
+    color: t.colors.text,
+    marginBottom: t.spacing.md,
   },
   statRow: {
     flexDirection: "row",
     justifyContent: "space-around",
   },
   statBlock: { alignItems: "center" },
-  statValue: { fontSize: 22, fontWeight: "700", color: colors.text },
-  statLabel: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
+  statValue: { fontSize: 22, fontWeight: "700", color: t.colors.text },
+  statLabel: { fontSize: 12, color: t.colors.textSecondary, marginTop: 2 },
   catRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: t.spacing.sm,
     gap: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    borderBottomWidth: 0.5,
+    borderBottomColor: t.colors.border,
   },
   rowPressed: {
     opacity: 0.5,
   },
   catIcon: { fontSize: 18 },
-  catName: { flex: 1, fontSize: 15, color: colors.text },
-  catStat: { fontSize: 13, color: colors.textSecondary, fontWeight: "600" },
+  catName: { flex: 1, fontSize: 15, color: t.colors.text },
+  catStat: { fontSize: 13, color: t.colors.textSecondary, fontWeight: "600" },
   ratingBadge: {
     flexDirection: "row",
     alignItems: "center",
     gap: 3,
   },
-  ratingText: { fontSize: 13, color: colors.text, fontWeight: "600" },
-});
+  ratingText: { fontSize: 13, color: t.colors.text, fontWeight: "600" },
+}));
