@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import { colors } from "@/lib/constants";
+import { makeStyles } from "@/theme";
 
 type Place = {
   id: number;
@@ -28,6 +28,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   ref
 ) {
   const { t } = useTranslation();
+  const styles = useStyles();
 
   useImperativeHandle(ref, () => ({
     animateToRegion: () => {},
@@ -58,34 +59,34 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   );
 });
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 16 },
+const useStyles = makeStyles((t) => ({
+  container: { flex: 1, backgroundColor: t.colors.background },
+  content: { padding: t.spacing.lg },
   title: {
     fontSize: 20,
     fontWeight: "700",
-    color: colors.text,
-    marginBottom: 12,
+    color: t.colors.text,
+    marginBottom: t.spacing.md,
   },
   empty: {
     fontSize: 15,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     textAlign: "center",
     marginTop: 40,
   },
   placeRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
     padding: 14,
     borderRadius: 10,
-    marginBottom: 8,
-    gap: 12,
+    marginBottom: t.spacing.sm,
+    gap: t.spacing.md,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: colors.border,
+    borderColor: t.colors.border,
   },
   icon: { fontSize: 22 },
   placeInfo: { flex: 1 },
-  placeName: { fontSize: 16, fontWeight: "600", color: colors.text },
-  coords: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-});
+  placeName: { fontSize: 16, fontWeight: "600", color: t.colors.text },
+  coords: { fontSize: 12, color: t.colors.textSecondary, marginTop: 2 },
+}));
