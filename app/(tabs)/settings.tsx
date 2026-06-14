@@ -18,15 +18,131 @@ import {
 } from "@/db/queries/categories";
 import { getAllTags, insertTag, deleteTag } from "@/db/queries/tags";
 import { getAllPeople, insertPerson, deletePerson } from "@/db/queries/people";
-import { colors } from "@/lib/constants";
+import { makeStyles, useTheme } from "@/theme";
 import { useThemeStore, PIN_COLORS } from "@/stores/useThemeStore";
 
 type Item = { id: number; name: string; extra?: string };
 type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
 
+const useStyles = makeStyles((t) => ({
+  container: {
+    paddingBottom: 40,
+    backgroundColor: t.colors.background,
+  },
+  pinSection: {
+    paddingHorizontal: t.spacing.lg,
+    paddingTop: t.spacing.xl,
+    paddingBottom: t.spacing.lg,
+    backgroundColor: t.colors.surface,
+    marginBottom: t.spacing.lg,
+  },
+  swatchRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: t.spacing.md,
+    marginTop: t.spacing.md,
+  },
+  swatch: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  swatchSelected: {
+    borderWidth: 3,
+    borderColor: t.colors.text,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: t.spacing.lg,
+    paddingTop: t.spacing.xl,
+    paddingBottom: t.spacing.sm,
+    backgroundColor: t.colors.background,
+  },
+  sectionTitle: {
+    ...t.typography.footnote,
+    color: t.colors.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: t.spacing.lg,
+    paddingVertical: t.spacing.md,
+    backgroundColor: t.colors.surface,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: t.colors.separator,
+    gap: 10,
+  },
+  itemIcon: {
+    fontSize: 18,
+  },
+  tagDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+  },
+  itemName: {
+    ...t.typography.body,
+    color: t.colors.text,
+    flex: 1,
+  },
+  deleteBtn: {
+    padding: t.spacing.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addRow: {
+    flexDirection: "row",
+    paddingHorizontal: t.spacing.lg,
+    paddingVertical: 10,
+    gap: t.spacing.sm,
+    backgroundColor: t.colors.surface,
+  },
+  addInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.md,
+    paddingVertical: t.spacing.sm,
+    fontSize: 14,
+    color: t.colors.text,
+    backgroundColor: t.colors.surface,
+  },
+  emojiInput: {
+    width: 44,
+    borderWidth: 1,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.sm,
+    paddingVertical: t.spacing.sm,
+    fontSize: 18,
+    textAlign: "center",
+    color: t.colors.text,
+    backgroundColor: t.colors.surface,
+  },
+  addBtn: {
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.lg,
+    justifyContent: "center",
+  },
+  addBtnText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+}));
+
 function ThemeColorPicker() {
   const { t } = useTranslation();
   const { accentColor, setAccentColor } = useThemeStore();
+  const styles = useStyles();
   return (
     <View style={styles.pinSection}>
       <Text style={styles.sectionTitle}>{t("settings.themeColor")}</Text>
@@ -49,6 +165,8 @@ function ThemeColorPicker() {
 
 export default function SettingsTab() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const accentColor = useThemeStore((s) => s.accentColor);
   const [sections, setSections] = useState<Section[]>([]);
   const [addMode, setAddMode] = useState<string | null>(null);
@@ -142,22 +260,24 @@ export default function SettingsTab() {
         section.type === "category" && editingId === item.id ? (
           <View style={styles.item}>
             <TextInput
-              style={styles.emojiInput}
+              style={[styles.emojiInput, { color: theme.colors.text }]}
               value={editIcon}
-              onChangeText={(t) => setEditIcon(t.slice(-2))}
+              onChangeText={(v) => setEditIcon(v.slice(-2))}
               autoFocus
+              placeholderTextColor={theme.colors.textTertiary}
             />
             <TextInput
-              style={[styles.addInput, { flex: 1 }]}
+              style={[styles.addInput, { flex: 1, color: theme.colors.text }]}
               value={editName}
               onChangeText={setEditName}
               onSubmitEditing={handleEditSave}
+              placeholderTextColor={theme.colors.textTertiary}
             />
             <Pressable style={[styles.addBtn, { backgroundColor: accentColor }]} onPress={handleEditSave}>
               <Text style={styles.addBtnText}>{t("settings.save")}</Text>
             </Pressable>
             <Pressable style={styles.deleteBtn} onPress={() => setEditingId(null)}>
-              <FontAwesome name="times" size={18} color={colors.textSecondary} />
+              <FontAwesome name="times" size={18} color={theme.colors.textSecondary} />
             </Pressable>
           </View>
         ) : (
@@ -176,7 +296,7 @@ export default function SettingsTab() {
             <Text style={styles.itemName}>{item.name}</Text>
             {section.type === "category" && (
               <Pressable style={styles.deleteBtn} onPress={() => startEdit(item)}>
-                <FontAwesome name="pencil" size={16} color={colors.textSecondary} />
+                <FontAwesome name="pencil" size={16} color={theme.colors.textSecondary} />
               </Pressable>
             )}
             <Pressable
@@ -185,7 +305,7 @@ export default function SettingsTab() {
               accessibilityLabel={`Delete ${item.name}`}
               accessibilityRole="button"
             >
-              <FontAwesome name="trash-o" size={18} color={colors.destructive} />
+              <FontAwesome name="trash-o" size={18} color={theme.colors.destructive} />
             </Pressable>
           </Pressable>
         )
@@ -194,12 +314,13 @@ export default function SettingsTab() {
         addMode === section.type ? (
           <View style={styles.addRow}>
             <TextInput
-              style={styles.addInput}
+              style={[styles.addInput, { color: theme.colors.text }]}
               value={newName}
               onChangeText={setNewName}
               placeholder={t(`settings.new${section.type.charAt(0).toUpperCase() + section.type.slice(1)}` as any)}
               autoFocus
               onSubmitEditing={() => handleAdd(section.type)}
+              placeholderTextColor={theme.colors.textTertiary}
             />
             <Pressable
               style={[styles.addBtn, { backgroundColor: accentColor }]}
@@ -215,111 +336,3 @@ export default function SettingsTab() {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 40,
-  },
-  pinSection: {
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 16,
-    backgroundColor: colors.background,
-  },
-  swatchRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
-    marginTop: 12,
-  },
-  swatch: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  swatchSelected: {
-    borderWidth: 3,
-    borderColor: colors.text,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 8,
-    backgroundColor: colors.background,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: colors.surface,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
-    gap: 10,
-  },
-  itemIcon: {
-    fontSize: 18,
-  },
-  tagDot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-  },
-  itemName: {
-    fontSize: 16,
-    color: colors.text,
-    flex: 1,
-  },
-  deleteBtn: {
-    padding: 8,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  addRow: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    gap: 8,
-    backgroundColor: colors.surface,
-  },
-  addInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-  },
-  emojiInput: {
-    width: 44,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    fontSize: 18,
-    textAlign: "center",
-  },
-  addBtn: {
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    justifyContent: "center",
-  },
-  addBtnText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-});
