@@ -1,11 +1,10 @@
-import { View, Image, Pressable, Text, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, Image, Pressable, Text, ScrollView, Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as ImagePicker from "expo-image-picker";
 import { File } from "expo-file-system/next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { colors } from "@/lib/constants";
 import { PHOTO_DIR, resolvePhotoUri } from "@/lib/photoUtils";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type PhotoItem = {
   id?: number;
@@ -26,7 +25,8 @@ function ensureDir() {
 
 export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
   const { t } = useTranslation();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
   const pickImage = async (fromCamera: boolean) => {
     const permMethod = fromCamera
       ? ImagePicker.requestCameraPermissionsAsync
@@ -73,12 +73,12 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
         ))}
         <View style={styles.addButtons}>
           <Pressable style={styles.addBtn} onPress={() => pickImage(false)} accessibilityLabel={t("photo.gallery")} accessibilityRole="button">
-            <FontAwesome name="photo" size={24} color={accentColor} />
-            <Text style={[styles.addText, { color: accentColor }]}>{t("photo.gallery")}</Text>
+            <FontAwesome name="photo" size={24} color={theme.colors.accent} />
+            <Text style={[styles.addText, { color: theme.colors.accent }]}>{t("photo.gallery")}</Text>
           </Pressable>
           <Pressable style={styles.addBtn} onPress={() => pickImage(true)} accessibilityLabel={t("photo.camera")} accessibilityRole="button">
-            <FontAwesome name="camera" size={24} color={accentColor} />
-            <Text style={[styles.addText, { color: accentColor }]}>{t("photo.camera")}</Text>
+            <FontAwesome name="camera" size={24} color={theme.colors.accent} />
+            <Text style={[styles.addText, { color: theme.colors.accent }]}>{t("photo.camera")}</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -86,7 +86,7 @@ export function PhotoPicker({ photos, onAdd, onRemove }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   scroll: {
     flexGrow: 0,
   },
@@ -104,18 +104,18 @@ const styles = StyleSheet.create({
     top: -6,
     right: -6,
     backgroundColor: "#fff",
-    borderRadius: 12,
+    borderRadius: t.radius.md,
   },
   addButtons: {
     flexDirection: "row",
-    gap: 8,
+    gap: t.spacing.sm,
   },
   addBtn: {
     width: 100,
     height: 100,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: t.colors.border,
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
@@ -124,4 +124,4 @@ const styles = StyleSheet.create({
   addText: {
     fontSize: 12,
   },
-});
+}));
