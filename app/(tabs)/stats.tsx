@@ -18,7 +18,7 @@ import {
   getTopPlaces,
 } from "@/db/queries/stats";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, categoryColors } from "@/theme";
 import { Skeleton } from "@/components/ui/Skeleton";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -93,6 +93,12 @@ export default function StatsTab() {
     { key: "year", label: t("stats.thisYear") },
     { key: "custom", label: t("stats.custom") },
   ];
+
+  const maxCatVisits = Math.max(1, ...byCategory.map((c) => c.visitCount));
+  const trendData = [...byTime]
+    .sort((a, b) => a.period.localeCompare(b.period))
+    .slice(-12);
+  const maxTrend = Math.max(1, ...trendData.map((d) => d.visitCount));
 
   return (
     <ScrollView
@@ -176,79 +182,111 @@ export default function StatsTab() {
         </>
       ) : (
         <>
-          {/* Overview Card */}
+          {/* Overview Hero */}
           {overall && (
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{t("stats.overview")}</Text>
-              <View style={styles.statRow}>
-                <StatBlock label={t("stats.visits")} value={String(overall.totalVisits)} />
-                <StatBlock
-                  label={t("stats.avgRating")}
-                  value={overall.avgRating != null ? overall.avgRating.toFixed(1) : "—"}
-                  icon="star"
-                />
-                <StatBlock
-                  label={t("stats.totalSpent")}
-                  value={overall.totalSpent ? Number(overall.totalSpent).toFixed(0) : "0"}
-                />
+            <View style={styles.heroCard}>
+              <View style={styles.heroPrimary}>
+                <Text style={styles.heroValue}>{overall.totalVisits}</Text>
+                <Text style={styles.heroLabel}>{t("stats.visits")}</Text>
+              </View>
+              <View style={styles.heroSecondary}>
+                <View style={styles.heroStat}>
+                  <View style={styles.heroStatValueRow}>
+                    <FontAwesome name="star" size={15} color={theme.colors.star} />
+                    <Text style={styles.heroStatValue}>
+                      {overall.avgRating != null ? overall.avgRating.toFixed(1) : "—"}
+                    </Text>
+                  </View>
+                  <Text style={styles.heroStatLabel}>{t("stats.avgRating")}</Text>
+                </View>
+                <View style={styles.heroStatDivider} />
+                <View style={styles.heroStat}>
+                  <Text style={styles.heroStatValue}>
+                    {overall.totalSpent ? Number(overall.totalSpent).toFixed(0) : "0"}
+                  </Text>
+                  <Text style={styles.heroStatLabel}>{t("stats.totalSpent")}</Text>
+                </View>
               </View>
             </View>
           )}
 
-          {/* Category Breakdown */}
+          {/* Category Breakdown — horizontal bars */}
           {byCategory.length > 0 && (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>{t("stats.byCategory")}</Text>
-              {byCategory.map((cat, i) => (
-                <Pressable
-                  key={cat.id ?? i}
-                  style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
-                  onPress={() => {
-                    resetFilters();
-                    if (cat.id != null) setFilter("categoryId", cat.id);
-                    router.navigate("/(tabs)/list");
-                  }}
-                >
-                  <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
-                  <Text style={styles.catName}>{cat.name ? t(`category.${cat.name}`, { defaultValue: cat.name }) : t("stats.uncategorized")}</Text>
-                  <Text style={styles.catStat}>
-                    {t("stats.visitCount", { count: cat.visitCount })}
-                  </Text>
-                  <Text style={[styles.catStat, { color: theme.colors.accent }]}>
-                    {Number(cat.totalSpent ?? 0).toFixed(0)}
-                  </Text>
-                  <FontAwesome name="chevron-right" size={12} color={theme.colors.textSecondary} />
-                </Pressable>
-              ))}
+              {byCategory.map((cat, i) => {
+                const frac = cat.visitCount / maxCatVisits;
+                const barColor = categoryColors[i % categoryColors.length];
+                return (
+                  <Pressable
+                    key={cat.id ?? i}
+                    style={({ pressed }) => [styles.barRow, pressed && styles.rowPressed]}
+                    onPress={() => {
+                      resetFilters();
+                      if (cat.id != null) setFilter("categoryId", cat.id);
+                      router.navigate("/(tabs)/list");
+                    }}
+                  >
+                    <View style={styles.barHeader}>
+                      <Text style={styles.catIcon}>{cat.icon ?? "📍"}</Text>
+                      <Text style={styles.barName} numberOfLines={1}>
+                        {cat.name ? t(`category.${cat.name}`, { defaultValue: cat.name }) : t("stats.uncategorized")}
+                      </Text>
+                      <Text style={styles.barCount}>
+                        {t("stats.visitCount", { count: cat.visitCount })}
+                      </Text>
+                    </View>
+                    <View style={styles.barTrack}>
+                      <View
+                        style={[
+                          styles.barFill,
+                          { width: `${Math.max(frac * 100, 3)}%`, backgroundColor: barColor },
+                        ]}
+                      />
+                    </View>
+                  </Pressable>
+                );
+              })}
             </View>
           )}
 
-          {/* Time Trend */}
-          {byTime.length > 0 && (
+          {/* Monthly Trend — column chart */}
+          {trendData.length > 0 && (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>{t("stats.monthlyTrend")}</Text>
-              {byTime.map((tm) => (
-                <Pressable
-                  key={tm.period}
-                  style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
-                  onPress={() => {
-                    const d = parseISO(tm.period + "-01");
-                    resetFilters();
-                    setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
-                    setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
-                    router.navigate("/(tabs)/list");
-                  }}
-                >
-                  <Text style={styles.catName}>{tm.period}</Text>
-                  <Text style={styles.catStat}>
-                    {t("stats.visitCount", { count: tm.visitCount })}
-                  </Text>
-                  <Text style={[styles.catStat, { color: theme.colors.accent }]}>
-                    {Number(tm.totalSpent ?? 0).toFixed(0)}
-                  </Text>
-                  <FontAwesome name="chevron-right" size={12} color={theme.colors.textSecondary} />
-                </Pressable>
-              ))}
+              <View style={styles.chart}>
+                {trendData.map((tm) => {
+                  const frac = tm.visitCount / maxTrend;
+                  return (
+                    <Pressable
+                      key={tm.period}
+                      style={({ pressed }) => [styles.column, pressed && styles.rowPressed]}
+                      onPress={() => {
+                        const d = parseISO(tm.period + "-01");
+                        resetFilters();
+                        setFilter("dateFrom", format(startOfMonth(d), "yyyy-MM-dd"));
+                        setFilter("dateTo", format(endOfMonth(d), "yyyy-MM-dd"));
+                        router.navigate("/(tabs)/list");
+                      }}
+                    >
+                      <Text style={styles.columnValue}>
+                        {tm.visitCount > 0 ? tm.visitCount : ""}
+                      </Text>
+                      <View style={styles.columnTrack}>
+                        <View
+                          style={[
+                            styles.columnFill,
+                            { height: `${Math.max(frac * 100, 2)}%`, backgroundColor: theme.colors.accent },
+                          ]}
+                        />
+                      </View>
+                      <Text style={styles.columnLabel} numberOfLines={1}>
+                        {format(parseISO(tm.period + "-01"), "MMM")}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </View>
             </View>
           )}
 
@@ -262,6 +300,9 @@ export default function StatsTab() {
                   style={({ pressed }) => [styles.catRow, pressed && styles.rowPressed]}
                   onPress={() => p.placeId != null && router.push(`/place/${p.placeId}`)}
                 >
+                  <View style={styles.rankBadge}>
+                    <Text style={styles.rankText}>{i + 1}</Text>
+                  </View>
                   <Text style={styles.catIcon}>{p.categoryIcon ?? "📍"}</Text>
                   <Text style={styles.catName}>{p.name ?? t("stats.unknown")}</Text>
                   <Text style={styles.catStat}>{p.visitCount}x</Text>
@@ -279,20 +320,6 @@ export default function StatsTab() {
         </>
       )}
     </ScrollView>
-  );
-}
-
-function StatBlock({ label, value, icon }: { label: string; value: string; icon?: string }) {
-  const theme = useTheme();
-  const styles = useStyles();
-  return (
-    <View style={styles.statBlock}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-        {icon && <FontAwesome name={icon as any} size={16} color={theme.colors.star} />}
-        <Text style={styles.statValue}>{value}</Text>
-      </View>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
   );
 }
 
@@ -363,13 +390,68 @@ const useStyles = makeStyles((t) => ({
     color: t.colors.text,
     marginBottom: t.spacing.md,
   },
-  statRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  // Overview hero
+  heroCard: {
+    backgroundColor: t.colors.accentMuted,
+    borderRadius: t.radius.lg,
+    paddingVertical: t.spacing.xl,
+    paddingHorizontal: t.spacing.lg,
+    marginBottom: t.spacing.md,
+    alignItems: "center",
   },
-  statBlock: { alignItems: "center" },
-  statValue: { fontSize: 22, fontWeight: "700", color: t.colors.text },
-  statLabel: { fontSize: 12, color: t.colors.textSecondary, marginTop: 2 },
+  heroPrimary: { alignItems: "center", marginBottom: t.spacing.lg },
+  heroValue: { fontSize: 52, fontWeight: "800", color: t.colors.accent, lineHeight: 56 },
+  heroLabel: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: t.colors.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginTop: t.spacing.xs,
+  },
+  heroSecondary: { flexDirection: "row", alignItems: "center", alignSelf: "stretch", justifyContent: "center" },
+  heroStat: { flex: 1, alignItems: "center" },
+  heroStatValueRow: { flexDirection: "row", alignItems: "center", gap: 4 },
+  heroStatValue: { fontSize: 22, fontWeight: "700", color: t.colors.text },
+  heroStatLabel: { fontSize: 12, color: t.colors.textSecondary, marginTop: 2 },
+  heroStatDivider: { width: StyleSheet.hairlineWidth, height: 32, backgroundColor: t.colors.border },
+  // Category bars
+  barRow: { paddingVertical: t.spacing.sm },
+  barHeader: { flexDirection: "row", alignItems: "center", gap: t.spacing.sm, marginBottom: 6 },
+  barName: { flex: 1, fontSize: 15, color: t.colors.text },
+  barCount: { fontSize: 13, color: t.colors.textSecondary, fontWeight: "600" },
+  barTrack: {
+    height: 8,
+    borderRadius: t.radius.full,
+    backgroundColor: t.colors.separator,
+    overflow: "hidden",
+  },
+  barFill: { height: "100%", borderRadius: t.radius.full },
+  // Monthly column chart
+  chart: { flexDirection: "row", alignItems: "stretch", height: 150, gap: 6, marginTop: t.spacing.sm },
+  column: { flex: 1, alignItems: "center", gap: 4 },
+  columnValue: { fontSize: 11, fontWeight: "600", color: t.colors.textSecondary, height: 14 },
+  columnTrack: {
+    width: "70%",
+    maxWidth: 28,
+    flex: 1,
+    borderRadius: t.radius.full,
+    backgroundColor: t.colors.separator,
+    justifyContent: "flex-end",
+    overflow: "hidden",
+  },
+  columnFill: { width: "100%", borderRadius: t.radius.full },
+  columnLabel: { fontSize: 10, color: t.colors.textSecondary },
+  // Rank badge
+  rankBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: t.colors.accentMuted,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rankText: { fontSize: 12, fontWeight: "700", color: t.colors.accent },
   catRow: {
     flexDirection: "row",
     alignItems: "center",
