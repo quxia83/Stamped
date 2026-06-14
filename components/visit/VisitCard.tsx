@@ -1,11 +1,11 @@
-import { View, Text, Pressable, Image, StyleSheet } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { colors } from "@/lib/constants";
 import { StarDisplay } from "@/components/visit/RatingInput";
+import { makeStyles } from "@/theme";
 
 type Props = {
   id: number;
@@ -36,6 +36,7 @@ export function VisitCard({
 }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
+  const styles = useStyles();
   const setFilter = useFilterStore((s) => s.setFilter);
 
   const filterByCategory = () => {
@@ -81,14 +82,14 @@ export function VisitCard({
             </View>
             {tags && tags.length > 0 && (
               <View style={styles.tags}>
-                {tags.map((t) => (
+                {tags.map((tag) => (
                   <Pressable
-                    key={t.id}
-                    style={[styles.tag, { backgroundColor: t.color + "20" }]}
-                    onPress={() => filterByTag(t.id)}
+                    key={tag.id}
+                    style={[styles.tag, { backgroundColor: tag.color + "20" }]}
+                    onPress={() => filterByTag(tag.id)}
                   >
-                    <Text style={[styles.tagText, { color: t.color }]}>
-                      {t.label}
+                    <Text style={[styles.tagText, { color: tag.color }]}>
+                      {tag.label}
                     </Text>
                   </Pressable>
                 ))}
@@ -101,23 +102,23 @@ export function VisitCard({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   row: {
     flexDirection: "row",
-    gap: 12,
+    gap: t.spacing.md,
   },
   thumbnail: {
     width: 56,
     height: 56,
-    borderRadius: 8,
+    borderRadius: t.radius.sm,
   },
   iconBox: {
     width: 56,
     height: 56,
-    borderRadius: 8,
-    backgroundColor: colors.surface,
+    borderRadius: t.radius.sm,
+    backgroundColor: t.colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: t.colors.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -132,31 +133,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   name: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
+    ...t.typography.headline,
+    color: t.colors.text,
     flex: 1,
   },
   date: {
     fontSize: 13,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 2,
   },
   meta: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: t.spacing.md,
     marginTop: 6,
   },
   cost: {
     fontSize: 13,
     fontWeight: "500",
-    color: colors.text,
+    color: t.colors.text,
   },
   tags: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 4,
+    gap: t.spacing.xs,
     marginTop: 6,
   },
   tag: {
@@ -168,4 +168,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "500",
   },
-});
+}));
