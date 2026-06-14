@@ -1,6 +1,5 @@
-import { StyleSheet } from "react-native";
 import { format } from "date-fns";
-import { colors } from "@/lib/constants";
+import { useTheme } from "@/theme";
 
 type Props = {
   value: Date;
@@ -8,6 +7,22 @@ type Props = {
 };
 
 export function DatePicker({ value, onChange }: Props) {
+  const theme = useTheme();
+
+  const inputStyle: React.CSSProperties = {
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontSize: 16,
+    color: theme.colors.text,
+    backgroundColor: theme.colors.surface,
+    borderStyle: "solid",
+  };
+
   return (
     <input
       type="date"
@@ -20,17 +35,3 @@ export function DatePicker({ value, onChange }: Props) {
     />
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 8,
-  paddingLeft: 14,
-  paddingRight: 14,
-  paddingTop: 10,
-  paddingBottom: 10,
-  fontSize: 16,
-  color: colors.text,
-  backgroundColor: colors.surface,
-  borderStyle: "solid",
-};
