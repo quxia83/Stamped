@@ -2,7 +2,7 @@ export default {
   expo: {
     name: "stamped",
     slug: "stamped",
-    version: "1.2.2",
+    version: "1.3.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
     scheme: "stamped",
@@ -20,7 +20,7 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.stamped.app",
-      buildNumber: "16",
+      buildNumber: "17",
       infoPlist: {
         NSLocationWhenInUseUsageDescription:
           "We need your location to show you on the map.",
