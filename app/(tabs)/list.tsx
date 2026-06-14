@@ -1,8 +1,9 @@
 import { FlatList, StyleSheet } from "react-native";
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { VisitCard } from "@/components/visit/VisitCard";
+import { VisitCardSkeleton } from "@/components/visit/VisitCardSkeleton";
 import { FilterBar } from "@/components/common/FilterBar";
 import { EmptyState } from "@/components/common/EmptyState";
 import { useFilterStore } from "@/stores/useFilterStore";
@@ -12,13 +13,15 @@ import { getPhotosForVisit } from "@/db/queries/photos";
 import { resolvePhotoUri } from "@/lib/photoUtils";
 
 type VisitRow = VisitWithPlace & {
-  tags: { label: string; color: string }[];
+  tags: { id: number; label: string; color: string }[];
   thumbnail?: string;
 };
 
 export default function ListTab() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [visits, setVisits] = useState<VisitRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const filters = useFilterStore();
   const clearFilters = useFilterStore((s) => s.clearFilters);
 
@@ -27,19 +30,24 @@ export default function ListTab() {
       let cancelled = false;
 
       async function load() {
-        const raw = await getFilteredVisits(filters);
-        const enriched = await Promise.all(
-          raw.map(async (v) => {
-            const tags = await getTagsForVisit(v.id);
-            const photos = await getPhotosForVisit(v.id);
-            return {
-              ...v,
-              tags,
-              thumbnail: photos[0] ? resolvePhotoUri(photos[0].uri) : undefined,
-            };
-          })
-        );
-        if (!cancelled) setVisits(enriched);
+        setLoading(true);
+        try {
+          const raw = await getFilteredVisits(filters);
+          const enriched = await Promise.all(
+            raw.map(async (v) => {
+              const tags = await getTagsForVisit(v.id);
+              const photos = await getPhotosForVisit(v.id);
+              return {
+                ...v,
+                tags,
+                thumbnail: photos[0] ? resolvePhotoUri(photos[0].uri) : undefined,
+              };
+            })
+          );
+          if (!cancelled) setVisits(enriched);
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
       }
 
       load();
@@ -64,33 +72,45 @@ export default function ListTab() {
   return (
     <>
       <FilterBar />
-      <FlatList
-        data={visits}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <VisitCard
-            id={item.id}
-            placeName={item.placeName}
-            date={item.date}
-            rating={item.rating}
-            cost={item.cost}
-            currency={item.currency}
-            categoryId={item.categoryId}
-            categoryIcon={item.categoryIcon}
-            categoryName={item.categoryName}
-            thumbnail={item.thumbnail}
-            tags={item.tags}
-          />
-        )}
-        contentContainerStyle={visits.length === 0 ? styles.empty : styles.list}
-        ListEmptyComponent={
-          <EmptyState
-            icon="list"
-            title={t("list.emptyTitle")}
-            message={t("list.emptyMessage")}
-          />
-        }
-      />
+      {loading ? (
+        <FlatList
+          data={[0, 1, 2, 3, 4, 5]}
+          keyExtractor={(i) => `sk-${i}`}
+          renderItem={() => <VisitCardSkeleton />}
+          contentContainerStyle={styles.list}
+          contentInsetAdjustmentBehavior="automatic"
+        />
+      ) : (
+        <FlatList
+          data={visits}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <VisitCard
+              id={item.id}
+              placeName={item.placeName}
+              date={item.date}
+              rating={item.rating}
+              cost={item.cost}
+              currency={item.currency}
+              categoryId={item.categoryId}
+              categoryIcon={item.categoryIcon}
+              categoryName={item.categoryName}
+              thumbnail={item.thumbnail}
+              tags={item.tags}
+            />
+          )}
+          contentContainerStyle={visits.length === 0 ? styles.empty : styles.list}
+          contentInsetAdjustmentBehavior="automatic"
+          ListEmptyComponent={
+            <EmptyState
+              icon="bookmark"
+              title={t("list.emptyTitle")}
+              message={t("list.emptyMessage")}
+              action={{ label: t("list.addFirst", { defaultValue: "Add a visit" }), onPress: () => router.push("/visit/new") }}
+            />
+          }
+        />
+      )}
     </>
   );
 }
