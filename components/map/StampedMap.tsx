@@ -1,11 +1,11 @@
 import { useRef, useCallback, useImperativeHandle, forwardRef, useEffect } from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { View, Text, Animated } from "react-native";
 import { useTranslation } from "react-i18next";
 import MapView from "react-native-map-clustering";
 import { Marker, Callout, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
 import { useMapStore, type SearchPin } from "@/stores/useMapStore";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type Place = {
   id: number;
@@ -30,6 +30,7 @@ const PIN_SIZE = 44;
 
 function SearchPinMarker({ pin, accentColor }: { pin: SearchPin; accentColor: string }) {
   const pulse = useRef(new Animated.Value(0)).current;
+  const pinStyles = usePinStyles();
 
   useEffect(() => {
     const anim = Animated.loop(
@@ -77,7 +78,11 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   const { t } = useTranslation();
   const mapRef = useRef<any>(null);
   const { region, setRegion } = useMapStore();
-  const pinColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const pinColor = theme.colors.accent;
+  const styles = useMapStyles();
+  const clusterStyles = useClusterStyles();
+  const searchPinStyles = useSearchPinStyles();
 
   const renderCluster = useCallback(
     (cluster: any) => {
@@ -96,7 +101,7 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
         </Marker>
       );
     },
-    [pinColor]
+    [pinColor, clusterStyles]
   );
 
   useImperativeHandle(ref, () => ({
@@ -183,13 +188,13 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
   );
 });
 
-const styles = StyleSheet.create({
+const useMapStyles = makeStyles(() => ({
   map: {
     flex: 1,
   },
-});
+}));
 
-const pinStyles = StyleSheet.create({
+const usePinStyles = makeStyles((t) => ({
   container: {
     alignItems: "center",
   },
@@ -206,7 +211,7 @@ const pinStyles = StyleSheet.create({
     elevation: 5,
   },
   labelText: {
-    color: "#fff",
+    color: t.colors.onAccent,
     fontSize: 14,
     fontWeight: "700",
     textAlign: "center",
@@ -228,7 +233,7 @@ const pinStyles = StyleSheet.create({
     height: PIN_SIZE,
     borderRadius: PIN_SIZE / 2,
     borderWidth: 3,
-    borderColor: "#fff",
+    borderColor: t.colors.onAccent,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
@@ -241,11 +246,11 @@ const pinStyles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: "#fff",
+    backgroundColor: t.colors.onAccent,
   },
-});
+}));
 
-const searchPinStyles = StyleSheet.create({
+const useSearchPinStyles = makeStyles((t) => ({
   callout: {
     padding: 10,
     minWidth: 160,
@@ -254,7 +259,7 @@ const searchPinStyles = StyleSheet.create({
   calloutName: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#1a1a2e",
+    color: t.colors.text,
     marginBottom: 6,
   },
   calloutAction: {
@@ -262,9 +267,9 @@ const searchPinStyles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
-});
+}));
 
-const clusterStyles = StyleSheet.create({
+const useClusterStyles = makeStyles((t) => ({
   bubble: {
     alignItems: "center",
     justifyContent: "center",
@@ -272,8 +277,8 @@ const clusterStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.6)",
   },
   count: {
-    color: "#fff",
+    color: t.colors.onAccent,
     fontWeight: "700",
     fontSize: 14,
   },
-});
+}));
