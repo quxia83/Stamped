@@ -31,6 +31,16 @@ export const categoryColors = [
   "#3b82f6", "#ec4899", "#14b8a6", "#6b7280",
 ] as const;
 
+/**
+ * Stable color for a category, derived from its id — the same category always
+ * maps to the same color across the whole app (cards, detail icons, stats bars,
+ * map pins). Uncategorized (null) falls back to the neutral last swatch.
+ */
+export function categoryColor(categoryId: number | null | undefined): string {
+  if (categoryId == null) return categoryColors[categoryColors.length - 1];
+  return categoryColors[categoryId % categoryColors.length];
+}
+
 export const palette = {
   light: {
     background: "#f2f2f7",

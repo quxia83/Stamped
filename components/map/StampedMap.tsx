@@ -5,7 +5,7 @@ import MapView from "react-native-map-clustering";
 import { Marker, Callout, Region, LongPressEvent } from "react-native-maps";
 import { PlaceMarker } from "./PlaceMarker";
 import { useMapStore, type SearchPin } from "@/stores/useMapStore";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, categoryColor } from "@/theme";
 
 type Place = {
   id: number;
@@ -170,20 +170,23 @@ export const StampedMap = forwardRef<StampedMapHandle, Props>(function StampedMa
           </Callout>
         </Marker>
       )}
-      {places.map((place) => (
-        <PlaceMarker
-          key={`${place.id}-${pinColor}`}
-          id={place.id}
-          name={place.name}
-          latitude={place.latitude}
-          longitude={place.longitude}
-          categoryIcon={place.categoryIcon}
-          categoryIndex={(place.categoryId ?? 7) - 1}
-          firstPhotoUri={place.firstPhotoUri}
-          onPress={onMarkerPress}
-          onCalloutPress={onCalloutPress}
-        />
-      ))}
+      {places.map((place) => {
+        const markerColor = categoryColor(place.categoryId);
+        return (
+          <PlaceMarker
+            key={`${place.id}-${markerColor}`}
+            id={place.id}
+            name={place.name}
+            latitude={place.latitude}
+            longitude={place.longitude}
+            categoryIcon={place.categoryIcon}
+            color={markerColor}
+            firstPhotoUri={place.firstPhotoUri}
+            onPress={onMarkerPress}
+            onCalloutPress={onCalloutPress}
+          />
+        );
+      })}
     </MapView>
   );
 });

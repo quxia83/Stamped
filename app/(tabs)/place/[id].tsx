@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
+import { makeStyles, useTheme, categoryColor, withAlpha } from "@/theme";
 
 type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
 type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
@@ -85,7 +85,7 @@ export default function PlaceDetailScreen() {
     );
   }
 
-  const catColor = categoryColors[(place.categoryId ?? 0) % categoryColors.length];
+  const catColor = categoryColor(place.categoryId);
 
   return (
     <>

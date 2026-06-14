@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { PressableScale } from "@/components/ui/PressableScale";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { StarDisplay } from "@/components/visit/RatingInput";
-import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
+import { makeStyles, useTheme, categoryColor, withAlpha } from "@/theme";
 
 type Props = {
   id: number;
@@ -41,7 +41,7 @@ export function VisitCard({
   const styles = useStyles();
   const setFilter = useFilterStore((s) => s.setFilter);
 
-  const catColor = categoryColors[(categoryId ?? 0) % categoryColors.length];
+  const catColor = categoryColor(categoryId);
 
   const filterByCategory = () => {
     if (categoryId == null) return;

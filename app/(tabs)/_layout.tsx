@@ -34,7 +34,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t("tabs.map"),
-          tabBarIcon: ({ color }) => <TabBarIcon name="map-marker" color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="map" color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => router.push("/search")}

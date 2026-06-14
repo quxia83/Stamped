@@ -18,7 +18,7 @@ import {
   getTopPlaces,
 } from "@/db/queries/stats";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { makeStyles, useTheme, categoryColors } from "@/theme";
+import { makeStyles, useTheme, categoryColor } from "@/theme";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { LargeHeader } from "@/components/ui/LargeHeader";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -219,7 +219,7 @@ export default function StatsTab() {
               <Text style={styles.cardTitle}>{t("stats.byCategory")}</Text>
               {byCategory.map((cat, i) => {
                 const frac = cat.visitCount / maxCatVisits;
-                const barColor = categoryColors[i % categoryColors.length];
+                const barColor = categoryColor(cat.id);
                 return (
                   <Pressable
                     key={cat.id ?? i}

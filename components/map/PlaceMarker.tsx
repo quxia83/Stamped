@@ -10,7 +10,7 @@ type Props = {
   latitude: number;
   longitude: number;
   categoryIcon: string | null;
-  categoryIndex: number;
+  color: string;
   firstPhotoUri: string | null;
   onPress: (id: number) => void;
   onCalloutPress: (id: number) => void;
@@ -22,12 +22,13 @@ export function PlaceMarker({
   latitude,
   longitude,
   categoryIcon,
+  color,
   firstPhotoUri,
   onPress,
   onCalloutPress,
 }: Props) {
   const { colors } = useTheme();
-  const pinColor = colors.accent;
+  const pinColor = color;
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setTracksViewChanges(false), 500);

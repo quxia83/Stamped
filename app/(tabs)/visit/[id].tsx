@@ -23,7 +23,7 @@ import { resolvePhotoUri } from "@/lib/photoUtils";
 import * as Haptics from "expo-haptics";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
-import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
+import { makeStyles, useTheme, categoryColor, withAlpha } from "@/theme";
 
 type VisitDetail = Awaited<ReturnType<typeof getVisitById>>[number];
 type Tag = { id: number; label: string; color: string };
@@ -111,7 +111,7 @@ export default function VisitDetailScreen() {
     );
   }
 
-  const catColor = categoryColors[(visit.categoryId ?? 0) % categoryColors.length];
+  const catColor = categoryColor(visit.categoryId);
 
   return (
     <>
