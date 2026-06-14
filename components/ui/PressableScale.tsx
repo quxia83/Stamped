@@ -5,8 +5,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 type Props = PressableProps & {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -16,24 +14,24 @@ type Props = PressableProps & {
 
 /**
  * Pressable with a subtle spring scale-down on press — a refined, native-feeling
- * tap interaction. Drop-in replacement for Pressable for tappable cards/rows.
+ * tap interaction. A plain Pressable handles the touch (reliable onPress), while
+ * an inner Animated.View handles the scale.
  */
 export function PressableScale({ children, style, activeScale = 0.97, ...rest }: Props) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   return (
-    <AnimatedPressable
+    <Pressable
       onPressIn={() => {
         scale.value = withSpring(activeScale, { damping: 18, stiffness: 280 });
       }}
       onPressOut={() => {
         scale.value = withSpring(1, { damping: 18, stiffness: 280 });
       }}
-      style={[animatedStyle, style]}
       {...rest}
     >
-      {children}
-    </AnimatedPressable>
+      <Animated.View style={[animatedStyle, style]}>{children}</Animated.View>
+    </Pressable>
   );
 }
