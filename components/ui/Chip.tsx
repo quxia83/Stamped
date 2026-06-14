@@ -1,6 +1,5 @@
-import { Pressable, Text, StyleSheet } from "react-native";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { Pressable, Text } from "react-native";
+import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
   label: string;
@@ -10,10 +9,11 @@ type Props = {
 };
 
 export function Chip({ label, selected, color, onPress }: Props) {
-  const accentColor = useThemeStore((s) => s.accentColor);
-  const bgColor = selected ? (color ?? accentColor) : colors.surface;
-  const textColor = selected ? "#fff" : colors.text;
-  const borderColor = selected ? bgColor : colors.border;
+  const theme = useTheme();
+  const styles = useStyles();
+  const bgColor = selected ? (color ?? theme.colors.accent) : theme.colors.surface;
+  const textColor = selected ? theme.colors.onAccent : theme.colors.text;
+  const borderColor = selected ? bgColor : theme.colors.border;
 
   return (
     <Pressable
@@ -28,14 +28,14 @@ export function Chip({ label, selected, color, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   chip: {
     paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingVertical: t.spacing.sm,
     borderRadius: 20,
     borderWidth: 1,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: t.spacing.sm,
+    marginBottom: t.spacing.sm,
     minHeight: 36,
     justifyContent: "center",
   },
@@ -43,4 +43,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
   },
-});
+}));
