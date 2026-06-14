@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
 
 type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
 type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
@@ -85,6 +85,8 @@ export default function PlaceDetailScreen() {
     );
   }
 
+  const catColor = categoryColors[(place.categoryId ?? 0) % categoryColors.length];
+
   return (
     <>
       <Stack.Screen
@@ -103,7 +105,9 @@ export default function PlaceDetailScreen() {
           <View>
             {/* Place header */}
             <View style={styles.header}>
-              <Text style={styles.icon}>{place.categoryIcon ?? "📍"}</Text>
+              <View style={[styles.iconCircle, { backgroundColor: withAlpha(catColor, 0.16) }]}>
+                <Text style={styles.icon}>{place.categoryIcon ?? "📍"}</Text>
+              </View>
               <Text style={styles.name}>{place.name}</Text>
               {place.address && (
                 <Pressable onPress={openInMaps}>
@@ -129,15 +133,17 @@ export default function PlaceDetailScreen() {
             {/* Stats */}
             <View style={styles.statsRow}>
               <View style={styles.stat}>
-                <Text style={styles.statValue}>{place.visitCount}</Text>
+                <Text style={[styles.statValue, { color: theme.colors.accent }]}>{place.visitCount}</Text>
                 <Text style={styles.statLabel}>{t("place.visits")}</Text>
               </View>
+              <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Text style={styles.statValue}>
                   {place.avgRating ? place.avgRating.toFixed(1) : "-"}
                 </Text>
                 <Text style={styles.statLabel}>{t("place.avgRating")}</Text>
               </View>
+              <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Text style={styles.statValue}>
                   {place.totalSpent ? `$${place.totalSpent.toFixed(0)}` : "-"}
@@ -206,9 +212,16 @@ const useStyles = makeStyles((t) => ({
     paddingVertical: t.spacing.xl,
     paddingHorizontal: t.spacing.lg,
   },
+  iconCircle: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: t.spacing.md,
+  },
   icon: {
-    fontSize: 40,
-    marginBottom: t.spacing.sm,
+    fontSize: 44,
   },
   name: {
     fontSize: 24,
@@ -237,7 +250,13 @@ const useStyles = makeStyles((t) => ({
     borderRadius: t.radius.md,
   },
   stat: {
+    flex: 1,
     alignItems: "center",
+  },
+  statDivider: {
+    width: StyleSheet.hairlineWidth,
+    alignSelf: "stretch",
+    backgroundColor: t.colors.border,
   },
   statValue: {
     fontSize: 22,

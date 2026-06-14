@@ -23,7 +23,7 @@ import { resolvePhotoUri } from "@/lib/photoUtils";
 import * as Haptics from "expo-haptics";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
-import { makeStyles, useTheme } from "@/theme";
+import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
 
 type VisitDetail = Awaited<ReturnType<typeof getVisitById>>[number];
 type Tag = { id: number; label: string; color: string };
@@ -111,6 +111,8 @@ export default function VisitDetailScreen() {
     );
   }
 
+  const catColor = categoryColors[(visit.categoryId ?? 0) % categoryColors.length];
+
   return (
     <>
       <Stack.Screen
@@ -158,9 +160,9 @@ export default function VisitDetailScreen() {
         {/* Place name */}
         <View style={styles.placeRow}>
           <Pressable onPress={filterByCategory}>
-            <Text style={styles.placeIcon}>
-              {visit.categoryIcon ?? "📍"}
-            </Text>
+            <View style={[styles.placeIconCircle, { backgroundColor: withAlpha(catColor, 0.16) }]}>
+              <Text style={styles.placeIcon}>{visit.categoryIcon ?? "📍"}</Text>
+            </View>
           </Pressable>
           <View style={{ flex: 1 }}>
             <Pressable
@@ -188,6 +190,7 @@ export default function VisitDetailScreen() {
           </View>
         </View>
 
+        <View style={styles.infoCard}>
         {/* Date */}
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t("visit.date")}</Text>
@@ -198,7 +201,7 @@ export default function VisitDetailScreen() {
 
         {/* Rating */}
         {visit.rating != null && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.rating")}</Text>
             <StarDisplay rating={visit.rating} size={24} />
           </View>
@@ -206,7 +209,7 @@ export default function VisitDetailScreen() {
 
         {/* Cost */}
         {visit.cost != null && visit.cost > 0 && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.cost")}</Text>
             <Text style={styles.sectionValue}>
               {visit.currency ?? "USD"} {visit.cost.toFixed(2)}
@@ -217,7 +220,7 @@ export default function VisitDetailScreen() {
 
         {/* Attendees */}
         {visit.attendeeCount != null && visit.attendeeCount > 0 && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.attendees")}</Text>
             <Text style={styles.sectionValue}>
               {t("visit.attendeeCount", { count: visit.attendeeCount })}
@@ -227,7 +230,7 @@ export default function VisitDetailScreen() {
 
         {/* Price Level */}
         {visit.priceLevel != null && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.priceLevel")}</Text>
             <Text style={styles.sectionValue}>{"$".repeat(visit.priceLevel)}</Text>
           </View>
@@ -235,13 +238,13 @@ export default function VisitDetailScreen() {
 
         {/* Tags */}
         {tags.length > 0 && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.tags")}</Text>
             <View style={styles.tagRow}>
               {tags.map((tag) => (
                 <Pressable
                   key={tag.id}
-                  style={[styles.tag, { backgroundColor: tag.color + "20" }]}
+                  style={[styles.tag, { backgroundColor: withAlpha(tag.color, 0.16) }]}
                   onPress={() => filterByTag(tag.id)}
                 >
                   <Text style={[styles.tagText, { color: tag.color }]}>
@@ -255,11 +258,12 @@ export default function VisitDetailScreen() {
 
         {/* Notes */}
         {visit.notes && (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.notes")}</Text>
             <Text style={styles.notes}>{visit.notes}</Text>
           </View>
         )}
+        </View>
       </ScrollView>
     </>
   );
@@ -297,8 +301,26 @@ const useStyles = makeStyles((t) => ({
     gap: t.spacing.md,
     marginBottom: t.spacing.sm,
   },
+  placeIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   placeIcon: {
-    fontSize: 28,
+    fontSize: 26,
+  },
+  infoCard: {
+    backgroundColor: t.colors.surface,
+    marginHorizontal: t.spacing.lg,
+    borderRadius: t.radius.md,
+    paddingHorizontal: t.spacing.lg,
+    overflow: "hidden",
+  },
+  divider: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: t.colors.separator,
   },
   placeName: {
     fontSize: 18,
@@ -311,8 +333,7 @@ const useStyles = makeStyles((t) => ({
     marginTop: 2,
   },
   section: {
-    paddingHorizontal: t.spacing.lg,
-    paddingVertical: 10,
+    paddingVertical: t.spacing.md,
   },
   sectionLabel: {
     fontSize: 12,

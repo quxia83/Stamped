@@ -5,7 +5,7 @@ import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { StarDisplay } from "@/components/visit/RatingInput";
-import { makeStyles } from "@/theme";
+import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
 
 type Props = {
   id: number;
@@ -36,8 +36,11 @@ export function VisitCard({
 }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
+  const theme = useTheme();
   const styles = useStyles();
   const setFilter = useFilterStore((s) => s.setFilter);
+
+  const catColor = categoryColors[(categoryId ?? 0) % categoryColors.length];
 
   const filterByCategory = () => {
     if (categoryId == null) return;
@@ -51,29 +54,28 @@ export function VisitCard({
   };
 
   return (
-    <Pressable onPress={() => router.push(`/visit/${id}`)}>
+    <Pressable
+      onPress={() => router.push(`/visit/${id}`)}
+      style={({ pressed }) => pressed && { opacity: 0.85 }}
+    >
       <Card>
         <View style={styles.row}>
           {thumbnail ? (
             <Image source={{ uri: thumbnail }} style={styles.thumbnail} />
           ) : (
             <Pressable onPress={filterByCategory} hitSlop={4}>
-              <View style={styles.iconBox}>
+              <View style={[styles.iconBox, { backgroundColor: withAlpha(catColor, 0.15) }]}>
                 <Text style={styles.icon}>{categoryIcon ?? "📍"}</Text>
               </View>
             </Pressable>
           )}
           <View style={styles.content}>
-            <View style={styles.header}>
-              <Text style={styles.name} numberOfLines={1}>
-                {placeName ?? t("common.unknown")}
-              </Text>
-            </View>
-            <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "MMM d, yyyy")}</Text>
+            <Text style={styles.name} numberOfLines={1}>
+              {placeName ?? t("common.unknown")}
+            </Text>
+            <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "EEE, MMM d, yyyy")}</Text>
             <View style={styles.meta}>
-              {rating != null && (
-                <StarDisplay rating={rating} size={13} />
-              )}
+              {rating != null && <StarDisplay rating={rating} size={13} />}
               {cost != null && cost > 0 && (
                 <Text style={styles.cost}>
                   {currency ?? "USD"} {cost.toFixed(2)}
@@ -85,17 +87,16 @@ export function VisitCard({
                 {tags.map((tag) => (
                   <Pressable
                     key={tag.id}
-                    style={[styles.tag, { backgroundColor: tag.color + "20" }]}
+                    style={[styles.tag, { backgroundColor: withAlpha(tag.color, 0.16) }]}
                     onPress={() => filterByTag(tag.id)}
                   >
-                    <Text style={[styles.tagText, { color: tag.color }]}>
-                      {tag.label}
-                    </Text>
+                    <Text style={[styles.tagText, { color: tag.color }]}>{tag.label}</Text>
                   </Pressable>
                 ))}
               </View>
             )}
           </View>
+          <View style={[styles.categoryStripe, { backgroundColor: catColor }]} />
         </View>
       </Card>
     </Pressable>
@@ -106,39 +107,32 @@ const useStyles = makeStyles((t) => ({
   row: {
     flexDirection: "row",
     gap: t.spacing.md,
+    alignItems: "center",
   },
   thumbnail: {
-    width: 56,
-    height: 56,
-    borderRadius: t.radius.sm,
+    width: 60,
+    height: 60,
+    borderRadius: t.radius.md,
   },
   iconBox: {
-    width: 56,
-    height: 56,
-    borderRadius: t.radius.sm,
-    backgroundColor: t.colors.surface,
-    borderWidth: 1,
-    borderColor: t.colors.border,
+    width: 60,
+    height: 60,
+    borderRadius: t.radius.md,
     alignItems: "center",
     justifyContent: "center",
   },
   icon: {
-    fontSize: 24,
+    fontSize: 28,
   },
   content: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   name: {
     ...t.typography.headline,
     color: t.colors.text,
-    flex: 1,
   },
   date: {
-    fontSize: 13,
+    ...t.typography.footnote,
     color: t.colors.textSecondary,
     marginTop: 2,
   },
@@ -150,22 +144,28 @@ const useStyles = makeStyles((t) => ({
   },
   cost: {
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: "600",
     color: t.colors.text,
   },
   tags: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: t.spacing.xs,
-    marginTop: 6,
+    marginTop: t.spacing.sm,
   },
   tag: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 10,
+    borderRadius: t.radius.full,
   },
   tagText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "600",
+  },
+  categoryStripe: {
+    width: 4,
+    alignSelf: "stretch",
+    borderRadius: t.radius.full,
+    minHeight: 44,
   },
 }));
