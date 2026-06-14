@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { colors } from "@/lib/constants";
+import { useTheme } from "@/theme";
 
 type Props = {
   value: Date;
@@ -9,6 +9,24 @@ type Props = {
 };
 
 export function NativeDatePicker({ value, onChange, minimumDate, maximumDate }: Props) {
+  const theme = useTheme();
+
+  const inputStyle: React.CSSProperties = {
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    paddingLeft: 14,
+    paddingRight: 14,
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontSize: 15,
+    color: theme.colors.text,
+    backgroundColor: theme.colors.surface,
+    borderStyle: "solid",
+    width: "100%",
+    boxSizing: "border-box",
+  };
+
   return (
     <input
       type="date"
@@ -23,19 +41,3 @@ export function NativeDatePicker({ value, onChange, minimumDate, maximumDate }: 
     />
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  borderWidth: 1,
-  borderColor: colors.border,
-  borderRadius: 8,
-  paddingLeft: 14,
-  paddingRight: 14,
-  paddingTop: 10,
-  paddingBottom: 10,
-  fontSize: 15,
-  color: colors.text,
-  backgroundColor: colors.surface,
-  borderStyle: "solid",
-  width: "100%",
-  boxSizing: "border-box",
-};
