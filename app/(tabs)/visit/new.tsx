@@ -26,12 +26,14 @@ import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
 import { insertPhoto, getPhotosForVisit, deletePhoto } from "@/db/queries/photos";
 import { getTagsForVisit, setVisitTags } from "@/db/queries/tags";
 import * as Location from "expo-location";
-import { colors } from "@/lib/constants";
+import { makeStyles, useTheme } from "@/theme";
 
 type PhotoItem = { id?: number; uri: string };
 
 export default function NewVisitScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const params = useLocalSearchParams<{
     lat?: string;
     lng?: string;
@@ -270,14 +272,18 @@ export default function NewVisitScreen() {
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.content}
+          contentInsetAdjustmentBehavior="automatic"
+        >
           <Text style={styles.label}>{t("form.placeName")}</Text>
           <TextInput
             style={styles.input}
             value={name}
             onChangeText={setName}
             placeholder={t("form.placeNamePlaceholder")}
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.colors.textTertiary}
           />
 
           <Text style={styles.label}>{t("form.address")}</Text>
@@ -286,7 +292,7 @@ export default function NewVisitScreen() {
             value={address}
             onChangeText={(v) => { setAddress(v); setAddressManuallyEdited(true); }}
             placeholder={t("form.addressPlaceholder")}
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.colors.textTertiary}
           />
 
           <Text style={styles.label}>{t("form.category")}</Text>
@@ -313,7 +319,7 @@ export default function NewVisitScreen() {
             onChangeText={(v) => setAttendeeCount(v.replace(/[^0-9]/g, ""))}
             keyboardType="number-pad"
             placeholder={t("form.attendeesPlaceholder")}
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.colors.textTertiary}
             maxLength={3}
           />
 
@@ -339,7 +345,7 @@ export default function NewVisitScreen() {
             value={notes}
             onChangeText={setNotes}
             placeholder={t("form.notesPlaceholder")}
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={theme.colors.textTertiary}
             multiline
             numberOfLines={4}
           />
@@ -357,40 +363,40 @@ export default function NewVisitScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   flex: { flex: 1 },
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: t.colors.background,
   },
   content: {
-    padding: 16,
+    padding: t.spacing.lg,
     paddingBottom: 40,
   },
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: colors.textSecondary,
-    marginTop: 16,
+    color: t.colors.textSecondary,
+    marginTop: t.spacing.lg,
     marginBottom: 6,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.surface,
+    color: t.colors.text,
+    backgroundColor: t.colors.surface,
   },
   textArea: {
     minHeight: 80,
     textAlignVertical: "top",
   },
   buttonRow: {
-    marginTop: 24,
+    marginTop: t.spacing.xl,
   },
-});
+}));
