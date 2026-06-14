@@ -1,9 +1,8 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs, useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import { useTranslation } from "react-i18next";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { useTheme } from "@/theme";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -15,20 +14,20 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const { t } = useTranslation();
   const router = useRouter();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: accentColor,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarActiveTintColor: theme.colors.accent,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          backgroundColor: theme.colors.surface,
+          borderTopColor: theme.colors.border,
         },
-        headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: accentColor,
-        headerBackTitleVisible: false,
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTitleStyle: { color: theme.colors.text },
+        headerTintColor: theme.colors.accent,
       }}
     >
       <Tabs.Screen
@@ -44,7 +43,7 @@ export default function TabLayout() {
               accessibilityLabel="Search"
               accessibilityRole="button"
             >
-              <FontAwesome name="search" size={20} color={colors.text} />
+              <FontAwesome name="search" size={20} color={theme.colors.text} />
             </Pressable>
           ),
         }}
@@ -62,7 +61,7 @@ export default function TabLayout() {
               accessibilityLabel="Add visit"
               accessibilityRole="button"
             >
-              <FontAwesome name="plus" size={20} color={accentColor} />
+              <FontAwesome name="plus" size={20} color={theme.colors.accent} />
             </Pressable>
           ),
           headerRight: () => (
@@ -73,7 +72,7 @@ export default function TabLayout() {
               accessibilityLabel="Search"
               accessibilityRole="button"
             >
-              <FontAwesome name="search" size={20} color={colors.text} />
+              <FontAwesome name="search" size={20} color={theme.colors.text} />
             </Pressable>
           ),
         }}
@@ -82,9 +81,7 @@ export default function TabLayout() {
         name="stats"
         options={{
           title: t("tabs.stats"),
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="signal" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name="signal" color={color} />,
         }}
       />
       <Tabs.Screen
