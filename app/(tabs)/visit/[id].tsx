@@ -23,8 +23,7 @@ import { resolvePhotoUri } from "@/lib/photoUtils";
 import * as Haptics from "expo-haptics";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { IconButton } from "@/components/ui/IconButton";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type VisitDetail = Awaited<ReturnType<typeof getVisitById>>[number];
 type Tag = { id: number; label: string; color: string };
@@ -32,10 +31,11 @@ type Photo = { id: number; uri: string };
 
 export default function VisitDetailScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const setFilter = useFilterStore((s) => s.setFilter);
-  const accentColor = useThemeStore((s) => s.accentColor);
   const [visit, setVisit] = useState<VisitDetail | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -101,10 +101,10 @@ export default function VisitDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: "" }} />
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
-          <Text style={{ fontSize: 16, color: colors.textSecondary, marginBottom: 16 }}>{t("visit.notFound", { defaultValue: "Visit not found" })}</Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
+          <Text style={{ fontSize: 16, color: theme.colors.textSecondary, marginBottom: 16 }}>{t("visit.notFound", { defaultValue: "Visit not found" })}</Text>
           <Pressable onPress={() => router.back()}>
-            <Text style={{ fontSize: 16, color: colors.accent }}>{t("common.goBack", { defaultValue: "Go Back" })}</Text>
+            <Text style={{ fontSize: 16, color: theme.colors.accent }}>{t("common.goBack", { defaultValue: "Go Back" })}</Text>
           </Pressable>
         </View>
       </>
@@ -120,7 +120,7 @@ export default function VisitDetailScreen() {
             <View style={styles.headerButtons}>
               <IconButton
                 name="pencil"
-                color={accentColor}
+                color={theme.colors.accent}
                 onPress={() =>
                   router.push({
                     pathname: "/visit/new",
@@ -128,12 +128,16 @@ export default function VisitDetailScreen() {
                   })
                 }
               />
-              <IconButton name="trash" color={colors.destructive} onPress={handleDelete} />
+              <IconButton name="trash" color={theme.colors.destructive} onPress={handleDelete} />
             </View>
           ),
         }}
       />
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
         {/* Photos */}
         {photos.length > 0 && (
           <ScrollView
@@ -176,7 +180,7 @@ export default function VisitDetailScreen() {
             </Pressable>
             {visit.placeAddress && (
               <Pressable onPress={openInMaps}>
-                <Text style={[styles.placeAddress, { color: accentColor }]}>
+                <Text style={[styles.placeAddress, { color: theme.colors.accent }]}>
                   {visit.placeAddress} ↗
                 </Text>
               </Pressable>
@@ -261,10 +265,10 @@ export default function VisitDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: t.colors.background,
   },
   content: {
     paddingBottom: 40,
@@ -275,23 +279,23 @@ const styles = StyleSheet.create({
   },
   photoScroll: {
     flexGrow: 0,
-    marginBottom: 16,
+    marginBottom: t.spacing.lg,
   },
   photo: {
     width: 280,
     height: 200,
-    borderRadius: 12,
-    marginLeft: 16,
+    borderRadius: t.radius.md,
+    marginLeft: t.spacing.lg,
   },
   placeRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.surface,
-    padding: 16,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    gap: 12,
-    marginBottom: 8,
+    backgroundColor: t.colors.surface,
+    padding: t.spacing.lg,
+    marginHorizontal: t.spacing.lg,
+    borderRadius: t.radius.md,
+    gap: t.spacing.md,
+    marginBottom: t.spacing.sm,
   },
   placeIcon: {
     fontSize: 28,
@@ -299,28 +303,28 @@ const styles = StyleSheet.create({
   placeName: {
     fontSize: 18,
     fontWeight: "700",
-    color: colors.text,
+    color: t.colors.text,
   },
   placeAddress: {
     fontSize: 13,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 2,
   },
   section: {
-    paddingHorizontal: 16,
+    paddingHorizontal: t.spacing.lg,
     paddingVertical: 10,
   },
   sectionLabel: {
     fontSize: 12,
     fontWeight: "600",
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 4,
   },
   sectionValue: {
     fontSize: 16,
-    color: colors.text,
+    color: t.colors.text,
   },
   tagRow: {
     flexDirection: "row",
@@ -330,7 +334,7 @@ const styles = StyleSheet.create({
   tag: {
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: t.radius.md,
   },
   tagText: {
     fontSize: 13,
@@ -338,7 +342,7 @@ const styles = StyleSheet.create({
   },
   notes: {
     fontSize: 15,
-    color: colors.text,
+    color: t.colors.text,
     lineHeight: 22,
   },
-});
+}));
