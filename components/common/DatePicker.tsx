@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Pressable, Text, Platform, StyleSheet } from "react-native";
+import { Pressable, Text, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { format } from "date-fns";
-import { colors } from "@/lib/constants";
+import { makeStyles } from "@/theme";
 
 type Props = {
   value: Date;
@@ -11,6 +11,7 @@ type Props = {
 
 export function DatePicker({ value, onChange }: Props) {
   const [show, setShow] = useState(false);
+  const styles = useStyles();
 
   return (
     <>
@@ -32,17 +33,17 @@ export function DatePicker({ value, onChange }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   button: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
   },
   text: {
     fontSize: 16,
-    color: colors.text,
+    color: t.colors.text,
   },
-});
+}));
