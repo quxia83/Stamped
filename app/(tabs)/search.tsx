@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { View, Text, FlatList, Pressable } from "react-native";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -10,22 +10,22 @@ import { getFilteredVisits, type VisitWithPlace } from "@/db/queries/visits";
 import { getTagsForVisit } from "@/db/queries/tags";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
 import { useMapStore } from "@/stores/useMapStore";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type VisitRow = VisitWithPlace & {
-  tags: { label: string; color: string }[];
+  tags: { id: number; label: string; color: string }[];
 };
 
 export default function SearchScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const [query, setQuery] = useState("");
   const [visits, setVisits] = useState<VisitRow[]>([]);
   const [places, setPlaces] = useState<PlaceResult[]>([]);
   const [searchError, setSearchError] = useState(false);
   const region = useMapStore((s) => s.region);
   const setSearchPin = useMapStore((s) => s.setSearchPin);
-  const accentColor = useThemeStore((s) => s.accentColor);
   const router = useRouter();
 
   const search = useCallback(async (q: string) => {
@@ -90,6 +90,7 @@ export default function SearchScreen() {
         contentContainerStyle={
           !hasResults && query ? styles.empty : undefined
         }
+        contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           <>
             {places.length > 0 && (
@@ -104,7 +105,7 @@ export default function SearchScreen() {
                     <Ionicons
                       name="location-outline"
                       size={20}
-                      color={accentColor}
+                      color={theme.colors.accent}
                       style={styles.placeIcon}
                     />
                     <View style={styles.placeText}>
@@ -163,10 +164,10 @@ export default function SearchScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: t.colors.background,
   },
   empty: {
     flex: 1,
@@ -174,23 +175,23 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 13,
     fontWeight: "600",
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     textTransform: "uppercase",
     letterSpacing: 0.5,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    paddingHorizontal: t.spacing.lg,
+    paddingTop: t.spacing.lg,
+    paddingBottom: t.spacing.sm,
   },
   placeRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
+    paddingHorizontal: t.spacing.lg,
+    paddingVertical: t.spacing.md,
+    borderBottomWidth: 0.5,
+    borderBottomColor: t.colors.border,
   },
   placeIcon: {
-    marginRight: 12,
+    marginRight: t.spacing.md,
   },
   placeText: {
     flex: 1,
@@ -198,11 +199,11 @@ const styles = StyleSheet.create({
   placeName: {
     fontSize: 16,
     fontWeight: "500",
-    color: colors.text,
+    color: t.colors.text,
   },
   placeAddress: {
     fontSize: 13,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 2,
   },
-});
+}));
