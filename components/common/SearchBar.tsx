@@ -1,7 +1,7 @@
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
-import { colors } from "@/lib/constants";
+import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
   value: string;
@@ -15,16 +15,18 @@ export function SearchBar({
   placeholder,
 }: Props) {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const resolvedPlaceholder = placeholder ?? t("common.searchPlaceholder");
   return (
     <View style={styles.container}>
-      <FontAwesome name="search" size={16} color={colors.textSecondary} />
+      <FontAwesome name="search" size={16} color={theme.colors.textSecondary} />
       <TextInput
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
         placeholder={resolvedPlaceholder}
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={theme.colors.textSecondary}
         autoCapitalize="none"
         autoCorrect={false}
         accessibilityLabel={resolvedPlaceholder}
@@ -34,23 +36,23 @@ export function SearchBar({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    backgroundColor: t.colors.surface,
+    borderRadius: t.radius.md,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    marginHorizontal: t.spacing.lg,
+    marginVertical: t.spacing.sm,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: t.colors.border,
   },
   input: {
     flex: 1,
     fontSize: 16,
     marginLeft: 10,
-    color: colors.text,
+    color: t.colors.text,
   },
-});
+}));
