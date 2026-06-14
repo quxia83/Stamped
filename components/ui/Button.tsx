@@ -1,7 +1,6 @@
-import { Pressable, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { Pressable, Text, ActivityIndicator } from "react-native";
 import * as Haptics from "expo-haptics";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
   title: string;
@@ -18,16 +17,17 @@ export function Button({
   disabled,
   loading,
 }: Props) {
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
   const bg =
     variant === "primary"
-      ? accentColor
+      ? theme.colors.accent
       : variant === "danger"
-        ? colors.destructive
+        ? theme.colors.destructive
         : "transparent";
   const textColor =
-    variant === "secondary" ? accentColor : "#fff";
-  const borderColor = variant === "secondary" ? accentColor : bg;
+    variant === "secondary" ? theme.colors.accent : theme.colors.onAccent;
+  const borderColor = variant === "secondary" ? theme.colors.accent : bg;
 
   return (
     <Pressable
@@ -53,17 +53,14 @@ export function Button({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingVertical: t.spacing.md + 2,
+    paddingHorizontal: t.spacing.xl,
+    borderRadius: t.radius.md,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1.5,
   },
-  text: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});
+  text: { ...t.typography.headline },
+}));
