@@ -1,7 +1,7 @@
 import { Marker, Callout } from "react-native-maps";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { useState, useEffect } from "react";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { useTheme } from "@/theme";
 import { resolvePhotoUri } from "@/lib/photoUtils";
 
 type Props = {
@@ -26,7 +26,8 @@ export function PlaceMarker({
   onPress,
   onCalloutPress,
 }: Props) {
-  const pinColor = useThemeStore((s) => s.accentColor);
+  const { colors } = useTheme();
+  const pinColor = colors.accent;
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setTracksViewChanges(false), 500);
