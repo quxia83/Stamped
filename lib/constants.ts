@@ -1,24 +1,20 @@
+import { palette, categoryColors } from "@/theme/tokens";
+
+// TEMPORARY bridge during theme migration. Removed later once every consumer
+// reads from useTheme(). Aliases the light palette so legacy `import { colors }`
+// keeps compiling.
 export const colors = {
   primary: "#1a1a2e",
   accent: "#e94560",
-  background: "#f8f9fa",
-  surface: "#ffffff",
-  text: "#1a1a2e",
-  textSecondary: "#6c757d",
-  border: "#dee2e6",
-  destructive: "#FF3B30",
-  star: "#fbbf24",
-  starEmpty: "#d1d5db",
-  categoryColors: [
-    "#e94560", // Restaurant
-    "#8b5cf6", // Cafe
-    "#f59e0b", // Bar
-    "#10b981", // Shopping
-    "#3b82f6", // Event
-    "#ec4899", // Travel
-    "#14b8a6", // Health
-    "#6b7280", // Other
-  ],
+  background: palette.light.background,
+  surface: palette.light.surface,
+  text: palette.light.text,
+  textSecondary: palette.light.textSecondary,
+  border: palette.light.border,
+  destructive: palette.light.destructive,
+  star: palette.light.star,
+  starEmpty: palette.light.starEmpty,
+  categoryColors,
 } as const;
 
 export const currencies = ["USD", "EUR", "GBP", "JPY", "CAD", "AUD", "CHF"] as const;
