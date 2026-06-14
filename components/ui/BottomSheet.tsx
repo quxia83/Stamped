@@ -1,6 +1,6 @@
-import { View, Modal, Pressable, ScrollView, StyleSheet } from "react-native";
+import { View, Modal, Pressable, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors } from "@/lib/constants";
+import { makeStyles } from "@/theme";
 
 type Props = {
   visible: boolean;
@@ -10,6 +10,7 @@ type Props = {
 
 export function BottomSheet({ visible, onClose, children }: Props) {
   const insets = useSafeAreaInsets();
+  const styles = useStyles();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.overlay} onPress={onClose}>
@@ -25,13 +26,13 @@ export function BottomSheet({ visible, onClose, children }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.3)",
   },
   sheet: {
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
@@ -41,8 +42,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.border,
+    backgroundColor: t.colors.border,
     alignSelf: "center",
-    marginBottom: 16,
+    marginBottom: t.spacing.lg,
   },
-});
+}));
