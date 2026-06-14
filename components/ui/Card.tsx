@@ -1,26 +1,23 @@
-import { View, StyleSheet, ViewStyle } from "react-native";
-import { colors } from "@/lib/constants";
+import { View, StyleProp, ViewStyle } from "react-native";
+import { makeStyles } from "@/theme";
 
 type Props = {
   children: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function Card({ children, style }: Props) {
+  const styles = useStyles();
   return <View style={[styles.card, style]}>{children}</View>;
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 16,
+    backgroundColor: t.colors.surface,
+    borderRadius: t.radius.md,
+    padding: t.spacing.lg,
+    marginHorizontal: t.spacing.lg,
     marginVertical: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    ...t.shadow.level1,
   },
-});
+}));
