@@ -7,8 +7,7 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { getAllCategories } from "@/db/queries/categories";
 import { getAllTags } from "@/db/queries/tags";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme, categoryColors } from "@/theme";
 
 type Category = { id: number; name: string; icon: string };
 type Tag = { id: number; label: string; color: string };
@@ -16,7 +15,8 @@ type Tag = { id: number; label: string; color: string };
 export function FilterBar() {
   const { t } = useTranslation();
   const store = useFilterStore();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
 
   const sortOptions = [
     { field: "date" as const, label: t("filter.date") },
@@ -82,7 +82,7 @@ export function FilterBar() {
         <Pressable
           style={[
             styles.filterBtn,
-            hasFilters && { backgroundColor: accentColor, borderColor: accentColor },
+            hasFilters && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent },
           ]}
           onPress={() => setShowFilters(true)}
           accessibilityLabel={hasFilters ? t("filter.filtersActive") : t("filter.filter")}
@@ -91,12 +91,12 @@ export function FilterBar() {
           <FontAwesome
             name="filter"
             size={14}
-            color={hasFilters ? "#fff" : colors.text}
+            color={hasFilters ? theme.colors.onAccent : theme.colors.text}
           />
           <Text
             style={[
               styles.filterText,
-              hasFilters && { color: "#fff" },
+              hasFilters && { color: theme.colors.onAccent },
             ]}
           >
             {t("filter.filter")}
@@ -118,7 +118,7 @@ export function FilterBar() {
               key={cat.id}
               label={`${cat.icon} ${t(`category.${cat.name}`, { defaultValue: cat.name })}`}
               selected={store.categoryId === cat.id}
-              color={colors.categoryColors[i % colors.categoryColors.length]}
+              color={categoryColors[i % categoryColors.length]}
               onPress={() => store.setFilter("categoryId", cat.id)}
             />
           ))}
@@ -163,10 +163,10 @@ export function FilterBar() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   bar: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: t.spacing.lg,
+    paddingVertical: t.spacing.sm,
     gap: 0,
     alignItems: "center",
   },
@@ -178,23 +178,23 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
-    marginRight: 8,
+    borderColor: t.colors.border,
+    marginRight: t.spacing.sm,
   },
   filterText: {
     fontSize: 14,
     fontWeight: "500",
-    color: colors.text,
+    color: t.colors.text,
   },
   sheetTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.text,
-    marginTop: 12,
-    marginBottom: 8,
+    color: t.colors.text,
+    marginTop: t.spacing.md,
+    marginBottom: t.spacing.sm,
   },
   chipRow: {
     flexDirection: "row",
     flexWrap: "wrap",
   },
-});
+}));
