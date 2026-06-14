@@ -1,6 +1,5 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { View, Text, Pressable } from "react-native";
+import { makeStyles, useTheme } from "@/theme";
 
 const LEVELS = [1, 2, 3, 4] as const;
 
@@ -14,7 +13,8 @@ type Props = {
 };
 
 export function PriceLevelPicker({ value, onChange }: Props) {
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       {LEVELS.map((level) => {
@@ -22,7 +22,7 @@ export function PriceLevelPicker({ value, onChange }: Props) {
         return (
           <Pressable
             key={level}
-            style={[styles.chip, selected && { backgroundColor: accentColor, borderColor: accentColor }]}
+            style={[styles.chip, selected && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }]}
             onPress={() => onChange(selected ? undefined : level)}
           >
             <Text style={[styles.label, selected && styles.labelSelected]}>
@@ -35,25 +35,25 @@ export function PriceLevelPicker({ value, onChange }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   row: {
     flexDirection: "row",
-    gap: 8,
+    gap: t.spacing.sm,
   },
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: t.spacing.lg,
+    paddingVertical: t.spacing.sm,
+    borderRadius: t.radius.sm,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: t.colors.border,
+    backgroundColor: t.colors.surface,
   },
   label: {
     fontSize: 15,
     fontWeight: "600",
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
   },
   labelSelected: {
-    color: "#fff",
+    color: t.colors.onAccent,
   },
-});
+}));
