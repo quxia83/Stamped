@@ -1,0 +1,529 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1781397595338,
+  "projectRoot": "/Users/quxia/Documents/2026/stamped",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "react",
+        "version": "19.1.0",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.1.0",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": "npm run start",
+    "scripts": {
+      "start": "expo start",
+      "android": "expo run:android",
+      "ios": "expo run:ios",
+      "web": "expo start --web"
+    }
+  },
+  "conventions": {
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "assets",
+      "components",
+      "docs",
+      "lib"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "android": {
+      "path": "android",
+      "purpose": null,
+      "fileCount": 7,
+      "lastAccessed": 1781397595320,
+      "keyFiles": [
+        "build.gradle",
+        "gradle.properties",
+        "gradlew",
+        "gradlew.bat",
+        "settings.gradle"
+      ]
+    },
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 2,
+      "lastAccessed": 1781397595329,
+      "keyFiles": [
+        "+not-found.tsx",
+        "_layout.tsx"
+      ]
+    },
+    "assets": {
+      "path": "assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1781397595331,
+      "keyFiles": []
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 10,
+      "lastAccessed": 1781397595332,
+      "keyFiles": [
+        "EditScreenInfo.tsx",
+        "ExternalLink.tsx",
+        "StyledText.tsx",
+        "Themed.tsx",
+        "useClientOnlyValue.ts"
+      ]
+    },
+    "constants": {
+      "path": "constants",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1781397595333,
+      "keyFiles": [
+        "Colors.ts"
+      ]
+    },
+    "db": {
+      "path": "db",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1781397595333,
+      "keyFiles": [
+        "client.ts",
+        "schema.ts",
+        "seed.ts"
+      ]
+    },
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 1,
+      "lastAccessed": 1781397595333,
+      "keyFiles": [
+        "metadata.json"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1781397595333,
+      "keyFiles": []
+    },
+    "drizzle": {
+      "path": "drizzle",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1781397595333,
+      "keyFiles": [
+        "0000_curious_wendell_rand.sql",
+        "0001_add_price_level.sql",
+        "0002_add_attendee_count.sql",
+        "migrations.js"
+      ]
+    },
+    "hooks": {
+      "path": "hooks",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1781397595334,
+      "keyFiles": [
+        "useDatabase.ts",
+        "usePhotos.ts",
+        "usePlaces.ts",
+        "useVisits.ts"
+      ]
+    },
+    "ios": {
+      "path": "ios",
+      "purpose": null,
+      "fileCount": 6,
+      "lastAccessed": 1781397595334,
+      "keyFiles": [
+        "Podfile",
+        "Podfile.properties.json"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 4,
+      "lastAccessed": 1781397595335,
+      "keyFiles": [
+        "constants.ts",
+        "geocode.ts",
+        "photoUtils.ts"
+      ]
+    },
+    "stores": {
+      "path": "stores",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1781397595336,
+      "keyFiles": [
+        "useFilterStore.ts",
+        "useMapStore.ts",
+        "useThemeStore.ts"
+      ]
+    },
+    "android/app": {
+      "path": "android/app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1781397595336,
+      "keyFiles": [
+        "build.gradle",
+        "debug.keystore",
+        "proguard-rules.pro"
+      ]
+    },
+    "components/__tests__": {
+      "path": "components/__tests__",
+      "purpose": "Test files",
+      "fileCount": 1,
+      "lastAccessed": 1781397595337,
+      "keyFiles": [
+        "StyledText-test.js"
+      ]
+    },
+    "dist/assets": {
+      "path": "dist/assets",
+      "purpose": "Static assets",
+      "fileCount": 43,
+      "lastAccessed": 1781397595337,
+      "keyFiles": [
+        "017bc6ba3fc25503e5eb5e53826d48a8",
+        "0747a1317bbe9c6fc340b889ef8ab3ae",
+        "0a328cd9c1afd0afe8e3b1ec5165b1b4"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "app/(tabs)/stats.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1781401817634,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/search.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1781401813181,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/settings.tsx",
+      "accessCount": 6,
+      "lastAccessed": 1781401944838,
+      "type": "file"
+    },
+    {
+      "path": "theme/tokens.ts",
+      "accessCount": 5,
+      "lastAccessed": 1781401883393,
+      "type": "file"
+    },
+    {
+      "path": "theme/index.ts",
+      "accessCount": 5,
+      "lastAccessed": 1781402062976,
+      "type": "file"
+    },
+    {
+      "path": "lib/constants.ts",
+      "accessCount": 5,
+      "lastAccessed": 1781403351707,
+      "type": "file"
+    },
+    {
+      "path": "theme/ThemeProvider.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1781399520760,
+      "type": "file"
+    },
+    {
+      "path": "components/ui/Card.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1781400124701,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/VisitCard.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1781400450735,
+      "type": "file"
+    },
+    {
+      "path": "db/queries/visits.ts",
+      "accessCount": 4,
+      "lastAccessed": 1781401565329,
+      "type": "file"
+    },
+    {
+      "path": "theme/makeStyles.ts",
+      "accessCount": 4,
+      "lastAccessed": 1781401882973,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/_layout.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781399640954,
+      "type": "file"
+    },
+    {
+      "path": "components/common/EmptyState.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781399787187,
+      "type": "file"
+    },
+    {
+      "path": "components/ui/Button.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400142555,
+      "type": "file"
+    },
+    {
+      "path": "components/ui/Chip.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400165375,
+      "type": "file"
+    },
+    {
+      "path": "components/common/PersonPicker.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400581321,
+      "type": "file"
+    },
+    {
+      "path": "components/map/MapControls.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400671229,
+      "type": "file"
+    },
+    {
+      "path": "components/map/PlaceMarker.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400688116,
+      "type": "file"
+    },
+    {
+      "path": "components/map/StampedMap.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781400744853,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/list.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1781401581266,
+      "type": "file"
+    },
+    {
+      "path": "stores/useThemeStore.ts",
+      "accessCount": 2,
+      "lastAccessed": 1781399162149,
+      "type": "file"
+    },
+    {
+      "path": "app/_layout.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781399616955,
+      "type": "file"
+    },
+    {
+      "path": "components/ui/BottomSheet.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400185258,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/RatingInput.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400240209,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/TagPicker.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400269030,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/PhotoPicker.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400303692,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/PriceLevelPicker.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400322445,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/CostInput.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400341541,
+      "type": "file"
+    },
+    {
+      "path": "components/common/FilterBar.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400539058,
+      "type": "file"
+    },
+    {
+      "path": "components/common/SearchBar.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400556247,
+      "type": "file"
+    },
+    {
+      "path": "components/common/DatePicker.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400603852,
+      "type": "file"
+    },
+    {
+      "path": "components/common/DatePicker.web.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400624194,
+      "type": "file"
+    },
+    {
+      "path": "components/common/NativeDatePicker.web.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400639947,
+      "type": "file"
+    },
+    {
+      "path": "components/map/StampedMap.web.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781400765051,
+      "type": "file"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-06-13-ui-foundation.md",
+      "accessCount": 2,
+      "lastAccessed": 1781401474709,
+      "type": "file"
+    },
+    {
+      "path": "theme/useTheme.ts",
+      "accessCount": 2,
+      "lastAccessed": 1781401883308,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/visit/new.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781402108284,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/visit/[id].tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781402153928,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/place/[id].tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781402202505,
+      "type": "file"
+    },
+    {
+      "path": "app/+not-found.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1781402223428,
+      "type": "file"
+    },
+    {
+      "path": "constants/Colors.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781397969382,
+      "type": "file"
+    },
+    {
+      "path": "app/(tabs)/index.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1781397969756,
+      "type": "file"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-06-13-ui-foundation-design.md",
+      "accessCount": 1,
+      "lastAccessed": 1781398657546,
+      "type": "file"
+    },
+    {
+      "path": "tsconfig.json",
+      "accessCount": 1,
+      "lastAccessed": 1781399162277,
+      "type": "file"
+    },
+    {
+      "path": "theme/types.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781399185074,
+      "type": "file"
+    },
+    {
+      "path": "components/ui/Skeleton.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1781399760654,
+      "type": "file"
+    },
+    {
+      "path": "components/visit/VisitCardSkeleton.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1781399773374,
+      "type": "file"
+    },
+    {
+      "path": "db/queries/tags.ts",
+      "accessCount": 1,
+      "lastAccessed": 1781401409546,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

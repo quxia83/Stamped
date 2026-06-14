@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"echo \\\"=== tsc (expect 0) ===\\\" && npx tsc --noEmit 2>/dev/null | grep -c \\\"error TS\\\" && git add \\\"app/(tabs)/search.tsx\\\" \\\"app/(tabs)/stats.tsx\\\" && git commit -q -m \\\"Restore StyleShee...",
+  "error": "Exit code 1\n=== tsc (expect 0) ===\n0",
+  "timestamp": "2026-06-14T01:50:24.699Z",
+  "retry_count": 2
+}

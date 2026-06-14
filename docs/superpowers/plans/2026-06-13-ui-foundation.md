@@ -894,6 +894,15 @@ git commit -m "Theme <ComponentName> via useTheme/makeStyles"
 Apply the **same migration recipe from Task 11** to each screen, plus the
 per-screen additions below.
 
+> **DEVIATION (2026-06-13):** iOS large titles are **deferred to Phase 2**.
+> `headerLargeTitle` is a native-stack-only option; Expo Router `Tabs` use
+> bottom-tab headers which don't support it, so enabling it here would be a
+> no-op. Adding it properly requires nesting a Stack per tab (structural, out of
+> Phase 1 scope). The `FilterBar`→`ListHeaderComponent` move (which existed only
+> to satisfy large titles) is therefore also dropped — `FilterBar` stays a
+> sticky bar above the list. We keep the rest of the nav polish:
+> `contentInsetAdjustmentBehavior="automatic"`, themed headers, safe areas.
+
 **Files (one commit per file):**
 - Modify: `app/(tabs)/index.tsx` (map) — recipe only.
 - Modify: `app/(tabs)/list.tsx` — recipe + loading skeletons + large-title fix.
