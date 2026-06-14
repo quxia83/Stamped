@@ -1,9 +1,8 @@
-import { View, Text, Pressable, StyleSheet, Alert } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useTranslation } from "react-i18next";
 import * as Location from "expo-location";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
   onLocationFound: (latitude: number, longitude: number) => void;
@@ -13,7 +12,9 @@ type Props = {
 
 export function MapControls({ onLocationFound, placeCount, noLocationCount }: Props) {
   const { t } = useTranslation();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
+
   const goToMyLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -37,17 +38,17 @@ export function MapControls({ onLocationFound, placeCount, noLocationCount }: Pr
           style={({ pressed }) => [styles.button, { opacity: pressed ? 0.7 : 1 }]}
           onPress={goToMyLocation}
         >
-          <FontAwesome name="location-arrow" size={20} color={accentColor} />
+          <FontAwesome name="location-arrow" size={20} color={theme.colors.accent} />
         </Pressable>
       </View>
     </>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   badge: {
     position: "absolute",
-    top: 12,
+    top: t.spacing.md,
     left: 0,
     right: 0,
     alignItems: "center",
@@ -57,18 +58,18 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 12,
     fontWeight: "600",
-    borderRadius: 12,
+    borderRadius: t.spacing.md,
     overflow: "hidden",
-    paddingHorizontal: 12,
+    paddingHorizontal: t.spacing.md,
     paddingVertical: 5,
   },
   container: {
     position: "absolute",
-    right: 16,
-    bottom: 24,
+    right: t.spacing.lg,
+    bottom: t.spacing.xl,
   },
   button: {
-    backgroundColor: colors.surface,
+    backgroundColor: t.colors.surface,
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -80,4 +81,4 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-});
+}));
