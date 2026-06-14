@@ -6,6 +6,7 @@ import { VisitCard } from "@/components/visit/VisitCard";
 import { VisitCardSkeleton } from "@/components/visit/VisitCardSkeleton";
 import { FilterBar } from "@/components/common/FilterBar";
 import { EmptyState } from "@/components/common/EmptyState";
+import { LargeHeader } from "@/components/ui/LargeHeader";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { getFilteredVisits, type VisitWithPlace } from "@/db/queries/visits";
 import { getTagsForVisit } from "@/db/queries/tags";
@@ -71,6 +72,7 @@ export default function ListTab() {
 
   return (
     <>
+      <LargeHeader title={t("tabs.visits")} />
       <FilterBar />
       {loading ? (
         <FlatList

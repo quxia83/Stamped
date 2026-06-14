@@ -20,6 +20,7 @@ import {
 import { useFilterStore } from "@/stores/useFilterStore";
 import { makeStyles, useTheme, categoryColors } from "@/theme";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { LargeHeader } from "@/components/ui/LargeHeader";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type TimeRange = "all" | "week" | "month" | "year" | "custom";
@@ -101,11 +102,13 @@ export default function StatsTab() {
   const maxTrend = Math.max(1, ...trendData.map((d) => d.visitCount));
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      contentInsetAdjustmentBehavior="automatic"
-    >
+    <View style={styles.screen}>
+      <LargeHeader title={t("tabs.stats")} />
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        contentInsetAdjustmentBehavior="automatic"
+      >
       {/* Time Range Chips */}
       <View style={styles.chipRow}>
         {chips.map((c) => (
@@ -319,11 +322,13 @@ export default function StatsTab() {
           )}
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const useStyles = makeStyles((t) => ({
+  screen: { flex: 1, backgroundColor: t.colors.background },
   container: { flex: 1, backgroundColor: t.colors.background },
   content: { padding: t.spacing.lg, paddingBottom: 40 },
   dateRow: {

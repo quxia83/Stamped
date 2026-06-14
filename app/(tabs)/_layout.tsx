@@ -52,6 +52,7 @@ export default function TabLayout() {
         name="list"
         options={{
           title: t("tabs.visits"),
+          headerTitle: () => null,
           tabBarIcon: ({ color }) => <TabBarIcon name="bookmark" color={color} />,
           headerLeft: () => (
             <Pressable
@@ -81,6 +82,7 @@ export default function TabLayout() {
         name="stats"
         options={{
           title: t("tabs.stats"),
+          headerTitle: () => null,
           tabBarIcon: ({ color }) => <TabBarIcon name="signal" color={color} />,
         }}
       />
@@ -88,6 +90,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: t("tabs.settings"),
+          headerTitle: () => null,
           tabBarIcon: ({ color }) => <TabBarIcon name="sliders" color={color} />,
         }}
       />

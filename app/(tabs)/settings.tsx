@@ -19,12 +19,17 @@ import {
 import { getAllTags, insertTag, deleteTag } from "@/db/queries/tags";
 import { getAllPeople, insertPerson, deletePerson } from "@/db/queries/people";
 import { makeStyles, useTheme } from "@/theme";
+import { LargeHeader } from "@/components/ui/LargeHeader";
 import { useThemeStore, PIN_COLORS } from "@/stores/useThemeStore";
 
 type Item = { id: number; name: string; extra?: string };
 type Section = { title: string; data: Item[]; type: "category" | "tag" | "person" };
 
 const useStyles = makeStyles((t) => ({
+  screen: {
+    flex: 1,
+    backgroundColor: t.colors.background,
+  },
   container: {
     paddingBottom: 40,
     backgroundColor: t.colors.background,
@@ -244,7 +249,9 @@ export default function SettingsTab() {
   };
 
   return (
-    <SectionList
+    <View style={styles.screen}>
+      <LargeHeader title={t("tabs.settings")} />
+      <SectionList
       sections={sections}
       keyExtractor={(item) => `${item.id}`}
       ListHeaderComponent={<ThemeColorPicker />}
@@ -333,6 +340,7 @@ export default function SettingsTab() {
       }
       contentContainerStyle={styles.container}
       stickySectionHeadersEnabled={false}
-    />
+      />
+    </View>
   );
 }
