@@ -1,6 +1,7 @@
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput } from "react-native";
 import { Chip } from "@/components/ui/Chip";
-import { colors, currencies } from "@/lib/constants";
+import { currencies } from "@/lib/constants";
+import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
   cost: string;
@@ -10,6 +11,8 @@ type Props = {
 };
 
 export function CostInput({ cost, currency, onCostChange, onCurrencyChange }: Props) {
+  const theme = useTheme();
+  const styles = useStyles();
   return (
     <View>
       <TextInput
@@ -17,7 +20,7 @@ export function CostInput({ cost, currency, onCostChange, onCurrencyChange }: Pr
         value={cost}
         onChangeText={onCostChange}
         placeholder="0.00"
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={theme.colors.textSecondary}
         keyboardType="decimal-pad"
       />
       <View style={styles.currencies}>
@@ -34,20 +37,20 @@ export function CostInput({ cost, currency, onCostChange, onCurrencyChange }: Pr
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   input: {
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 10,
     fontSize: 18,
-    color: colors.text,
-    backgroundColor: colors.surface,
-    marginBottom: 8,
+    color: t.colors.text,
+    backgroundColor: t.colors.surface,
+    marginBottom: t.spacing.sm,
   },
   currencies: {
     flexDirection: "row",
     flexWrap: "wrap",
   },
-});
+}));
