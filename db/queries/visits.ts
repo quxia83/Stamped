@@ -136,6 +136,7 @@ export async function getFilteredVisits(filters: VisitFilters) {
       cost: visits.cost,
       currency: visits.currency,
       whoPaidId: visits.whoPaidId,
+      priceLevel: visits.priceLevel,
       attendeeCount: visits.attendeeCount,
       notes: visits.notes,
       createdAt: visits.createdAt,
