@@ -1,10 +1,9 @@
-import { View, TextInput, Pressable, Text, StyleSheet } from "react-native";
+import { View, TextInput, Pressable, Text } from "react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllTags, insertTag } from "@/db/queries/tags";
 import { Chip } from "@/components/ui/Chip";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type Tag = { id: number; label: string; color: string };
 
@@ -17,7 +16,8 @@ type Props = {
 
 export function TagPicker({ selectedIds, onToggle }: Props) {
   const { t } = useTranslation();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
   const [allTags, setAllTags] = useState<Tag[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newLabel, setNewLabel] = useState("");
@@ -50,8 +50,8 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
             onPress={() => onToggle(tag.id)}
           />
         ))}
-        <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
-          <Text style={[styles.addText, { color: accentColor }]}>{t("tag.addTag")}</Text>
+        <Pressable style={[styles.addBtn, { borderColor: theme.colors.accent }]} onPress={() => setShowAdd(true)}>
+          <Text style={[styles.addText, { color: theme.colors.accent }]}>{t("tag.addTag")}</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -64,7 +64,7 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
             autoFocus
             onSubmitEditing={addTag}
           />
-          <Pressable onPress={addTag} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
+          <Pressable onPress={addTag} style={[styles.saveBtn, { backgroundColor: theme.colors.accent }]}>
             <Text style={styles.saveText}>{t("tag.add")}</Text>
           </Pressable>
         </View>
@@ -73,7 +73,7 @@ export function TagPicker({ selectedIds, onToggle }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -84,32 +84,32 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderStyle: "dashed",
-    marginBottom: 8,
+    marginBottom: t.spacing.sm,
   },
   addText: {
     fontSize: 14,
   },
   addRow: {
     flexDirection: "row",
-    marginTop: 4,
-    gap: 8,
+    marginTop: t.spacing.xs,
+    gap: t.spacing.sm,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.md,
+    paddingVertical: t.spacing.sm,
     fontSize: 14,
   },
   saveBtn: {
-    borderRadius: 8,
-    paddingHorizontal: 16,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.lg,
     justifyContent: "center",
   },
   saveText: {
-    color: "#fff",
+    color: t.colors.onAccent,
     fontWeight: "600",
   },
-});
+}));
