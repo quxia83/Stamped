@@ -95,6 +95,14 @@ export default function MapTab() {
     [setRegion]
   );
 
+  const handleFitAll = useCallback(() => {
+    const coords = filteredPlaces.map((p) => ({
+      latitude: p.latitude,
+      longitude: p.longitude,
+    }));
+    if (coords.length > 0) mapRef.current?.fitToMarkers(coords);
+  }, [filteredPlaces]);
+
   return (
     <View style={styles.container}>
       <StampedMap
@@ -108,6 +116,7 @@ export default function MapTab() {
       />
       <MapControls
         onLocationFound={handleLocationFound}
+        onFitAll={handleFitAll}
         placeCount={filteredPlaces.length}
         noLocationCount={noLocationCount}
       />

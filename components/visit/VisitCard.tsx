@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { format, parseISO } from "date-fns";
 import { Card } from "@/components/ui/Card";
+import { PressableScale } from "@/components/ui/PressableScale";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { makeStyles, useTheme, categoryColors, withAlpha } from "@/theme";
@@ -54,10 +55,7 @@ export function VisitCard({
   };
 
   return (
-    <Pressable
-      onPress={() => router.push(`/visit/${id}`)}
-      style={({ pressed }) => pressed && { opacity: 0.85 }}
-    >
+    <PressableScale onPress={() => router.push(`/visit/${id}`)}>
       <Card>
         <View style={styles.row}>
           {thumbnail ? (
@@ -99,7 +97,7 @@ export function VisitCard({
           <View style={[styles.categoryStripe, { backgroundColor: catColor }]} />
         </View>
       </Card>
-    </Pressable>
+    </PressableScale>
   );
 }
 

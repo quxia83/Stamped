@@ -43,8 +43,8 @@ export function PlaceMarker({
     >
       {/* Apple Maps–style teardrop pin */}
       <View style={styles.pinWrapper}>
-        <View style={styles.label}>
-          <Text style={styles.labelText} numberOfLines={1}>{name}</Text>
+        <View style={[styles.label, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.labelText, { color: colors.text }]} numberOfLines={1}>{name}</Text>
         </View>
         <View style={styles.pinContainer}>
           <View style={[styles.pinHead, { backgroundColor: pinColor }]}>
@@ -62,7 +62,7 @@ export function PlaceMarker({
           ) : (
             <Text style={styles.calloutIcon}>{categoryIcon ?? "📍"}</Text>
           )}
-          <Text style={styles.calloutText} numberOfLines={2}>
+          <Text style={[styles.calloutText, { color: colors.text }]} numberOfLines={2}>
             {name}
           </Text>
         </View>
