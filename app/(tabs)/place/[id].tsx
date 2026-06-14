@@ -13,17 +13,17 @@ import { Button } from "@/components/ui/Button";
 import { IconButton } from "@/components/ui/IconButton";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { useFilterStore } from "@/stores/useFilterStore";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type PlaceStats = Awaited<ReturnType<typeof getPlaceWithStats>>[number];
 type Visit = Awaited<ReturnType<typeof getVisitsByPlaceId>>[number];
 
 export default function PlaceDetailScreen() {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const styles = useStyles();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const accentColor = useThemeStore((s) => s.accentColor);
   const setFilter = useFilterStore((s) => s.setFilter);
   const [place, setPlace] = useState<PlaceStats | null>(null);
   const [placeVisits, setVisits] = useState<Visit[]>([]);
@@ -77,8 +77,8 @@ export default function PlaceDetailScreen() {
     return (
       <>
         <Stack.Screen options={{ title: "" }} />
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: colors.background }}>
-          <Text style={{ fontSize: 16, color: colors.textSecondary, marginBottom: 16 }}>{t("place.notFound", { defaultValue: "Place not found" })}</Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
+          <Text style={{ fontSize: 16, color: theme.colors.textSecondary, marginBottom: 16 }}>{t("place.notFound", { defaultValue: "Place not found" })}</Text>
           <Button title={t("common.goBack", { defaultValue: "Go Back" })} onPress={() => router.back()} />
         </View>
       </>
@@ -91,13 +91,14 @@ export default function PlaceDetailScreen() {
         options={{
           title: place.name,
           headerRight: () => (
-            <IconButton name="trash" color={colors.destructive} onPress={handleDeletePlace} />
+            <IconButton name="trash" color={theme.colors.destructive} onPress={handleDeletePlace} />
           ),
         }}
       />
       <FlatList
         data={placeVisits}
         keyExtractor={(item) => item.id.toString()}
+        contentInsetAdjustmentBehavior="automatic"
         ListHeaderComponent={
           <View>
             {/* Place header */}
@@ -106,7 +107,7 @@ export default function PlaceDetailScreen() {
               <Text style={styles.name}>{place.name}</Text>
               {place.address && (
                 <Pressable onPress={openInMaps}>
-                  <Text style={[styles.address, { color: accentColor }]}>
+                  <Text style={[styles.address, { color: theme.colors.accent }]}>
                     {place.address} ↗
                   </Text>
                 </Pressable>
@@ -118,10 +119,10 @@ export default function PlaceDetailScreen() {
                     router.navigate("/(tabs)/list");
                   }}
                 >
-                  <Text style={[styles.category, { color: accentColor }]}>{t(`category.${place.categoryName}`, { defaultValue: place.categoryName ?? "" })}</Text>
+                  <Text style={[styles.category, { color: theme.colors.accent }]}>{t(`category.${place.categoryName}`, { defaultValue: place.categoryName ?? "" })}</Text>
                 </Pressable>
               ) : (
-                <Text style={[styles.category, { color: colors.textSecondary }]}>{t("place.other")}</Text>
+                <Text style={[styles.category, { color: theme.colors.textSecondary }]}>{t("place.other")}</Text>
               )}
             </View>
 
@@ -195,29 +196,29 @@ export default function PlaceDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   container: {
     paddingBottom: 40,
-    backgroundColor: colors.background,
+    backgroundColor: t.colors.background,
   },
   header: {
     alignItems: "center",
-    paddingVertical: 24,
-    paddingHorizontal: 16,
+    paddingVertical: t.spacing.xl,
+    paddingHorizontal: t.spacing.lg,
   },
   icon: {
     fontSize: 40,
-    marginBottom: 8,
+    marginBottom: t.spacing.sm,
   },
   name: {
     fontSize: 24,
     fontWeight: "700",
-    color: colors.text,
+    color: t.colors.text,
     textAlign: "center",
   },
   address: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 4,
     textAlign: "center",
   },
@@ -229,11 +230,11 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    paddingVertical: t.spacing.lg,
+    marginHorizontal: t.spacing.lg,
+    marginBottom: t.spacing.lg,
+    backgroundColor: t.colors.surface,
+    borderRadius: t.radius.md,
   },
   stat: {
     alignItems: "center",
@@ -241,20 +242,20 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 22,
     fontWeight: "700",
-    color: colors.text,
+    color: t.colors.text,
   },
   statLabel: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 2,
   },
   visitListTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: colors.text,
-    paddingHorizontal: 16,
+    color: t.colors.text,
+    paddingHorizontal: t.spacing.lg,
     paddingTop: 20,
-    paddingBottom: 8,
+    paddingBottom: t.spacing.sm,
   },
   visitRow: {
     gap: 4,
@@ -267,15 +268,15 @@ const styles = StyleSheet.create({
   visitDate: {
     fontSize: 15,
     fontWeight: "500",
-    color: colors.text,
+    color: t.colors.text,
   },
   visitCost: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
   },
   visitNotes: {
     fontSize: 13,
-    color: colors.textSecondary,
+    color: t.colors.textSecondary,
     marginTop: 4,
   },
-});
+}));
