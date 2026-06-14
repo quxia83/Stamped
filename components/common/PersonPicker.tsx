@@ -1,9 +1,8 @@
-import { View, Text, Pressable, TextInput, StyleSheet, Alert } from "react-native";
+import { View, Text, Pressable, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getAllPeople, insertPerson } from "@/db/queries/people";
-import { colors } from "@/lib/constants";
-import { useThemeStore } from "@/stores/useThemeStore";
+import { makeStyles, useTheme } from "@/theme";
 
 type Person = { id: number; name: string };
 
@@ -14,7 +13,8 @@ type Props = {
 
 export function PersonPicker({ selectedId, onSelect }: Props) {
   const { t } = useTranslation();
-  const accentColor = useThemeStore((s) => s.accentColor);
+  const theme = useTheme();
+  const styles = useStyles();
   const [people, setPeople] = useState<Person[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newName, setNewName] = useState("");
@@ -38,7 +38,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
     <View>
       <View style={styles.row}>
         <Pressable
-          style={[styles.option, !selectedId && { backgroundColor: accentColor, borderColor: accentColor }]}
+          style={[styles.option, !selectedId && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }]}
           onPress={() => onSelect(undefined)}
         >
           <Text style={[styles.optionText, !selectedId && styles.selectedText]}>
@@ -48,7 +48,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
         {people.map((p) => (
           <Pressable
             key={p.id}
-            style={[styles.option, selectedId === p.id && { backgroundColor: accentColor, borderColor: accentColor }]}
+            style={[styles.option, selectedId === p.id && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }]}
             onPress={() => onSelect(p.id)}
           >
             <Text
@@ -61,8 +61,8 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
             </Text>
           </Pressable>
         ))}
-        <Pressable style={[styles.addBtn, { borderColor: accentColor }]} onPress={() => setShowAdd(true)}>
-          <Text style={[styles.addText, { color: accentColor }]}>{t("common.addPerson")}</Text>
+        <Pressable style={[styles.addBtn, { borderColor: theme.colors.accent }]} onPress={() => setShowAdd(true)}>
+          <Text style={[styles.addText, { color: theme.colors.accent }]}>{t("common.addPerson")}</Text>
         </Pressable>
       </View>
       {showAdd && (
@@ -75,7 +75,7 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
             autoFocus
             onSubmitEditing={addPerson}
           />
-          <Pressable onPress={addPerson} style={[styles.saveBtn, { backgroundColor: accentColor }]}>
+          <Pressable onPress={addPerson} style={[styles.saveBtn, { backgroundColor: theme.colors.accent }]}>
             <Text style={styles.saveText}>{t("common.save")}</Text>
           </Pressable>
         </View>
@@ -84,26 +84,26 @@ export function PersonPicker({ selectedId, onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((t) => ({
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: t.spacing.sm,
   },
   option: {
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderColor: t.colors.border,
+    backgroundColor: t.colors.surface,
   },
   optionText: {
     fontSize: 14,
-    color: colors.text,
+    color: t.colors.text,
   },
   selectedText: {
-    color: "#fff",
+    color: t.colors.onAccent,
   },
   addBtn: {
     paddingHorizontal: 14,
@@ -118,24 +118,24 @@ const styles = StyleSheet.create({
   addRow: {
     flexDirection: "row",
     marginTop: 10,
-    gap: 8,
+    gap: t.spacing.sm,
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderColor: t.colors.border,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.md,
+    paddingVertical: t.spacing.sm,
     fontSize: 14,
   },
   saveBtn: {
-    borderRadius: 8,
-    paddingHorizontal: 16,
+    borderRadius: t.radius.sm,
+    paddingHorizontal: t.spacing.lg,
     justifyContent: "center",
   },
   saveText: {
-    color: "#fff",
+    color: t.colors.onAccent,
     fontWeight: "600",
   },
-});
+}));
