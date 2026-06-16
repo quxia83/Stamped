@@ -280,78 +280,90 @@ export default function NewVisitScreen() {
           contentContainerStyle={styles.content}
           contentInsetAdjustmentBehavior="automatic"
         >
-          <Text style={styles.label}>{t("form.placeName")}</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder={t("form.placeNamePlaceholder")}
-            placeholderTextColor={theme.colors.textTertiary}
-          />
+          <Text style={styles.groupHeader}>{t("form.sectionPlace", { defaultValue: "Place" })}</Text>
+          <View style={styles.group}>
+            <Text style={styles.label}>{t("form.placeName")}</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder={t("form.placeNamePlaceholder")}
+              placeholderTextColor={theme.colors.textTertiary}
+            />
 
-          <Text style={styles.label}>{t("form.address")}</Text>
-          <TextInput
-            style={styles.input}
-            value={address}
-            onChangeText={(v) => { setAddress(v); setAddressManuallyEdited(true); }}
-            placeholder={t("form.addressPlaceholder")}
-            placeholderTextColor={theme.colors.textTertiary}
-          />
+            <Text style={styles.label}>{t("form.address")}</Text>
+            <TextInput
+              style={styles.input}
+              value={address}
+              onChangeText={(v) => { setAddress(v); setAddressManuallyEdited(true); }}
+              placeholder={t("form.addressPlaceholder")}
+              placeholderTextColor={theme.colors.textTertiary}
+            />
+          </View>
 
-          <Text style={styles.label}>{t("form.category")}</Text>
-          <CategoryPicker selectedId={categoryId} onSelect={setCategoryId} />
+          <Text style={styles.groupHeader}>{t("form.sectionVisit", { defaultValue: "The Visit" })}</Text>
+          <View style={styles.group}>
+            <Text style={styles.label}>{t("form.category")}</Text>
+            <CategoryPicker selectedId={categoryId} onSelect={setCategoryId} />
 
-          <Text style={styles.label}>{t("form.date")}</Text>
-          <DatePicker value={date} onChange={setDate} />
+            <Text style={styles.label}>{t("form.date")}</Text>
+            <DatePicker value={date} onChange={setDate} />
 
-          <Text style={styles.label}>{t("form.rating")}</Text>
-          <RatingInput value={rating} onChange={setRating} />
+            <Text style={styles.label}>{t("form.rating")}</Text>
+            <RatingInput value={rating} onChange={setRating} />
+          </View>
 
-          <Text style={styles.label}>{t("form.cost")}</Text>
-          <CostInput
-            cost={cost}
-            currency={currency}
-            onCostChange={setCost}
-            onCurrencyChange={setCurrency}
-          />
+          <Text style={styles.groupHeader}>{t("form.sectionDetails", { defaultValue: "Details" })}</Text>
+          <View style={styles.group}>
+            <Text style={styles.label}>{t("form.cost")}</Text>
+            <CostInput
+              cost={cost}
+              currency={currency}
+              onCostChange={setCost}
+              onCurrencyChange={setCurrency}
+            />
 
-          <Text style={styles.label}>{t("form.attendees")}</Text>
-          <TextInput
-            style={styles.input}
-            value={attendeeCount}
-            onChangeText={(v) => setAttendeeCount(v.replace(/[^0-9]/g, ""))}
-            keyboardType="number-pad"
-            placeholder={t("form.attendeesPlaceholder")}
-            placeholderTextColor={theme.colors.textTertiary}
-            maxLength={3}
-          />
+            <Text style={styles.label}>{t("form.attendees")}</Text>
+            <TextInput
+              style={styles.input}
+              value={attendeeCount}
+              onChangeText={(v) => setAttendeeCount(v.replace(/[^0-9]/g, ""))}
+              keyboardType="number-pad"
+              placeholder={t("form.attendeesPlaceholder")}
+              placeholderTextColor={theme.colors.textTertiary}
+              maxLength={3}
+            />
 
-          <Text style={styles.label}>{t("form.priceLevel")}</Text>
-          <PriceLevelPicker value={priceLevel} onChange={setPriceLevel} />
+            <Text style={styles.label}>{t("form.priceLevel")}</Text>
+            <PriceLevelPicker value={priceLevel} onChange={setPriceLevel} />
 
-          <Text style={styles.label}>{t("form.whoPaid")}</Text>
-          <PersonPicker selectedId={whoPaidId} onSelect={setWhoPaidId} />
+            <Text style={styles.label}>{t("form.whoPaid")}</Text>
+            <PersonPicker selectedId={whoPaidId} onSelect={setWhoPaidId} />
+          </View>
 
-          <Text style={styles.label}>{t("form.tags")}</Text>
-          <TagPicker selectedIds={selectedTags} onToggle={toggleTag} />
+          <Text style={styles.groupHeader}>{t("form.sectionExtras", { defaultValue: "Tags, Photos & Notes" })}</Text>
+          <View style={styles.group}>
+            <Text style={styles.label}>{t("form.tags")}</Text>
+            <TagPicker selectedIds={selectedTags} onToggle={toggleTag} />
 
-          <Text style={styles.label}>{t("form.photos")}</Text>
-          <PhotoPicker
-            photos={localPhotos}
-            onAdd={addPhoto}
-            onRemove={removePhoto}
-          />
+            <Text style={styles.label}>{t("form.photos")}</Text>
+            <PhotoPicker
+              photos={localPhotos}
+              onAdd={addPhoto}
+              onRemove={removePhoto}
+            />
 
-          <Text style={styles.label}>{t("form.notes")}</Text>
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder={t("form.notesPlaceholder")}
-            placeholderTextColor={theme.colors.textTertiary}
-            multiline
-            numberOfLines={4}
-          />
+            <Text style={styles.label}>{t("form.notes")}</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder={t("form.notesPlaceholder")}
+              placeholderTextColor={theme.colors.textTertiary}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
 
           <View style={styles.buttonRow}>
             <Button
@@ -376,11 +388,27 @@ const useStyles = makeStyles((t) => ({
     padding: t.spacing.lg,
     paddingBottom: 40,
   },
+  groupHeader: {
+    ...t.typography.footnote,
+    color: t.colors.textSecondary,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    marginTop: t.spacing.xl,
+    marginBottom: t.spacing.sm,
+    marginLeft: t.spacing.xs,
+  },
+  group: {
+    backgroundColor: t.colors.surface,
+    borderRadius: t.radius.md,
+    paddingHorizontal: t.spacing.lg,
+    paddingTop: t.spacing.xs,
+    paddingBottom: t.spacing.lg,
+  },
   label: {
     fontSize: 14,
     fontWeight: "600",
     color: t.colors.textSecondary,
-    marginTop: t.spacing.lg,
+    marginTop: t.spacing.md,
     marginBottom: 6,
     textTransform: "uppercase",
     letterSpacing: 0.5,
