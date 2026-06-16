@@ -23,6 +23,7 @@ import { PriceLevelPicker } from "@/components/visit/PriceLevelPicker";
 import { Button } from "@/components/ui/Button";
 import { insertPlace, updatePlace, findPlaceByName } from "@/db/queries/places";
 import { insertVisit, getVisitById, updateVisit } from "@/db/queries/visits";
+import * as Haptics from "expo-haptics";
 import { insertPhoto, getPhotosForVisit, deletePhoto } from "@/db/queries/photos";
 import { getTagsForVisit, setVisitTags } from "@/db/queries/tags";
 import * as Location from "expo-location";
@@ -255,8 +256,10 @@ export default function NewVisitScreen() {
         }
       }
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch (e: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(t("form.error"), e.message);
     } finally {
       setSaving(false);

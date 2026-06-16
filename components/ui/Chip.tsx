@@ -1,4 +1,5 @@
 import { Pressable, Text } from "react-native";
+import * as Haptics from "expo-haptics";
 import { makeStyles, useTheme } from "@/theme";
 
 type Props = {
@@ -17,7 +18,14 @@ export function Chip({ label, selected, color, onPress }: Props) {
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={
+        onPress
+          ? () => {
+              Haptics.selectionAsync();
+              onPress();
+            }
+          : undefined
+      }
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected }}

@@ -13,7 +13,9 @@ const fileStorage = {
     }
   },
   setItem: async (_name: string, value: string): Promise<void> => {
-    await FileSystem.writeAsStringAsync(settingsPath, value);
+    try {
+      await FileSystem.writeAsStringAsync(settingsPath, value);
+    } catch {}
   },
   removeItem: async (_name: string): Promise<void> => {
     try {

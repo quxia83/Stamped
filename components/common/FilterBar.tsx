@@ -7,7 +7,7 @@ import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useFilterStore } from "@/stores/useFilterStore";
 import { getAllCategories } from "@/db/queries/categories";
 import { getAllTags } from "@/db/queries/tags";
-import { makeStyles, useTheme, categoryColors } from "@/theme";
+import { makeStyles, useTheme, categoryColor } from "@/theme";
 
 type Category = { id: number; name: string; icon: string };
 type Tag = { id: number; label: string; color: string };
@@ -113,12 +113,12 @@ export function FilterBar() {
             selected={!store.categoryId}
             onPress={() => store.setFilter("categoryId", undefined)}
           />
-          {cats.map((cat, i) => (
+          {cats.map((cat) => (
             <Chip
               key={cat.id}
               label={`${cat.icon} ${t(`category.${cat.name}`, { defaultValue: cat.name })}`}
               selected={store.categoryId === cat.id}
-              color={categoryColors[i % categoryColors.length]}
+              color={categoryColor(cat.id)}
               onPress={() => store.setFilter("categoryId", cat.id)}
             />
           ))}

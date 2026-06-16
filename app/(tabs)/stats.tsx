@@ -21,6 +21,7 @@ import { useFilterStore } from "@/stores/useFilterStore";
 import { makeStyles, useTheme, categoryColor } from "@/theme";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { LargeHeader } from "@/components/ui/LargeHeader";
+import * as Haptics from "expo-haptics";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 type TimeRange = "all" | "week" | "month" | "year" | "custom";
@@ -115,7 +116,10 @@ export default function StatsTab() {
           <Pressable
             key={c.key}
             style={[styles.chip, range === c.key && { backgroundColor: theme.colors.accent, borderColor: theme.colors.accent }]}
-            onPress={() => setRange(c.key)}
+            onPress={() => {
+              Haptics.selectionAsync();
+              setRange(c.key);
+            }}
           >
             <Text style={[styles.chipText, range === c.key && styles.chipTextActive]}>
               {c.label}
