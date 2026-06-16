@@ -1,13 +1,17 @@
-import { View, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { StampedMap, type StampedMapHandle } from "@/components/map/StampedMap";
 import { MapControls } from "@/components/map/MapControls";
 import { usePlaces } from "@/hooks/usePlaces";
 import { useMapStore } from "@/stores/useMapStore";
 import { useFilterStore } from "@/stores/useFilterStore";
+import { useTheme } from "@/theme";
 
 export default function MapTab() {
+  const { t } = useTranslation();
+  const theme = useTheme();
   const router = useRouter();
   const mapRef = useRef<StampedMapHandle>(null);
   const { data: places } = usePlaces();
@@ -120,6 +124,18 @@ export default function MapTab() {
         placeCount={filteredPlaces.length}
         noLocationCount={noLocationCount}
       />
+      {places.length === 0 && (
+        <View style={styles.hintWrap} pointerEvents="none">
+          <View style={[styles.hintCard, { backgroundColor: theme.colors.surface }, theme.shadow.level2]}>
+            <Text style={[styles.hintTitle, { color: theme.colors.text }]}>
+              {t("map.emptyTitle", { defaultValue: "No visits yet" })}
+            </Text>
+            <Text style={[styles.hintMsg, { color: theme.colors.textSecondary }]}>
+              {t("map.emptyMessage", { defaultValue: "Press and hold anywhere on the map to log your first visit." })}
+            </Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -127,5 +143,32 @@ export default function MapTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  hintWrap: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 32,
+  },
+  hintCard: {
+    borderRadius: 16,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    maxWidth: 320,
+  },
+  hintTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 6,
+  },
+  hintMsg: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
   },
 });

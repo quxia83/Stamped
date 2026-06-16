@@ -21,6 +21,7 @@ import { useFilterStore } from "@/stores/useFilterStore";
 import { makeStyles, useTheme, categoryColor } from "@/theme";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { LargeHeader } from "@/components/ui/LargeHeader";
+import { EmptyState } from "@/components/common/EmptyState";
 import * as Haptics from "expo-haptics";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 
@@ -187,6 +188,14 @@ export default function StatsTab() {
             </View>
           ))}
         </>
+      ) : !overall || overall.totalVisits === 0 ? (
+        <View style={styles.emptyWrap}>
+          <EmptyState
+            icon="bar-chart"
+            title={t("stats.emptyTitle", { defaultValue: "No data yet" })}
+            message={t("stats.emptyMessage", { defaultValue: "Log some visits to see your stats for this period." })}
+          />
+        </View>
       ) : (
         <>
           {/* Overview Hero */}
@@ -333,6 +342,7 @@ export default function StatsTab() {
 
 const useStyles = makeStyles((t) => ({
   screen: { flex: 1, backgroundColor: t.colors.background },
+  emptyWrap: { minHeight: 380 },
   container: { flex: 1, backgroundColor: t.colors.background },
   content: { padding: t.spacing.lg, paddingBottom: 40 },
   dateRow: {
