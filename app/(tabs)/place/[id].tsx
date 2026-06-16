@@ -2,7 +2,7 @@ import { View, Text, FlatList, Alert, StyleSheet, Pressable, Linking, Platform }
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { format, parseISO } from "date-fns";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { getPlaceWithStats, deletePlace } from "@/db/queries/places";
 import { getVisitsByPlaceId, deleteVisit } from "@/db/queries/visits";
 import { deletePhotosForVisit } from "@/db/queries/photos";
@@ -176,7 +176,7 @@ export default function PlaceDetailScreen() {
               <View style={styles.visitRow}>
                 <View style={styles.visitInfo}>
                   <Text style={styles.visitDate}>
-                    {format(parseISO(item.date + "T00:00:00"), "MMM d, yyyy")}
+                    {formatDate(item.date)}
                   </Text>
                   {item.rating != null && (
                     <StarDisplay rating={item.rating} size={14} />
@@ -184,7 +184,7 @@ export default function PlaceDetailScreen() {
                 </View>
                 {item.cost != null && item.cost > 0 && (
                   <Text style={styles.visitCost}>
-                    {item.currency ?? "USD"} {item.cost.toFixed(2)}
+                    {formatCurrency(item.cost, item.currency)}
                   </Text>
                 )}
                 {item.notes && (

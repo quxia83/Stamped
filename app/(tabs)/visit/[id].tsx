@@ -12,7 +12,7 @@ import {
 import { useLocalSearchParams, useRouter, Stack } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCallback, useState } from "react";
-import { format, parseISO } from "date-fns";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { useTranslation } from "react-i18next";
 import { StarDisplay } from "@/components/visit/RatingInput";
 import { getVisitById, deleteVisit } from "@/db/queries/visits";
@@ -195,7 +195,7 @@ export default function VisitDetailScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionLabel}>{t("visit.date")}</Text>
           <Text style={styles.sectionValue}>
-            {format(parseISO(visit.date + "T00:00:00"), "EEEE, MMMM d, yyyy")}
+            {formatDate(visit.date, "EEEE, MMMM d, yyyy")}
           </Text>
         </View>
 
@@ -212,7 +212,7 @@ export default function VisitDetailScreen() {
           <View style={[styles.section, styles.divider]}>
             <Text style={styles.sectionLabel}>{t("visit.cost")}</Text>
             <Text style={styles.sectionValue}>
-              {visit.currency ?? "USD"} {visit.cost.toFixed(2)}
+              {formatCurrency(visit.cost, visit.currency)}
               {visit.whoPaidName ? ` (${t("visit.paidBy", { name: visit.whoPaidName })})` : ""}
             </Text>
           </View>

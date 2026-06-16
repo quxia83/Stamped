@@ -1,7 +1,7 @@
 import { View, Text, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { format, parseISO } from "date-fns";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { Card } from "@/components/ui/Card";
 import { PressableScale } from "@/components/ui/PressableScale";
 import { useFilterStore } from "@/stores/useFilterStore";
@@ -71,13 +71,11 @@ export function VisitCard({
             <Text style={styles.name} numberOfLines={1}>
               {placeName ?? t("common.unknown")}
             </Text>
-            <Text style={styles.date}>{format(parseISO(date + "T00:00:00"), "EEE, MMM d, yyyy")}</Text>
+            <Text style={styles.date}>{formatDate(date, "EEE, MMM d, yyyy")}</Text>
             <View style={styles.meta}>
               {rating != null && <StarDisplay rating={rating} size={13} />}
               {cost != null && cost > 0 && (
-                <Text style={styles.cost}>
-                  {currency ?? "USD"} {cost.toFixed(2)}
-                </Text>
+                <Text style={styles.cost}>{formatCurrency(cost, currency)}</Text>
               )}
             </View>
             {tags && tags.length > 0 && (
