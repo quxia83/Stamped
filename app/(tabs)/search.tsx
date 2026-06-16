@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/common/SearchBar";
 import { VisitCard } from "@/components/visit/VisitCard";
 import { EmptyState } from "@/components/common/EmptyState";
 import { getFilteredVisits, type VisitWithPlace } from "@/db/queries/visits";
-import { getTagsForVisit } from "@/db/queries/tags";
+import { getTagsForVisits } from "@/db/queries/tags";
 import { searchPlaces, type PlaceResult } from "@/lib/geocode";
 import { useMapStore } from "@/stores/useMapStore";
 import { makeStyles, useTheme } from "@/theme";
@@ -43,12 +43,8 @@ export default function SearchScreen() {
         searchPlaces(q, region),
       ]);
 
-      const enriched = await Promise.all(
-        raw.map(async (v) => {
-          const tags = await getTagsForVisit(v.id);
-          return { ...v, tags };
-        })
-      );
+      const tagMap = await getTagsForVisits(raw.map((v) => v.id));
+      const enriched = raw.map((v) => ({ ...v, tags: tagMap.get(v.id) ?? [] }));
       setVisits(enriched);
       setPlaces(placeResults);
     } catch {

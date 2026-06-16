@@ -1,6 +1,34 @@
 import { db } from "@/db/client";
 import { tags, visitTags } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
+
+export type VisitTag = { id: number; label: string; color: string };
+
+/**
+ * Batched tag lookup for many visits in ONE query (avoids N+1).
+ * Returns a Map of visitId -> tags.
+ */
+export async function getTagsForVisits(visitIds: number[]): Promise<Map<number, VisitTag[]>> {
+  const map = new Map<number, VisitTag[]>();
+  if (visitIds.length === 0) return map;
+  const rows = await db
+    .select({
+      visitId: visitTags.visitId,
+      id: tags.id,
+      label: tags.label,
+      color: tags.color,
+    })
+    .from(visitTags)
+    .innerJoin(tags, eq(visitTags.tagId, tags.id))
+    .where(inArray(visitTags.visitId, visitIds));
+  for (const r of rows) {
+    const arr = map.get(r.visitId);
+    const tag = { id: r.id, label: r.label, color: r.color };
+    if (arr) arr.push(tag);
+    else map.set(r.visitId, [tag]);
+  }
+  return map;
+}
 
 export function getAllTags() {
   return db.select().from(tags);
