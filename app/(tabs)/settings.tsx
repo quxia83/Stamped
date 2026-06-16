@@ -10,6 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import * as Haptics from "expo-haptics";
 import {
   getAllCategories,
   insertCategory,
@@ -152,11 +153,17 @@ function ThemeColorPicker() {
     <View style={styles.pinSection}>
       <Text style={styles.sectionTitle}>{t("settings.themeColor")}</Text>
       <View style={styles.swatchRow}>
-        {PIN_COLORS.map((c) => (
+        {PIN_COLORS.map((c, i) => (
           <Pressable
             key={c}
             style={[styles.swatch, { backgroundColor: c }, accentColor === c && styles.swatchSelected]}
-            onPress={() => setAccentColor(c)}
+            onPress={() => {
+              Haptics.selectionAsync();
+              setAccentColor(c);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel={t("settings.themeColorOption", { defaultValue: "Theme color {{n}}", n: i + 1 })}
+            accessibilityState={{ selected: accentColor === c }}
           >
             {accentColor === c && (
               <FontAwesome name="check" size={14} color="#fff" />

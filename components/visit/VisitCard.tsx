@@ -55,7 +55,11 @@ export function VisitCard({
   };
 
   return (
-    <PressableScale onPress={() => router.push(`/visit/${id}`)}>
+    <PressableScale
+      onPress={() => router.push(`/visit/${id}`)}
+      accessibilityRole="button"
+      accessibilityLabel={`${placeName ?? t("common.unknown")}, ${formatDate(date)}`}
+    >
       <Card>
         <View style={styles.row}>
           {thumbnail ? (
