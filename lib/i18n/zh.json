@@ -14,7 +14,8 @@
   },
   "list": {
     "emptyTitle": "还没有访问记录",
-    "emptyMessage": "长按地图添加您的第一次访问。"
+    "emptyMessage": "长按地图添加您的第一次访问。",
+    "addFirst": "添加到访"
   },
   "search": {
     "placeholder": "搜索地点、笔记、标签...",
@@ -41,7 +42,9 @@
     "visitCount_other": "{{count}} 次",
     "monthlyTrend": "月度趋势",
     "topPlaces": "热门地点",
-    "unknown": "未知"
+    "unknown": "未知",
+    "emptyTitle": "暂无数据",
+    "emptyMessage": "记录一些到访后，即可在此查看该时段的统计。"
   },
   "settings": {
     "themeColor": "主题颜色",
@@ -54,7 +57,8 @@
     "save": "保存",
     "add": "添加",
     "delete": "删除",
-    "deleteConfirm": "确定删除 \"{{name}}\"？"
+    "deleteConfirm": "确定删除 \"{{name}}\"？",
+    "themeColorOption": "主题色 {{n}}"
   },
   "place": {
     "visits": "访问次数",
@@ -102,7 +106,11 @@
     "saveChanges": "保存更改",
     "required": "必填",
     "enterPlaceName": "请输入地点名称。",
-    "error": "错误"
+    "error": "错误",
+    "sectionPlace": "地点",
+    "sectionVisit": "本次到访",
+    "sectionDetails": "详情",
+    "sectionExtras": "标签、照片和备注"
   },
   "filter": {
     "all": "全部",
@@ -135,7 +143,11 @@
     "locationPermissionNeeded": "需要位置权限。",
     "addVisit": "+ 添加访问",
     "yourPlaces": "我的地点",
-    "noPlaces": "还没有地点。前往访问标签页添加。"
+    "noPlaces": "还没有地点。前往访问标签页添加。",
+    "emptyTitle": "还没有到访记录",
+    "emptyMessage": "在地图上任意位置长按，即可记录你的第一次到访。",
+    "fitAll": "显示所有标记",
+    "myLocation": "我的位置"
   },
   "notFound": {
     "title": "出错了！",
